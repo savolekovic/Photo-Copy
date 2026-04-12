@@ -1,0 +1,10 @@
+node_modules/
+dist/
+
+# Secrets — keep .env.example committed as a template only
+.env
+.env.local
+*.log
+.DS_Store
+client/dist/
+server/.env

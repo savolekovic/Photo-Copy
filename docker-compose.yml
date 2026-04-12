@@ -1,0 +1,17 @@
+# Local PostgreSQL — no SSL. Matches DATABASE_URL in .env.example.
+# Requires Docker Desktop (or Docker Engine + Compose).
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: photocopy
+    ports:
+      - "5432:5432"
+    volumes:
+      - photocopy_pgdata:/var/lib/postgresql/data
+
+volumes:
+  photocopy_pgdata:
