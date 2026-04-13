@@ -1,5 +1,5 @@
 {
-  "name": "photocopy-order",
+  "name": "photo-copy",
   "private": true,
   "workspaces": [
     "client",

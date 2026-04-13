@@ -90,12 +90,12 @@ Your [`.env`](../.env.example) `DATABASE_URL` points at `localhost:5432`, which 
 
 ## 5. Step by step in this repository
 
-From the **project root** (`Property-Management`):
+From the **project root** (`Photo-Copy`):
 
 ### 5.1 One-time: Node dependencies
 
 ```bash
-cd /path/to/Property-Management
+cd /path/to/Photo-Copy
 npm install
 cp .env.example .env
 ```
