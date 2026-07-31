@@ -1,313 +1,328 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  deleteOrder,
-  fetchOrders,
-  patchOrderStatus,
-} from "../api.js";
+import { fetchOrderSummary, fetchOrders, patchOrderStatus } from "../api.js";
 import OrderDetailsModal from "../components/orders/OrderDetailsModal.jsx";
+import OrdersFilterBar from "../components/orders/OrdersFilterBar.jsx";
 import OrdersTable from "../components/orders/OrdersTable.jsx";
-import { FACULTIES, YEARS } from "../constants.js";
-import { getAdminSecret, setAdminSecret } from "../lib/adminSecret.js";
+import { useI18n } from "../i18n/I18nProvider.jsx";
+import { apiErrorMessage } from "../lib/apiErrorMessage.js";
 
-const SORTS = [
-  { value: "date-desc", label: "Newest first" },
-  { value: "date-asc", label: "Oldest first" },
-  { value: "price-desc", label: "Price high → low" },
-  { value: "price-asc", label: "Price low → high" },
-];
+const PAGE_SIZE = 20;
 
+/**
+ * Operator dashboard — "pregled svih pristiglih narudžbina", filtering, detail view and
+ * status management. Defaults to the active queue so the landing view is the work still
+ * outstanding rather than the full archive.
+ */
 export default function OrdersPage() {
+  const { t } = useI18n();
+
   const [orders, setOrders] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [forbidden, setForbidden] = useState(false);
-  const [secretInput, setSecretInput] = useState("");
   const [busyId, setBusyId] = useState(null);
   const [viewOrderId, setViewOrderId] = useState(null);
+  const [notice, setNotice] = useState(null);
+  const [summary, setSummary] = useState(null);
+  // Bumped after every mutation so both the list and the open modal re-fetch.
+  const [version, setVersion] = useState(0);
 
-  const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("active");
   const [facultyFilter, setFacultyFilter] = useState("");
   const [yearFilter, setYearFilter] = useState("");
   const [sort, setSort] = useState("date-desc");
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    setError("");
-    setForbidden(false);
-    try {
-      const data = await fetchOrders();
-      setForbidden(false);
-      setOrders(Array.isArray(data) ? data : []);
-    } catch (e) {
-      if (e.message === "FORBIDDEN") {
-        setForbidden(true);
-        setOrders([]);
-      } else {
-        setError(e.message || "Failed to load orders");
-      }
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchInput.trim()), 400);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    setPage(1);
+  }, [debouncedSearch]);
 
-  const filtered = useMemo(() => {
-    let list = orders;
-    const q = search.trim().toLowerCase();
-    if (q) {
-      list = list.filter(
-        (o) =>
-          o.email.toLowerCase().includes(q) ||
-          (o.literature?.name || "").toLowerCase().includes(q)
-      );
-    }
-    if (facultyFilter) {
-      list = list.filter((o) => o.faculty === facultyFilter);
-    }
-    if (yearFilter) {
-      list = list.filter((o) => o.year === yearFilter);
-    }
-    const sorted = [...list];
-    sorted.sort((a, b) => {
-      if (sort === "date-desc" || sort === "date-asc") {
-        const ta = new Date(a.created_at).getTime();
-        const tb = new Date(b.created_at).getTime();
-        return sort === "date-desc" ? tb - ta : ta - tb;
+  const listParams = useMemo(
+    () => ({
+      page,
+      limit: PAGE_SIZE,
+      search: debouncedSearch,
+      faculty: facultyFilter,
+      year: yearFilter,
+      sort,
+      status: statusFilter,
+    }),
+    [page, debouncedSearch, facultyFilter, yearFilter, sort, statusFilter]
+  );
+
+  useEffect(() => {
+    const ac = new AbortController();
+    (async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const data = await fetchOrders(listParams, { signal: ac.signal });
+        setOrders(data.orders ?? []);
+        setTotal(data.total ?? 0);
+        setTotalPages(data.totalPages ?? 1);
+        if (typeof data.page === "number") setPage(data.page);
+      } catch (err) {
+        if (err.name === "AbortError") return;
+        setError(apiErrorMessage(err, t));
+      } finally {
+        setLoading(false);
       }
-      const pa = Number(a.price);
-      const pb = Number(b.price);
-      return sort === "price-desc" ? pb - pa : pa - pb;
-    });
-    return sorted;
-  }, [orders, search, facultyFilter, yearFilter, sort]);
+    })();
+    return () => ac.abort();
+  }, [listParams, version, t]);
 
-  const handleSaveSecret = (e) => {
-    e.preventDefault();
-    setAdminSecret(secretInput);
-    setSecretInput("");
-    load();
-  };
+  // Summary is independent of the filters — it always describes the whole queue.
+  useEffect(() => {
+    const ac = new AbortController();
+    fetchOrderSummary({ signal: ac.signal })
+      .then(setSummary)
+      .catch(() => setSummary(null));
+    return () => ac.abort();
+  }, [version]);
 
-  const handleDelete = async (id) => {
-    if (!window.confirm(`Delete order #${id}? This cannot be undone.`)) {
-      return;
-    }
-    setBusyId(id);
-    try {
-      await deleteOrder(id);
-      setOrders((prev) => prev.filter((o) => o.id !== id));
-    } catch (e) {
-      if (e.message === "FORBIDDEN") {
-        setForbidden(true);
-      } else {
-        alert(e.message);
+  const handleStatusChange = useCallback(
+    async (id, status) => {
+      setBusyId(id);
+      setNotice(null);
+      try {
+        const updated = await patchOrderStatus(id, status);
+
+        // Only the ready transition sends mail, so only it reports delivery.
+        if (status === "spremno") {
+          setNotice({
+            tone: updated.emailSent ? "success" : "warning",
+            message: updated.emailSent
+              ? t("orders.readyEmailSent")
+              : t("orders.readyEmailFailed"),
+          });
+        }
+        setVersion((v) => v + 1);
+      } catch (err) {
+        setNotice({ tone: "error", message: apiErrorMessage(err, t) });
+        // Re-sync regardless: a rejected transition usually means someone else already
+        // moved the order, so the local copy is the stale one.
+        setVersion((v) => v + 1);
+      } finally {
+        setBusyId(null);
       }
-    } finally {
-      setBusyId(null);
-    }
-  };
+    },
+    [t]
+  );
 
-  const handleStatusChange = async (id, status) => {
-    const prev = orders.find((o) => o.id === id);
-    if (!prev || prev.status === status) return;
-    setBusyId(id);
-    try {
-      const updated = await patchOrderStatus(id, status);
-      setOrders((o) =>
-        o.map((row) => (row.id === id ? { ...row, ...updated } : row))
-      );
-      setViewOrderId((open) => (open === id ? null : open));
-    } catch (e) {
-      if (e.message === "FORBIDDEN") {
-        setForbidden(true);
-      } else {
-        alert(e.message);
-      }
-      load();
-    } finally {
-      setBusyId(null);
-    }
-  };
+  const hasFilters =
+    Boolean(debouncedSearch) ||
+    Boolean(facultyFilter) ||
+    Boolean(yearFilter) ||
+    statusFilter !== "active";
 
-  const handleMarkComplete = (id) => handleStatusChange(id, "completed");
-
-  if (forbidden && getAdminSecret() === "") {
-    return (
-      <div className="max-w-md mx-auto px-4 py-16">
-        <h1 className="text-2xl font-semibold text-slate-900 mb-2">Orders</h1>
-        <p className="text-sm text-slate-600 mb-6">
-          This list is protected. Enter the admin secret configured on the server
-          (<code className="text-xs bg-slate-100 px-1 rounded">ADMIN_SECRET</code> in{" "}
-          <code className="text-xs bg-slate-100 px-1 rounded">.env</code>).
-        </p>
-        <form onSubmit={handleSaveSecret} className="space-y-3">
-          <label className="block text-xs font-medium text-slate-500">
-            Admin secret
-            <input
-              type="password"
-              value={secretInput}
-              onChange={(e) => setSecretInput(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/15"
-              autoComplete="off"
-            />
-          </label>
-          <button
-            type="submit"
-            className="w-full rounded-xl bg-slate-900 text-white py-2.5 text-sm font-medium hover:bg-slate-800 transition-colors"
-          >
-            Unlock
-          </button>
-        </form>
-      </div>
-    );
-  }
-
-  if (forbidden && getAdminSecret() !== "") {
-    return (
-      <div className="max-w-lg mx-auto px-4 py-16 text-center">
-        <h1 className="text-2xl font-semibold text-slate-900 mb-2">Orders</h1>
-        <p className="text-sm text-slate-600 mb-4">
-          Invalid admin secret. Check <code className="text-xs bg-slate-100 px-1 rounded">ADMIN_SECRET</code> matches this value.
-        </p>
-        <button
-          type="button"
-          onClick={() => {
-            setAdminSecret("");
-            setForbidden(false);
-            load();
-          }}
-          className="text-sm font-medium text-slate-700 underline"
-        >
-          Clear and try again
-        </button>
-      </div>
-    );
-  }
+  const rangeStart = total === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
+  const rangeEnd = Math.min(page * PAGE_SIZE, total);
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-10 sm:py-12">
-      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
+    <div className="mx-auto max-w-5xl px-4 py-10 sm:py-12">
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-medium uppercase tracking-widest text-slate-500 mb-1">
-            Admin
+          <p className="mb-1 text-xs font-medium uppercase tracking-widest text-slate-500">
+            {t("orders.roleBadge")}
           </p>
-          <h1 className="text-2xl sm:text-3xl font-semibold text-slate-900 tracking-tight">
-            Orders
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+            {t("orders.title")}
           </h1>
+          <p className="mt-1.5 text-sm text-slate-600">{t("orders.subtitle")}</p>
         </div>
         <button
           type="button"
-          onClick={() => load()}
+          onClick={() => setVersion((v) => v + 1)}
           disabled={loading}
-          className="self-start text-sm font-medium text-slate-600 hover:text-slate-900 px-3 py-2 rounded-lg border border-slate-200 hover:bg-white transition-colors disabled:opacity-50"
+          className="self-start rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-white hover:text-slate-900 disabled:opacity-50"
         >
-          Refresh
+          {t("common.refresh")}
         </button>
       </div>
 
-      <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-soft mb-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <label className="block text-xs font-medium text-slate-500">
-            Search (literature or email)
-            <input
-              type="search"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Type to filter…"
-              className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/15"
-            />
-          </label>
-          <label className="block text-xs font-medium text-slate-500">
-            Faculty
-            <select
-              value={facultyFilter}
-              onChange={(e) => setFacultyFilter(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15"
-            >
-              <option value="">All</option>
-              {FACULTIES.map((f) => (
-                <option key={f} value={f}>
-                  {f}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="block text-xs font-medium text-slate-500">
-            Year
-            <select
-              value={yearFilter}
-              onChange={(e) => setYearFilter(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15"
-            >
-              <option value="">All</option>
-              {YEARS.map((y) => (
-                <option key={y} value={y}>
-                  {y}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="block text-xs font-medium text-slate-500">
-            Sort
-            <select
-              value={sort}
-              onChange={(e) => setSort(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-slate-900/15"
-            >
-              {SORTS.map((s) => (
-                <option key={s.value} value={s.value}>
-                  {s.label}
-                </option>
-              ))}
-            </select>
-          </label>
+      {summary && (
+        <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <SummaryTile
+            label={t("orders.summary.nova")}
+            value={summary.counts?.nova ?? 0}
+            onClick={() => {
+              setStatusFilter("nova");
+              setPage(1);
+            }}
+          />
+          <SummaryTile
+            label={t("orders.summary.u_pripremi")}
+            value={summary.counts?.u_pripremi ?? 0}
+            onClick={() => {
+              setStatusFilter("u_pripremi");
+              setPage(1);
+            }}
+          />
+          <SummaryTile
+            label={t("orders.summary.spremno")}
+            value={summary.counts?.spremno ?? 0}
+            onClick={() => {
+              setStatusFilter("spremno");
+              setPage(1);
+            }}
+          />
+          <SummaryTile
+            label={t("orders.summary.overdue")}
+            value={summary.overdue ?? 0}
+            tone={summary.overdue > 0 ? "danger" : "default"}
+            onClick={() => {
+              setStatusFilter("spremno");
+              setPage(1);
+            }}
+          />
         </div>
-      </div>
+      )}
+
+      {notice && (
+        <div
+          role="status"
+          className={[
+            "mb-5 flex items-start justify-between gap-3 rounded-xl border px-4 py-3 text-sm",
+            notice.tone === "success"
+              ? "border-emerald-200 bg-emerald-50 text-emerald-900"
+              : notice.tone === "warning"
+                ? "border-amber-200 bg-amber-50 text-amber-900"
+                : "border-rose-200 bg-rose-50 text-rose-900",
+          ].join(" ")}
+        >
+          <span>{notice.message}</span>
+          <button
+            type="button"
+            onClick={() => setNotice(null)}
+            className="shrink-0 text-xs font-medium underline"
+          >
+            {t("common.close")}
+          </button>
+        </div>
+      )}
+
+      <OrdersFilterBar
+        search={searchInput}
+        onSearchChange={setSearchInput}
+        statusFilter={statusFilter}
+        onStatusChange={(v) => {
+          setStatusFilter(v);
+          setPage(1);
+        }}
+        facultyFilter={facultyFilter}
+        onFacultyChange={(v) => {
+          setFacultyFilter(v);
+          setPage(1);
+        }}
+        yearFilter={yearFilter}
+        onYearChange={(v) => {
+          setYearFilter(v);
+          setPage(1);
+        }}
+        sort={sort}
+        onSortChange={(v) => {
+          setSort(v);
+          setPage(1);
+        }}
+      />
 
       {loading && (
-        <p className="text-center text-sm text-slate-500 py-12">Loading orders…</p>
+        <p className="py-12 text-center text-sm text-slate-500">{t("common.loading")}</p>
       )}
 
       {!loading && error && (
-        <p className="text-center text-sm text-red-600 py-8" role="alert">
+        <p className="py-8 text-center text-sm text-red-600" role="alert">
           {error}
         </p>
       )}
 
-      {!loading && !error && filtered.length === 0 && orders.length === 0 && (
+      {!loading && !error && total === 0 && (
         <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 px-6 py-16 text-center">
-          <p className="text-slate-600 text-sm">No orders yet.</p>
-          <p className="text-slate-500 text-xs mt-2">
-            Submitted orders will appear here.
+          <p className="text-sm text-slate-600">
+            {hasFilters ? t("orders.empty.filtered") : t("orders.empty.active")}
           </p>
+          {!hasFilters && (
+            <p className="mt-2 text-xs text-slate-500">{t("orders.empty.activeHint")}</p>
+          )}
         </div>
       )}
 
-      {!loading && !error && orders.length > 0 && filtered.length === 0 && (
-        <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 px-6 py-12 text-center text-sm text-slate-600">
-          No orders match your filters.
-        </div>
-      )}
+      {!loading && !error && total > 0 && (
+        <>
+          <OrdersTable
+            orders={orders}
+            onView={(id) => setViewOrderId(id)}
+            onStatusChange={handleStatusChange}
+            busyId={busyId}
+          />
 
-      {!loading && !error && filtered.length > 0 && (
-        <OrdersTable
-          orders={filtered}
-          onView={(id) => setViewOrderId(id)}
-          onDelete={handleDelete}
-          onMarkComplete={handleMarkComplete}
-          busyId={busyId}
-        />
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm text-slate-600">
+              {t("common.showing", { from: rangeStart, to: rangeEnd, total })}
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                disabled={page <= 1 || loading}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40"
+              >
+                {t("common.previous")}
+              </button>
+              <span className="px-1 text-sm tabular-nums text-slate-600">
+                {t("common.pageOf", { page, totalPages })}
+              </span>
+              <button
+                type="button"
+                disabled={page >= totalPages || loading}
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-40"
+              >
+                {t("common.next")}
+              </button>
+            </div>
+          </div>
+        </>
       )}
 
       <OrderDetailsModal
         orderId={viewOrderId}
         onClose={() => setViewOrderId(null)}
-        onMarkComplete={handleMarkComplete}
+        onStatusChange={handleStatusChange}
         busy={busyId === viewOrderId}
+        refreshKey={version}
       />
     </div>
+  );
+}
+
+function SummaryTile({ label, value, tone = "default", onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={[
+        "rounded-xl border bg-white p-4 text-left shadow-soft transition-colors hover:bg-slate-50",
+        tone === "danger" ? "border-rose-200" : "border-slate-200",
+      ].join(" ")}
+    >
+      <p className="text-xs font-medium text-slate-500">{label}</p>
+      <p
+        className={[
+          "mt-1 text-2xl font-semibold tabular-nums",
+          tone === "danger" && value > 0 ? "text-rose-700" : "text-slate-900",
+        ].join(" ")}
+      >
+        {value}
+      </p>
+    </button>
   );
 }

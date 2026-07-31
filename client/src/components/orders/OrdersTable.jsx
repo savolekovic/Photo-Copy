@@ -1,32 +1,30 @@
-import OrderRow from "./OrderRow.jsx";
-import { formatDateTime } from "../../lib/formatDate.js";
-import { IconCheck, IconEye, IconTrash } from "./OrderIcons.jsx";
+import OrderRow, { isOverdue } from "./OrderRow.jsx";
+import StatusBadge from "../StatusBadge.jsx";
+import StatusActionButton from "./StatusActionButton.jsx";
+import { IconClock, IconEye } from "./OrderIcons.jsx";
+import { PRIMARY_NEXT } from "./orderActions.js";
+import { useI18n } from "../../i18n/I18nProvider.jsx";
 
-export default function OrdersTable({
-  orders,
-  onView,
-  onDelete,
-  onMarkComplete,
-  busyId,
-}) {
-  if (orders.length === 0) {
-    return null;
-  }
+/** Table on desktop, cards on mobile — the same data and the same actions in both. */
+export default function OrdersTable({ orders, onView, onStatusChange, busyId }) {
+  const { t } = useI18n();
+
+  if (orders.length === 0) return null;
 
   return (
     <>
-      <div className="hidden md:block overflow-x-auto rounded-xl border border-slate-200/90 bg-white shadow-soft">
-        <table className="w-full text-left border-collapse min-w-[720px]">
+      <div className="hidden overflow-x-auto rounded-xl border border-slate-200/90 bg-white shadow-soft md:block">
+        <table className="w-full min-w-[640px] border-collapse text-left">
           <thead>
             <tr className="border-b border-slate-100 text-xs font-semibold uppercase tracking-wide text-slate-500">
-              <th className="px-3 py-3 pl-4">ID</th>
-              <th className="px-3 py-3">Literature</th>
-              <th className="px-3 py-3">Faculty</th>
-              <th className="px-3 py-3">Year</th>
-              <th className="px-3 py-3">Price</th>
-              <th className="px-3 py-3">Status</th>
-              <th className="px-3 py-3">Created</th>
-              <th className="px-3 py-3 pr-4 text-right">Actions</th>
+              <th className="w-14 px-3 py-3 pl-4">{t("orders.col.id")}</th>
+              <th className="px-3 py-3">{t("orders.col.literature")}</th>
+              <th className="px-3 py-3">{t("orders.col.student")}</th>
+              <th className="px-3 py-3">{t("orders.col.status")}</th>
+              <th className="px-3 py-3">{t("orders.col.date")}</th>
+              <th className="w-[1%] px-3 py-3 pr-4 text-right">
+                <span className="sr-only">{t("orders.col.actions")}</span>
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -35,8 +33,7 @@ export default function OrdersTable({
                 key={order.id}
                 order={order}
                 onView={onView}
-                onDelete={onDelete}
-                onMarkComplete={onMarkComplete}
+                onStatusChange={onStatusChange}
                 busyId={busyId}
               />
             ))}
@@ -44,14 +41,13 @@ export default function OrdersTable({
         </table>
       </div>
 
-      <ul className="md:hidden space-y-3">
+      <ul className="space-y-3 md:hidden">
         {orders.map((order) => (
           <OrderCard
             key={order.id}
             order={order}
             onView={onView}
-            onDelete={onDelete}
-            onMarkComplete={onMarkComplete}
+            onStatusChange={onStatusChange}
             busyId={busyId}
           />
         ))}
@@ -60,81 +56,68 @@ export default function OrdersTable({
   );
 }
 
-function OrderCard({
-  order,
-  onView,
-  onDelete,
-  onMarkComplete,
-  busyId,
-}) {
+function OrderCard({ order, onView, onStatusChange, busyId }) {
+  const { t, formatDate } = useI18n();
   const busy = busyId === order.id;
-  const dateStr = formatDateTime(order.created_at);
-  const isDone = order.status === "completed";
+  const primary = PRIMARY_NEXT[order.status];
+  const allowed = order.allowedTransitions ?? [];
+  const overdue = isOverdue(order);
 
   return (
     <li className="rounded-xl border border-slate-200/90 bg-white p-4 shadow-soft transition-shadow hover:shadow-md">
-      <button
-        type="button"
-        onClick={() => onView(order.id)}
-        className="w-full text-left"
-      >
-        <div className="flex justify-between items-start gap-2 mb-3">
-          <span className="text-xs font-medium text-slate-500 tabular-nums">
+      <button type="button" onClick={() => onView(order.id)} className="w-full text-left">
+        <div className="mb-3 flex items-start justify-between gap-2">
+          <span className="text-xs font-medium tabular-nums text-slate-500">
             #{order.id}
           </span>
-          <span
-            className={
-              isDone
-                ? "inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium bg-emerald-100 text-emerald-800"
-                : "inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium bg-amber-100 text-amber-900"
-            }
-          >
-            {isDone ? "Completed" : "Pending"}
-          </span>
+          <div className="flex items-center gap-1.5">
+            <StatusBadge status={order.status} />
+            {overdue && (
+              <span className="text-rose-600" title={t("orders.summary.overdue")}>
+                <IconClock className="h-4 w-4" />
+              </span>
+            )}
+          </div>
         </div>
-        <p className="text-sm font-medium text-slate-900 line-clamp-2 mb-2">
-          {order.literature?.name ?? "—"}
+        <p className="mb-1 line-clamp-2 text-sm font-medium text-slate-900">
+          {order.literature?.name ?? t("common.dash")}
         </p>
-        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-600">
-          <span>{order.faculty}</span>
-          <span>{order.year}</span>
-          <span className="tabular-nums">{Number(order.price).toFixed(2)}</span>
-        </div>
-        <p className="text-xs text-slate-500 mt-2">{dateStr}</p>
+        <p className="truncate text-xs text-slate-600">{order.email}</p>
+        {order.student?.indexNumber && (
+          <p className="text-xs tabular-nums text-slate-500">
+            {order.student.indexNumber}
+          </p>
+        )}
+        <p className="mt-1 text-xs text-slate-500">{formatDate(order.created_at)}</p>
       </button>
-      <div
-        className="mt-4 flex flex-wrap gap-2"
-        onClick={(e) => e.stopPropagation()}
-      >
+
+      <div className="mt-3 flex flex-wrap gap-1" onClick={(e) => e.stopPropagation()}>
         <button
           type="button"
           disabled={busy}
           onClick={() => onView(order.id)}
-          className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50"
+          className="inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white p-2 text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+          title={t("orders.action.view")}
+          aria-label={t("orders.action.view")}
         >
-          <IconEye className="w-3.5 h-3.5" />
-          View
+          <IconEye className="h-4 w-4" />
         </button>
-        {!isDone && (
-          <button
-            type="button"
+        {primary && allowed.includes(primary) && (
+          <StatusActionButton
+            orderId={order.id}
+            status={primary}
+            onChange={onStatusChange}
             disabled={busy}
-            onClick={() => onMarkComplete(order.id)}
-            className="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-800 hover:bg-emerald-100"
-          >
-            <IconCheck className="w-3.5 h-3.5" />
-            Done
-          </button>
+          />
         )}
-        <button
-          type="button"
-          disabled={busy}
-          onClick={() => onDelete(order.id)}
-          className="inline-flex items-center gap-1 rounded-lg border border-red-100 px-3 py-2 text-xs font-medium text-red-700 hover:bg-red-50"
-        >
-          <IconTrash className="w-3.5 h-3.5" />
-          Delete
-        </button>
+        {allowed.includes("otkazano") && (
+          <StatusActionButton
+            orderId={order.id}
+            status="otkazano"
+            onChange={onStatusChange}
+            disabled={busy}
+          />
+        )}
       </div>
     </li>
   );

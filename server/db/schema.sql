@@ -16,11 +16,12 @@ CREATE TABLE IF NOT EXISTS orders (
   price NUMERIC(10, 2) NOT NULL CHECK (price >= 0),
   email TEXT NOT NULL,
   phone TEXT,
-  status TEXT NOT NULL DEFAULT 'pending',
-  CONSTRAINT orders_status_check CHECK (status IN ('pending', 'completed')),
+  status TEXT NOT NULL DEFAULT 'nova',
+  CONSTRAINT orders_status_check
+    CHECK (status IN ('nova', 'u_pripremi', 'spremno', 'preuzeto', 'otkazano')),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX IF NOT EXISTS idx_literature_faculty_year ON literature (faculty, year);
 CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders (created_at DESC);
--- idx_orders_status is created in migrate_status.sql after `status` exists (legacy DBs may lack the column until migration runs).
+-- idx_orders_status is created in migrations/001 after `status` exists (legacy DBs may lack the column until migration runs).

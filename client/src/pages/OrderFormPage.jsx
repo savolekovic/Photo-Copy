@@ -1,21 +1,32 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { fetchLiterature, submitOrder } from "../api.js";
 import { FACULTIES, YEARS } from "../constants.js";
+import { useAuth } from "../auth/AuthContext.jsx";
+import { useI18n } from "../i18n/I18nProvider.jsx";
+import { apiErrorMessage } from "../lib/apiErrorMessage.js";
 
-const STEPS = [
-  "Faculty",
-  "Year",
-  "Literature",
-  "Overview",
-  "Contact",
-  "Complete",
+/**
+ * The student ordering flow. Five steps, mirroring the spec: fakultet → godina →
+ * materijali → pregled → potvrda.
+ *
+ * There is no e-mail step any more: the address comes from the verified university
+ * account, which is the whole point of the login requirement.
+ */
+const STEP_KEYS = [
+  "form.step.faculty",
+  "form.step.year",
+  "form.step.literature",
+  "form.step.overview",
+  "form.step.confirm",
 ];
 
-function isValidEmail(v) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v).trim());
-}
+const LAST_STEP = STEP_KEYS.length - 1;
 
 export default function OrderFormPage() {
+  const { t } = useI18n();
+  const { user } = useAuth();
+
   const [step, setStep] = useState(0);
   const [faculty, setFaculty] = useState("");
   const [year, setYear] = useState("");
@@ -24,14 +35,11 @@ export default function OrderFormPage() {
   const [litSearch, setLitSearch] = useState("");
   const [litLoading, setLitLoading] = useState(false);
   const [litError, setLitError] = useState("");
-  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [contactErrors, setContactErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [orderDone, setOrderDone] = useState(false);
-  const [emailSent, setEmailSent] = useState(false);
-  const [emailError, setEmailError] = useState("");
+  const [completedOrder, setCompletedOrder] = useState(null);
 
   const selectedLit = useMemo(
     () => literatureList.find((l) => l.id === literatureId) || null,
@@ -41,9 +49,7 @@ export default function OrderFormPage() {
   const filteredLiterature = useMemo(() => {
     const q = litSearch.trim().toLowerCase();
     if (!q) return literatureList;
-    return literatureList.filter((l) =>
-      l.name.toLowerCase().includes(q)
-    );
+    return literatureList.filter((l) => l.name.toLowerCase().includes(q));
   }, [literatureList, litSearch]);
 
   useEffect(() => {
@@ -61,7 +67,7 @@ export default function OrderFormPage() {
         });
       })
       .catch((e) => {
-        if (!cancelled) setLitError(e.message || "Could not load options");
+        if (!cancelled) setLitError(apiErrorMessage(e, t) || t("form.literature.loadFailed"));
       })
       .finally(() => {
         if (!cancelled) setLitLoading(false);
@@ -69,29 +75,21 @@ export default function OrderFormPage() {
     return () => {
       cancelled = true;
     };
-  }, [step, faculty, year]);
+  }, [step, faculty, year, t]);
 
   const canNextFromStep = useCallback(
     (s) => {
       if (s === 0) return Boolean(faculty);
       if (s === 1) return Boolean(year);
       if (s === 2) return Boolean(selectedLit);
-      if (s === 3) return true;
-      if (s === 4) {
-        const e = {};
-        if (!email.trim()) e.email = "Email is required";
-        else if (!isValidEmail(email)) e.email = "Enter a valid email";
-        setContactErrors(e);
-        return Object.keys(e).length === 0;
-      }
       return true;
     },
-    [faculty, year, selectedLit, email]
+    [faculty, year, selectedLit]
   );
 
   const goNext = () => {
     if (!canNextFromStep(step)) return;
-    setStep((x) => Math.min(x + 1, STEPS.length - 1));
+    setStep((x) => Math.min(x + 1, LAST_STEP));
   };
 
   const goBack = () => {
@@ -109,59 +107,68 @@ export default function OrderFormPage() {
         year,
         literature_id: selectedLit.id,
         price: selectedLit.price,
-        email: email.trim(),
         phone: phone.trim() || undefined,
       });
-      setEmailSent(Boolean(result.emailSent));
-      setEmailError(result.emailError || "");
+      setCompletedOrder(result);
       setOrderDone(true);
     } catch (e) {
-      setSubmitError(e.message || "Something went wrong");
+      setSubmitError(apiErrorMessage(e, t));
     } finally {
       setSubmitting(false);
     }
   };
 
+  const resetForm = () => {
+    setStep(0);
+    setFaculty("");
+    setYear("");
+    setLiteratureList([]);
+    setLiteratureId(null);
+    setLitSearch("");
+    setPhone("");
+    setOrderDone(false);
+    setCompletedOrder(null);
+    setSubmitError("");
+  };
+
   const totalPrice = selectedLit ? Number(selectedLit.price) : 0;
 
   return (
-    <div className="min-h-screen flex flex-col items-center px-4 py-10 sm:py-14">
-      <div className="w-full max-w-lg">
-        <header className="text-center mb-10">
-          <p className="text-xs font-medium uppercase tracking-widest text-slate-500 mb-2">
-            Academic photocopies
+    <div className="flex min-h-screen flex-col items-center px-4 py-10 sm:py-14">
+      <div className="w-full max-w-3xl">
+        <header className="mb-10 text-center">
+          <p className="mb-2 text-xs font-medium uppercase tracking-widest text-slate-500">
+            {t("form.heading")}
           </p>
-          <h1 className="text-2xl sm:text-3xl font-semibold text-slate-900 tracking-tight">
-            Place an order
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
+            {t("form.title")}
           </h1>
         </header>
 
-        <nav
-          className="mb-10"
-          aria-label="Progress"
-        >
-          <ol className="flex flex-wrap justify-center gap-2 sm:gap-3">
-            {STEPS.map((label, i) => (
-              <li key={label} className="flex items-center gap-2">
+        <nav className="mb-10 w-full" aria-label="Progress">
+          <ol className="-mx-1 flex flex-nowrap items-center justify-between gap-1 overflow-x-auto px-1 pb-1 sm:gap-2 md:gap-3 [scrollbar-width:thin]">
+            {STEP_KEYS.map((key, i) => (
+              <li key={key} className="flex min-w-0 shrink-0 items-center gap-1.5 sm:gap-2">
                 <span
                   className={[
-                    "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-medium transition-colors duration-300",
+                    "flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[10px] font-semibold transition-colors duration-300 sm:h-8 sm:w-8 sm:text-xs",
                     i === step
                       ? "bg-slate-900 text-white shadow-soft"
                       : i < step
                         ? "bg-emerald-600 text-white"
                         : "bg-slate-200 text-slate-600",
                   ].join(" ")}
+                  aria-current={i === step ? "step" : undefined}
                 >
                   {i < step ? "✓" : i + 1}
                 </span>
                 <span
                   className={[
-                    "hidden sm:inline text-sm transition-colors duration-300",
-                    i === step ? "text-slate-900 font-medium" : "text-slate-500",
+                    "hidden whitespace-nowrap text-[11px] transition-colors duration-300 sm:inline sm:text-xs md:text-sm",
+                    i === step ? "font-semibold text-slate-900" : "text-slate-500",
                   ].join(" ")}
                 >
-                  {label}
+                  {t(key)}
                 </span>
               </li>
             ))}
@@ -169,19 +176,12 @@ export default function OrderFormPage() {
         </nav>
 
         <div
-          className="rounded-2xl bg-white shadow-soft border border-slate-100/80 p-6 sm:p-8 transition-all duration-300 ease-out"
+          className="rounded-2xl border border-slate-100/80 bg-white p-6 shadow-soft transition-all duration-300 ease-out sm:p-8"
           style={{ minHeight: "320px" }}
         >
           <div key={step} className="animate-fade-in">
-            {step === 0 && (
-              <StepFaculty
-                faculty={faculty}
-                onSelect={setFaculty}
-              />
-            )}
-            {step === 1 && (
-              <StepYear year={year} onSelect={setYear} />
-            )}
+            {step === 0 && <StepFaculty faculty={faculty} onSelect={setFaculty} />}
+            {step === 1 && <StepYear year={year} onSelect={setYear} />}
             {step === 2 && (
               <StepLiterature
                 loading={litLoading}
@@ -199,105 +199,85 @@ export default function OrderFormPage() {
                 year={year}
                 literature={selectedLit}
                 total={totalPrice}
-              />
-            )}
-            {step === 4 && (
-              <StepContact
-                email={email}
+                email={user?.email}
                 phone={phone}
-                onEmail={setEmail}
                 onPhone={setPhone}
-                errors={contactErrors}
               />
             )}
-            {step === 5 && !orderDone && (
-              <StepComplete
+            {step === 4 && !orderDone && (
+              <StepConfirm
                 faculty={faculty}
                 year={year}
                 literature={selectedLit}
                 total={totalPrice}
-                email={email}
+                email={user?.email}
                 phone={phone}
                 onSubmit={handleSubmit}
                 submitting={submitting}
                 error={submitError}
               />
             )}
-            {step === 5 && orderDone && (
-              <div className="text-center py-6">
-                <div className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 text-2xl mb-4">
+            {step === 4 && orderDone && (
+              <div className="py-6 text-center">
+                <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 text-2xl text-emerald-700">
                   ✓
                 </div>
-                <h2 className="text-xl font-semibold text-slate-900 mb-2">
-                  Order submitted
+                <h2 className="mb-2 text-xl font-semibold text-slate-900">
+                  {t("form.done.title")}
                 </h2>
-                <p className="text-slate-600 text-sm leading-relaxed">
-                  {emailSent ? (
-                    <>
-                      Thank you. A confirmation email has been sent to{" "}
-                      <span className="font-medium text-slate-800">{email}</span>.
-                    </>
-                  ) : (
-                    <>
-                      Your order was saved, but email could not be sent. We have
-                      your address:{" "}
-                      <span className="font-medium text-slate-800">{email}</span>.
-                      {emailError ? (
-                        <span className="block mt-3 text-left text-xs text-amber-900 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
-                          {emailError}
-                        </span>
-                      ) : null}
-                    </>
-                  )}
+                <p className="text-sm leading-relaxed text-slate-600">
+                  {completedOrder?.emailSent
+                    ? t("form.done.emailSent", { email: user?.email })
+                    : t("form.done.emailFailed", { email: user?.email })}
                 </p>
+                <p className="mt-3 text-sm text-slate-500">{t("form.done.next")}</p>
+                {completedOrder?.emailError && (
+                  <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-left text-xs text-amber-900">
+                    {completedOrder.emailError}
+                  </p>
+                )}
               </div>
             )}
           </div>
         </div>
 
-        {step < 5 || (step === 5 && !orderDone) ? (
+        {!(step === LAST_STEP && orderDone) && (
           <div className="mt-8 flex justify-between gap-3">
             <button
               type="button"
               onClick={goBack}
               disabled={step === 0 || submitting}
-              className="px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 disabled:opacity-40 transition-colors"
+              className="px-4 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:text-slate-900 disabled:opacity-40"
             >
-              Back
+              {t("common.back")}
             </button>
-            {step < 5 && (
+            {step < LAST_STEP && (
               <button
                 type="button"
                 onClick={goNext}
-                className="ml-auto px-5 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-medium hover:bg-slate-800 transition-colors shadow-soft"
+                disabled={!canNextFromStep(step)}
+                className="ml-auto rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-medium text-white shadow-soft transition-colors hover:bg-slate-800 disabled:opacity-40"
               >
-                Continue
+                {t("common.continue")}
               </button>
             )}
           </div>
-        ) : null}
+        )}
 
-        {step === 5 && orderDone && (
-          <div className="mt-8 text-center">
+        {step === LAST_STEP && orderDone && (
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <Link
+              to="/moje-narudzbine"
+              className="rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-slate-800"
+            >
+              {t("form.done.viewOrders")}
+            </Link>
             <button
               type="button"
-              onClick={() => {
-                setStep(0);
-                setFaculty("");
-                setYear("");
-                setLiteratureList([]);
-                setLiteratureId(null);
-                setLitSearch("");
-                setEmail("");
-                setPhone("");
-                setOrderDone(false);
-                setEmailSent(false);
-                setEmailError("");
-                setSubmitError("");
-              }}
-              className="px-5 py-2.5 rounded-xl border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+              onClick={resetForm}
+              className="rounded-xl border border-slate-200 px-5 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
             >
-              New order
+              {t("form.done.newOrder")}
             </button>
           </div>
         )}
@@ -307,13 +287,14 @@ export default function OrderFormPage() {
 }
 
 function StepFaculty({ faculty, onSelect }) {
+  const { t } = useI18n();
   return (
     <div>
-      <h2 className="text-lg font-semibold text-slate-900 mb-1">Faculty</h2>
-      <p className="text-sm text-slate-500 mb-6">
-        Choose the faculty your materials belong to.
-      </p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <h2 className="mb-1 text-lg font-semibold text-slate-900">
+        {t("form.faculty.title")}
+      </h2>
+      <p className="mb-6 text-sm text-slate-500">{t("form.faculty.subtitle")}</p>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {FACULTIES.map((f) => (
           <button
             key={f}
@@ -335,10 +316,11 @@ function StepFaculty({ faculty, onSelect }) {
 }
 
 function StepYear({ year, onSelect }) {
+  const { t } = useI18n();
   return (
     <div>
-      <h2 className="text-lg font-semibold text-slate-900 mb-1">Year</h2>
-      <p className="text-sm text-slate-500 mb-6">Select your study year.</p>
+      <h2 className="mb-1 text-lg font-semibold text-slate-900">{t("form.year.title")}</h2>
+      <p className="mb-6 text-sm text-slate-500">{t("form.year.subtitle")}</p>
       <div className="flex flex-wrap gap-2">
         {YEARS.map((y) => (
           <button
@@ -369,147 +351,162 @@ function StepLiterature({
   selectedId,
   onSelect,
 }) {
+  const { t } = useI18n();
   return (
     <div>
-      <h2 className="text-lg font-semibold text-slate-900 mb-1">Literature</h2>
-      <p className="text-sm text-slate-500 mb-4">
-        Pick the document set. Prices are per order.
-      </p>
-      <label className="block text-xs font-medium text-slate-500 mb-1.5">
-        Search
+      <h2 className="mb-1 text-lg font-semibold text-slate-900">
+        {t("form.literature.title")}
+      </h2>
+      <p className="mb-4 text-sm text-slate-500">{t("form.literature.subtitle")}</p>
+      <label
+        htmlFor="lit-search"
+        className="mb-1.5 block text-xs font-medium text-slate-500"
+      >
+        {t("form.literature.searchLabel")}
       </label>
       <input
+        id="lit-search"
         type="search"
         value={search}
         onChange={(e) => onSearchChange(e.target.value)}
-        placeholder="Filter by title…"
-        className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-300"
+        placeholder={t("form.literature.searchPlaceholder")}
+        className="mb-4 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900/15"
       />
-      {loading && (
-        <p className="text-sm text-slate-500">Loading options…</p>
-      )}
+      {loading && <p className="text-sm text-slate-500">{t("common.loading")}</p>}
       {error && (
         <p className="text-sm text-red-600" role="alert">
           {error}
         </p>
       )}
       {!loading && !error && items.length === 0 && (
-        <p className="text-sm text-slate-500">
-          No literature for this faculty and year. Go back and adjust your
-          selection.
-        </p>
+        <p className="text-sm text-slate-500">{t("form.literature.empty")}</p>
       )}
       {!loading && !error && items.length > 0 && (
-        <ul className="max-h-56 overflow-y-auto space-y-2 pr-1">
-          {items.map((item) => (
-            <li key={item.id}>
-              <button
-                type="button"
-                onClick={() => onSelect(item.id)}
-                className={[
-                  "w-full rounded-xl border px-3 py-3 text-left transition-all duration-200",
-                  selectedId === item.id
-                    ? "border-slate-900 bg-slate-50 ring-1 ring-slate-900"
-                    : "border-slate-200 hover:border-slate-300",
-                ].join(" ")}
-              >
-                <span className="block text-sm font-medium text-slate-900">
-                  {item.name}
-                </span>
-                <span className="text-sm text-slate-600">
-                  {Number(item.price).toFixed(2)}
-                </span>
-              </button>
-            </li>
-          ))}
+        <ul
+          className="max-h-56 space-y-2 overflow-y-auto pr-1"
+          role="listbox"
+          aria-label={t("form.literature.title")}
+        >
+          {items.map((item) => {
+            const selected = selectedId === item.id;
+            return (
+              <li key={item.id}>
+                <button
+                  type="button"
+                  role="option"
+                  aria-selected={selected}
+                  onClick={() => onSelect(item.id)}
+                  className={[
+                    "flex w-full items-start justify-between gap-3 rounded-xl border px-3 py-3 text-left transition-all duration-200",
+                    selected
+                      ? "border-slate-900 bg-slate-900 text-white shadow-soft ring-0"
+                      : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/80",
+                  ].join(" ")}
+                >
+                  <span className="min-w-0 flex-1">
+                    <span
+                      className={[
+                        "block text-sm font-medium",
+                        selected ? "text-white" : "text-slate-900",
+                      ].join(" ")}
+                    >
+                      {item.name}
+                    </span>
+                    <span
+                      className={[
+                        "text-sm tabular-nums",
+                        selected ? "text-slate-300" : "text-slate-600",
+                      ].join(" ")}
+                    >
+                      {Number(item.price).toFixed(2)}
+                    </span>
+                  </span>
+                  <span
+                    className={[
+                      "flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold",
+                      selected
+                        ? "bg-white/20 text-white"
+                        : "border-2 border-slate-200 bg-white",
+                    ].join(" ")}
+                    aria-hidden
+                  >
+                    {selected ? "✓" : ""}
+                  </span>
+                </button>
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>
   );
 }
 
-function StepOverview({ faculty, year, literature, total }) {
+function SummaryRow({ label, value, strong }) {
   return (
-    <div>
-      <h2 className="text-lg font-semibold text-slate-900 mb-1">Overview</h2>
-      <p className="text-sm text-slate-500 mb-6">
-        Review your selection before entering contact details.
-      </p>
-      <dl className="space-y-3 text-sm">
-        <div className="flex justify-between gap-4">
-          <dt className="text-slate-500">Faculty</dt>
-          <dd className="font-medium text-slate-900 text-right">{faculty}</dd>
-        </div>
-        <div className="flex justify-between gap-4">
-          <dt className="text-slate-500">Year</dt>
-          <dd className="font-medium text-slate-900 text-right">{year}</dd>
-        </div>
-        <div className="flex justify-between gap-4">
-          <dt className="text-slate-500">Literature</dt>
-          <dd className="font-medium text-slate-900 text-right max-w-[60%]">
-            {literature?.name ?? "—"}
-          </dd>
-        </div>
-        <div className="flex justify-between gap-4 pt-3 border-t border-slate-100">
-          <dt className="text-slate-700 font-medium">Total</dt>
-          <dd className="font-semibold text-slate-900">
-            {literature ? total.toFixed(2) : "—"}
-          </dd>
-        </div>
-      </dl>
+    <div className="flex justify-between gap-4">
+      <dt className={strong ? "font-medium text-slate-700" : "text-slate-500"}>{label}</dt>
+      <dd
+        className={[
+          "max-w-[60%] text-right",
+          strong ? "font-semibold text-slate-900" : "font-medium text-slate-900",
+        ].join(" ")}
+      >
+        {value}
+      </dd>
     </div>
   );
 }
 
-function StepContact({ email, phone, onEmail, onPhone, errors }) {
+function StepOverview({ faculty, year, literature, total, email, phone, onPhone }) {
+  const { t } = useI18n();
   return (
     <div>
-      <h2 className="text-lg font-semibold text-slate-900 mb-1">Contact</h2>
-      <p className="text-sm text-slate-500 mb-6">
-        We will use this to confirm your order.
-      </p>
-      <div className="space-y-4">
-        <div>
-          <label
-            htmlFor="email"
-            className="block text-xs font-medium text-slate-500 mb-1.5"
-          >
-            Email <span className="text-red-500">*</span>
-          </label>
-          <input
-            id="email"
-            type="email"
-            autoComplete="email"
-            value={email}
-            onChange={(e) => onEmail(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-300"
-          />
-          {errors.email && (
-            <p className="mt-1 text-xs text-red-600">{errors.email}</p>
-          )}
-        </div>
-        <div>
-          <label
-            htmlFor="phone"
-            className="block text-xs font-medium text-slate-500 mb-1.5"
-          >
-            Phone <span className="text-slate-400">(optional)</span>
-          </label>
-          <input
-            id="phone"
-            type="tel"
-            autoComplete="tel"
-            value={phone}
-            onChange={(e) => onPhone(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/15 focus:border-slate-300"
+      <h2 className="mb-1 text-lg font-semibold text-slate-900">
+        {t("form.overview.title")}
+      </h2>
+      <p className="mb-6 text-sm text-slate-500">{t("form.overview.subtitle")}</p>
+
+      <dl className="space-y-3 text-sm">
+        <SummaryRow label={t("orders.details.faculty")} value={faculty} />
+        <SummaryRow label={t("orders.details.year")} value={year} />
+        <SummaryRow
+          label={t("orders.details.literature")}
+          value={literature?.name ?? t("common.dash")}
+        />
+        <SummaryRow label={t("orders.details.email")} value={email} />
+        <div className="border-t border-slate-100 pt-3">
+          <SummaryRow
+            label={t("common.total")}
+            value={literature ? total.toFixed(2) : t("common.dash")}
+            strong
           />
         </div>
+      </dl>
+
+      <div className="mt-6 border-t border-slate-100 pt-5">
+        <label
+          htmlFor="phone"
+          className="mb-1.5 block text-xs font-medium text-slate-500"
+        >
+          {t("form.contact.phoneLabel")}{" "}
+          <span className="text-slate-400">({t("common.optional")})</span>
+        </label>
+        <input
+          id="phone"
+          type="tel"
+          autoComplete="tel"
+          value={phone}
+          onChange={(e) => onPhone(e.target.value)}
+          className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900/15"
+        />
+        <p className="mt-1.5 text-xs text-slate-500">{t("form.contact.subtitle")}</p>
       </div>
     </div>
   );
 }
 
-function StepComplete({
+function StepConfirm({
   faculty,
   year,
   literature,
@@ -520,58 +517,41 @@ function StepComplete({
   submitting,
   error,
 }) {
+  const { t } = useI18n();
   return (
     <div>
-      <h2 className="text-lg font-semibold text-slate-900 mb-1">
-        Complete order
+      <h2 className="mb-1 text-lg font-semibold text-slate-900">
+        {t("form.confirm.title")}
       </h2>
-      <p className="text-sm text-slate-500 mb-6">
-        Submit to place your photocopy order.
-      </p>
-      <div className="rounded-xl bg-slate-50 border border-slate-100 p-4 mb-6 text-sm space-y-2">
-        <p>
-          <span className="text-slate-500">Faculty:</span>{" "}
-          <span className="font-medium text-slate-900">{faculty}</span>
-        </p>
-        <p>
-          <span className="text-slate-500">Year:</span>{" "}
-          <span className="font-medium text-slate-900">{year}</span>
-        </p>
-        <p>
-          <span className="text-slate-500">Literature:</span>{" "}
-          <span className="font-medium text-slate-900">
-            {literature?.name}
-          </span>
-        </p>
-        <p>
-          <span className="text-slate-500">Total:</span>{" "}
-          <span className="font-semibold text-slate-900">
-            {total.toFixed(2)}
-          </span>
-        </p>
-        <p>
-          <span className="text-slate-500">Email:</span>{" "}
-          <span className="font-medium text-slate-900">{email}</span>
-        </p>
+      <p className="mb-6 text-sm text-slate-500">{t("form.confirm.subtitle")}</p>
+
+      <dl className="mb-6 space-y-2 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm">
+        <SummaryRow label={t("orders.details.faculty")} value={faculty} />
+        <SummaryRow label={t("orders.details.year")} value={year} />
+        <SummaryRow
+          label={t("orders.details.literature")}
+          value={literature?.name ?? t("common.dash")}
+        />
+        <SummaryRow label={t("orders.details.email")} value={email} />
         {phone ? (
-          <p>
-            <span className="text-slate-500">Phone:</span>{" "}
-            <span className="font-medium text-slate-900">{phone}</span>
-          </p>
+          <SummaryRow label={t("orders.details.phone")} value={phone} />
         ) : null}
-      </div>
+        <SummaryRow label={t("common.total")} value={total.toFixed(2)} strong />
+      </dl>
+
       {error && (
-        <p className="text-sm text-red-600 mb-4" role="alert">
+        <p className="mb-4 text-sm text-red-600" role="alert">
           {error}
         </p>
       )}
+
       <button
         type="button"
         onClick={onSubmit}
         disabled={submitting}
-        className="w-full rounded-xl bg-slate-900 text-white py-3 text-sm font-medium hover:bg-slate-800 disabled:opacity-60 transition-colors"
+        className="w-full rounded-xl bg-slate-900 py-3 text-sm font-medium text-white transition-colors hover:bg-slate-800 disabled:opacity-60"
       >
-        {submitting ? "Submitting…" : "Submit order"}
+        {submitting ? t("form.confirm.submitting") : t("form.confirm.submit")}
       </button>
     </div>
   );
