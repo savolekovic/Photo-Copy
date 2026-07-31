@@ -5,24 +5,81 @@ import { pool } from "./pool.js";
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 dotenv.config({ path: path.resolve(process.cwd(), "../.env") });
 
-const rows = [
-  ["Contract Law — Cases & Materials", "Law", "1st", 12.5],
-  ["Criminal Procedure Reader", "Law", "2nd", 15.0],
-  ["EU Law Compendium", "Law", "3rd", 18.75],
-  ["Microeconomics Workbook", "Economics", "1st", 9.99],
-  ["Macroeconomics Lecture Notes", "Economics", "2nd", 11.5],
-  ["Econometrics Problem Sets", "Economics", "Master", 22.0],
-  ["Statics & Dynamics Summary", "Engineering", "1st", 14.25],
-  ["Thermodynamics Essentials", "Engineering", "2nd", 16.5],
-  ["Signals & Systems — Selected Chapters", "Engineering", "3rd", 19.0],
-  ["Machine Design Handbook (excerpts)", "Engineering", "4th", 21.5],
-  ["Anatomy Atlas — Selected Plates", "Medicine", "1st", 24.0],
-  ["Pathology Core Notes", "Medicine", "3rd", 26.5],
-  ["Modern Fiction Anthology", "Arts", "2nd", 8.5],
-  ["Philosophy Reader", "Arts", "Master", 13.0],
-  ["Organic Chemistry Lab Manual", "Sciences", "2nd", 17.25],
-  ["Statistics for Scientists", "Sciences", "3rd", 12.0],
+/** Keep in sync with client `constants.js` */
+const FACULTIES = [
+  "Law",
+  "Economics",
+  "Engineering",
+  "Medicine",
+  "Arts",
+  "Sciences",
 ];
+
+const YEARS = ["1st", "2nd", "3rd", "4th", "Master"];
+
+/** Three distinct packs per faculty — each (faculty, year) gets all three */
+const PACKS = {
+  Law: [
+    "Cases & Materials Reader",
+    "Statutes & Commentary Pack",
+    "Seminar Notes & Outlines",
+  ],
+  Economics: [
+    "Lecture Notes & Problems",
+    "Tutorial Workbook",
+    "Exam Prep Summary",
+  ],
+  Engineering: [
+    "Core Lecture Compendium",
+    "Problem Sets & Solutions",
+    "Formula Sheet & Key Chapters",
+  ],
+  Medicine: [
+    "Clinical Reader (selected chapters)",
+    "Atlas & Diagram Pack",
+    "OSCE / Exam Review Notes",
+  ],
+  Arts: [
+    "Primary Texts Reader",
+    "Criticism & Context Pack",
+    "Essay & Seminar Notes",
+  ],
+  Sciences: [
+    "Lecture Notes & Slides",
+    "Lab Manual & Exercises",
+    "Problem Book & Solutions",
+  ],
+};
+
+function priceFor(faculty, year, packIndex) {
+  const base =
+    {
+      Law: 13,
+      Economics: 11,
+      Engineering: 16,
+      Medicine: 23,
+      Arts: 9,
+      Sciences: 14,
+    }[faculty] ?? 12;
+  const yearBump = { "1st": 0, "2nd": 0.5, "3rd": 1, "4th": 1.25, Master: 2 }[year] ?? 0;
+  const packBump = packIndex * 0.75;
+  return Math.round((base + yearBump + packBump) * 100) / 100;
+}
+
+const rows = [];
+for (const faculty of FACULTIES) {
+  const packs = PACKS[faculty];
+  for (const year of YEARS) {
+    packs.forEach((packTitle, i) => {
+      rows.push([
+        `${packTitle} · ${faculty} · ${year}`,
+        faculty,
+        year,
+        priceFor(faculty, year, i),
+      ]);
+    });
+  }
+}
 
 async function seed() {
   const client = await pool.connect();
@@ -36,7 +93,7 @@ async function seed() {
     for (const [name, faculty, year, price] of rows) {
       await client.query(insert, [name, faculty, year, price]);
     }
-    console.log(`Seeded ${rows.length} literature items.`);
+    console.log(`Seeded ${rows.length} literature items (${FACULTIES.length}×${YEARS.length}×3).`);
   } finally {
     client.release();
     await pool.end();

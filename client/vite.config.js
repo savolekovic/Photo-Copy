@@ -8,7 +8,7 @@ export default defineConfig({
   },
   server: {
     port: 5173,
-    // ngrok / Cloudflare Tunnel / etc. send a non-localhost Host header
+    // ngrok sends a non-localhost Host header (Vite 6 validates it)
     allowedHosts: [
       ".ngrok-free.app",
       ".ngrok-free.dev",
