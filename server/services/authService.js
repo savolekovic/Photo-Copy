@@ -24,7 +24,7 @@ export function normalizeEmail(email) {
 
 /**
  * True when the address sits on an approved domain, or on a subdomain of one when
- * subdomains are enabled (faculty addresses such as ime@pf.ucg.ac.me).
+ * subdomains are enabled (faculty addresses such as ime@fmefb.udg.edu.me).
  */
 export function isAllowedStudentEmail(email) {
   const normalized = normalizeEmail(email);

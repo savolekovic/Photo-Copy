@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS users (
   CONSTRAINT users_role_check CHECK (role IN ('student', 'operator'))
 );
 
--- Case-insensitive uniqueness: e-mail is the identity, so Ime@ucg.ac.me == ime@ucg.ac.me.
+-- Case-insensitive uniqueness: e-mail is the identity, so Ime@udg.edu.me == ime@udg.edu.me.
 CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email_lower ON users (LOWER(email));
 
 -- Two students must not claim the same index number. NULLs do not collide in Postgres,

@@ -45,7 +45,7 @@ export const messages = {
     "auth.subtitle":
       "Prijavite se službenom univerzitetskom e-mail adresom. Poslaćemo vam link za prijavu — nije potrebna šifra.",
     "auth.emailLabel": "Univerzitetski e-mail",
-    "auth.emailPlaceholder": "ime.prezime@ucg.ac.me",
+    "auth.emailPlaceholder": "ime.prezime@udg.edu.me",
     "auth.emailHint": "Dozvoljene su adrese na domenu {domains} i njegovim poddomenima.",
     "auth.indexLabel": "Broj indeksa",
     "auth.indexHint": "Potreban je samo pri prvoj prijavi.",
@@ -87,7 +87,7 @@ export const messages = {
 
     // PLACEHOLDER faculty names. The keys are the stable codes stored in the database;
     // only these labels are translated. Replace with the client's real faculty list —
-    // these are plausible UCG names, not a confirmed roster.
+    // these are placeholders, NOT the real UDG roster (see stablo.txt from the client).
     "faculty.Law": "Pravni fakultet",
     "faculty.Economics": "Ekonomski fakultet",
     "faculty.Engineering": "Elektrotehnički fakultet",
@@ -250,7 +250,7 @@ export const messages = {
     "auth.subtitle":
       "Sign in with your official university e-mail address. We'll send you a login link — no password needed.",
     "auth.emailLabel": "University e-mail",
-    "auth.emailPlaceholder": "name.surname@ucg.ac.me",
+    "auth.emailPlaceholder": "name.surname@udg.edu.me",
     "auth.emailHint": "Addresses on {domains} and its subdomains are accepted.",
     "auth.indexLabel": "Index number",
     "auth.indexHint": "Only needed the first time you sign in.",

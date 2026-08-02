@@ -19,10 +19,10 @@ function boolFromEnv(name, fallback) {
 
 /**
  * Domains a student may register from. Subdomains are accepted too, because faculties
- * at Univerzitet Crne Gore issue addresses like ime@pf.ucg.ac.me alongside @ucg.ac.me.
+ * at Univerzitet Donja Gorica issue addresses like ime@fmefb.udg.edu.me alongside @udg.edu.me.
  */
 export const STUDENT_EMAIL_DOMAINS = (
-  process.env.STUDENT_EMAIL_DOMAINS || "ucg.ac.me"
+  process.env.STUDENT_EMAIL_DOMAINS || "udg.edu.me"
 )
   .split(",")
   .map((d) => d.trim().toLowerCase().replace(/^@/, ""))
@@ -33,7 +33,7 @@ export const config = {
   clientUrl: process.env.CLIENT_URL || "http://localhost:5173",
 
   studentEmailDomains: STUDENT_EMAIL_DOMAINS,
-  /** When true, ime@pf.ucg.ac.me is accepted for the domain ucg.ac.me. */
+  /** When true, ime@fmefb.udg.edu.me is accepted for the domain udg.edu.me. */
   allowEmailSubdomains: boolFromEnv("STUDENT_EMAIL_ALLOW_SUBDOMAINS", true),
 
   /** Magic-link validity. Short by design — the link is a bearer credential. */

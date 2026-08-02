@@ -4,7 +4,7 @@
  * Operators cannot self-register — the signup path only ever creates students — so the
  * first operator has to be created out of band:
  *
- *   npm run create:operator --workspace=server -- operater@ucg.ac.me
+ *   npm run create:operator --workspace=server -- operater@udg.edu.me
  *
  * The account has no password. The operator signs in with the same magic link as everyone
  * else, and the university-domain restriction does not apply to an address that already
@@ -30,7 +30,7 @@ Arguments:
   locale   Optional interface/e-mail language: ${LOCALES.join(" | ")} (default ${config.defaultLocale}).
 
 Examples:
-  npm run create:operator --workspace=server -- operater@ucg.ac.me
+  npm run create:operator --workspace=server -- operater@udg.edu.me
   npm run create:operator --workspace=server -- shop@example.com en
 `);
   process.exit(1);

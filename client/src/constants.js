@@ -23,7 +23,7 @@ export const ORDER_STATUSES = [
  * (STUDENT_EMAIL_DOMAINS) and is what actually enforces the restriction.
  */
 export const STUDENT_EMAIL_DOMAINS =
-  import.meta.env.VITE_STUDENT_EMAIL_DOMAINS || "ucg.ac.me";
+  import.meta.env.VITE_STUDENT_EMAIL_DOMAINS || "udg.edu.me";
 
 /** Where each role lands after signing in. */
 export const HOME_BY_ROLE = {

@@ -72,7 +72,7 @@ Point `DATABASE_URL` at your user/socket if different from the example.
    `db:setup` applies `schema.sql` and then any unapplied files in `server/db/migrations/`, tracking them in a `schema_migrations` table. It is safe to re-run.
 5. **Create the first operator** — operators cannot self-register:
   ```bash
-   npm run create:operator --workspace=server -- operater@ucg.ac.me
+   npm run create:operator --workspace=server -- operater@udg.edu.me
   ```
    Any domain is accepted for an operator; the university-domain restriction applies only to new student self-registrations. Re-running for an existing operator just reactivates them.
 
@@ -102,7 +102,7 @@ address. What happens next depends on whether SMTP is configured:
 - **With SMTP** — the login link arrives by e-mail. Click it.
 - **Without SMTP** — the API prints the link to its own console:
   ```
-  [auth] SMTP unavailable. Login link for ime@ucg.ac.me:
+  [auth] SMTP unavailable. Login link for ime@udg.edu.me:
     http://localhost:5173/prijava/potvrda?token=...
   ```
   Paste that URL into the browser. The link is **never** returned in the HTTP response —
@@ -174,9 +174,9 @@ There is deliberately **no** `DELETE`; use a transition to `otkazano`.
 For a **full** test (UI + API + database + optional email), you only need this on your machine:
 
 1. **Postgres** — `npm run db:up` (Docker) or a local `createdb photocopy`, then `npm run db:setup` and `npm run db:seed`.
-2. **Operator** — `npm run create:operator --workspace=server -- operater@ucg.ac.me`.
+2. **Operator** — `npm run create:operator --workspace=server -- operater@udg.edu.me`.
 3. **App** — `npm run dev`, then walk both roles:
-   - Sign in as a student (any `@ucg.ac.me` address; grab the link from the server console if SMTP is off), place an order, and check it appears under **Moje narudžbine** as `Nova`.
+   - Sign in as a student (any `@udg.edu.me` address; grab the link from the server console if SMTP is off), place an order, and check it appears under **Moje narudžbine** as `Nova`.
    - Sign in as the operator, move that order to `U pripremi` then `Spremno` — the student is e-mailed on `Spremno` — then `Preuzeto`. Open the order's detail modal and confirm every transition is listed under **Istorija statusa** with your operator address against it.
 4. **Email** — to see the real messages, set SMTP values in `.env` (e.g. a [Mailtrap](https://mailtrap.io/) inbox for dev). Without SMTP, everything still works; mail is skipped and login links go to the console.
 
