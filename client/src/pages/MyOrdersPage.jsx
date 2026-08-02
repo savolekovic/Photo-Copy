@@ -13,7 +13,7 @@ const PAGE_SIZE = 10;
  * status." Scoped server-side to the signed-in account.
  */
 export default function MyOrdersPage() {
-  const { t, formatDate, formatDateTime } = useI18n();
+  const { t, formatDate, formatDateTime, formatPrice } = useI18n();
 
   const [orders, setOrders] = useState([]);
   const [total, setTotal] = useState(0);
@@ -129,16 +129,16 @@ export default function MyOrdersPage() {
                   <dl className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-xs text-slate-500">
                     <div className="flex gap-1.5">
                       <dt>{t("orders.details.faculty")}:</dt>
-                      <dd className="text-slate-700">{order.faculty}</dd>
+                      <dd className="text-slate-700">{t(`faculty.${order.faculty}`)}</dd>
                     </div>
                     <div className="flex gap-1.5">
                       <dt>{t("orders.details.year")}:</dt>
-                      <dd className="text-slate-700">{order.year}</dd>
+                      <dd className="text-slate-700">{t(`year.${order.year}`)}</dd>
                     </div>
                     <div className="flex gap-1.5">
                       <dt>{t("common.total")}:</dt>
                       <dd className="tabular-nums text-slate-700">
-                        {Number(order.price).toFixed(2)}
+                        {formatPrice(order.price)}
                       </dd>
                     </div>
                     <div className="flex gap-1.5">

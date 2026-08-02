@@ -17,37 +17,43 @@ const FACULTIES = [
 
 const YEARS = ["1st", "2nd", "3rd", "4th", "Master"];
 
-/** Three distinct packs per faculty — each (faculty, year) gets all three */
+/**
+ * PLACEHOLDER catalogue — three packs per faculty, every (faculty, year) gets all three.
+ * None of this is real: titles and prices are invented until the client supplies the
+ * actual literature list. Titles are in Montenegrin because they are stored verbatim in
+ * the database and shown as-is; unlike interface strings they cannot be translated at
+ * render time, so a bilingual catalogue would need a per-title translation column.
+ */
 const PACKS = {
   Law: [
-    "Cases & Materials Reader",
-    "Statutes & Commentary Pack",
-    "Seminar Notes & Outlines",
+    "Zbirka slučajeva i materijala",
+    "Zakoni i komentari",
+    "Skripta sa seminara",
   ],
   Economics: [
-    "Lecture Notes & Problems",
-    "Tutorial Workbook",
-    "Exam Prep Summary",
+    "Predavanja i zadaci",
+    "Radna knjiga za vježbe",
+    "Priprema za ispit",
   ],
   Engineering: [
-    "Core Lecture Compendium",
-    "Problem Sets & Solutions",
-    "Formula Sheet & Key Chapters",
+    "Zbirka predavanja",
+    "Zadaci sa rješenjima",
+    "Formule i ključna poglavlja",
   ],
   Medicine: [
-    "Clinical Reader (selected chapters)",
-    "Atlas & Diagram Pack",
-    "OSCE / Exam Review Notes",
+    "Klinička čitanka (izabrana poglavlja)",
+    "Atlas i dijagrami",
+    "Skripta za ispit",
   ],
   Arts: [
-    "Primary Texts Reader",
-    "Criticism & Context Pack",
-    "Essay & Seminar Notes",
+    "Čitanka primarnih tekstova",
+    "Kritika i kontekst",
+    "Eseji i seminarske bilješke",
   ],
   Sciences: [
-    "Lecture Notes & Slides",
-    "Lab Manual & Exercises",
-    "Problem Book & Solutions",
+    "Predavanja i slajdovi",
+    "Laboratorijski praktikum",
+    "Zbirka zadataka sa rješenjima",
   ],
 };
 
@@ -72,7 +78,10 @@ for (const faculty of FACULTIES) {
   for (const year of YEARS) {
     packs.forEach((packTitle, i) => {
       rows.push([
-        `${packTitle} · ${faculty} · ${year}`,
+        // The title alone. Appending the faculty/year codes would bake untranslated
+        // English ("… · Law · 1st") into a stored value, and they are already separate
+        // columns rendered with localized labels.
+        packTitle,
         faculty,
         year,
         priceFor(faculty, year, i),

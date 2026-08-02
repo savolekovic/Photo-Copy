@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 import { config } from "../config.js";
-import { t, resolveLocale } from "../lib/i18n.js";
+import { facultyLabel, formatMoney, resolveLocale, t, yearLabel } from "../lib/i18n.js";
 
 /**
  * All outbound mail. Every template shares one document shell so the five message types
@@ -73,14 +73,14 @@ function orderSummaryHtml({
   phone,
   locale,
 }) {
-  const priceStr = Number(price).toFixed(2);
+  const priceStr = formatMoney(locale, price);
   const phoneDisplay =
     phone && String(phone).trim() ? String(phone) : t(locale, "label.notProvided");
 
   const rows =
     detailRow(t(locale, "label.placed"), when) +
-    detailRow(t(locale, "label.faculty"), faculty) +
-    detailRow(t(locale, "label.year"), year) +
+    detailRow(t(locale, "label.faculty"), facultyLabel(locale, faculty)) +
+    detailRow(t(locale, "label.year"), yearLabel(locale, year)) +
     detailRow(t(locale, "label.literature"), literatureName) +
     detailRow(t(locale, "label.email"), email) +
     detailRow(t(locale, "label.phone"), phoneDisplay);
@@ -220,7 +220,26 @@ async function deliver({ to, subject, text, html, label }) {
   }
 
   const result = await transport.sendMail({ from, to, subject, text, html });
-  console.log(`[email] ${label} sent to ${to}`, result.messageId);
+
+  // A 250 from the relay only means it accepted the handover. Check the per-recipient
+  // outcome too: a message can be accepted at the SMTP level and still have every
+  // recipient rejected, which previously logged as an unqualified success.
+  const accepted = result.accepted ?? [];
+  const rejected = result.rejected ?? [];
+
+  if (rejected.length > 0) {
+    console.warn(
+      `[email] ${label}: relay rejected ${rejected.join(", ")} — ${result.response ?? "no response"}`
+    );
+  }
+  if (accepted.length === 0) {
+    console.error(`[email] ${label} to ${to} was accepted by nobody; treating as unsent.`);
+    return { sent: false, reason: "all_recipients_rejected" };
+  }
+
+  console.log(
+    `[email] ${label} accepted for ${accepted.join(", ")} — ${result.response ?? result.messageId}`
+  );
   return { sent: true };
 }
 
@@ -275,10 +294,10 @@ export async function sendMagicLinkEmail({ to, url, locale }) {
 function summaryTextLines(locale, { when, faculty, year, literatureName, price }) {
   return [
     `${t(locale, "label.placed")}: ${when}`,
-    `${t(locale, "label.faculty")}: ${faculty}`,
-    `${t(locale, "label.year")}: ${year}`,
+    `${t(locale, "label.faculty")}: ${facultyLabel(locale, faculty)}`,
+    `${t(locale, "label.year")}: ${yearLabel(locale, year)}`,
     `${t(locale, "label.literature")}: ${literatureName}`,
-    `${t(locale, "label.total")}: ${Number(price).toFixed(2)}`,
+    `${t(locale, "label.total")}: ${formatMoney(locale, price)}`,
   ];
 }
 

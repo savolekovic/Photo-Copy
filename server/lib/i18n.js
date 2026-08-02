@@ -17,6 +17,21 @@ const dict = {
     "status.preuzeto": "Preuzeto",
     "status.otkazano": "Otkazano",
 
+    // PLACEHOLDER faculty names — keys are the database codes. Mirror of the client
+    // dictionary in client/src/i18n/messages.js; replace both with the real roster.
+    "faculty.Law": "Pravni fakultet",
+    "faculty.Economics": "Ekonomski fakultet",
+    "faculty.Engineering": "Elektrotehnički fakultet",
+    "faculty.Medicine": "Medicinski fakultet",
+    "faculty.Arts": "Filozofski fakultet",
+    "faculty.Sciences": "Prirodno-matematički fakultet",
+
+    "year.1st": "I godina",
+    "year.2nd": "II godina",
+    "year.3rd": "III godina",
+    "year.4th": "IV godina",
+    "year.Master": "Master",
+
     "label.placed": "Kreirana",
     "label.faculty": "Fakultet",
     "label.year": "Godina studija",
@@ -86,6 +101,20 @@ const dict = {
     "status.spremno": "Ready for pickup",
     "status.preuzeto": "Picked up",
     "status.otkazano": "Cancelled",
+
+    // PLACEHOLDER — see the sr-ME block.
+    "faculty.Law": "Faculty of Law",
+    "faculty.Economics": "Faculty of Economics",
+    "faculty.Engineering": "Faculty of Electrical Engineering",
+    "faculty.Medicine": "Faculty of Medicine",
+    "faculty.Arts": "Faculty of Philosophy",
+    "faculty.Sciences": "Faculty of Natural Sciences",
+
+    "year.1st": "1st year",
+    "year.2nd": "2nd year",
+    "year.3rd": "3rd year",
+    "year.4th": "4th year",
+    "year.Master": "Master",
 
     "label.placed": "Placed",
     "label.faculty": "Faculty",
@@ -165,4 +194,30 @@ export function t(locale, key, vars = {}) {
 
 export function statusLabel(locale, status) {
   return t(locale, `status.${status}`);
+}
+
+/** Faculty/year values are stored as stable codes; these render them for a reader. */
+export function facultyLabel(locale, code) {
+  return t(locale, `faculty.${code}`);
+}
+
+export function yearLabel(locale, code) {
+  return t(locale, `year.${code}`);
+}
+
+/**
+ * Prices are euro. Intl positions the symbol and decimal separator per locale, so
+ * sr-ME gives "12,50 €" and en gives "€12.50".
+ */
+export function formatMoney(locale, value) {
+  const n = Number(value);
+  if (Number.isNaN(n)) return "—";
+  try {
+    return new Intl.NumberFormat(resolveLocale(locale), {
+      style: "currency",
+      currency: "EUR",
+    }).format(n);
+  } catch {
+    return `${n.toFixed(2)} €`;
+  }
 }

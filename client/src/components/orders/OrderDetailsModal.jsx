@@ -20,7 +20,7 @@ export default function OrderDetailsModal({
   busy,
   refreshKey,
 }) {
-  const { t, formatDateTime } = useI18n();
+  const { t, formatDateTime, formatPrice } = useI18n();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -105,15 +105,15 @@ export default function OrderDetailsModal({
                   value={data.student?.indexNumber || t("common.dash")}
                   mono={Boolean(data.student?.indexNumber)}
                 />
-                <DetailRow label={t("orders.details.faculty")} value={data.faculty} />
-                <DetailRow label={t("orders.details.year")} value={data.year} />
+                <DetailRow label={t("orders.details.faculty")} value={t(`faculty.${data.faculty}`)} />
+                <DetailRow label={t("orders.details.year")} value={t(`year.${data.year}`)} />
                 <DetailRow
                   label={t("orders.details.literature")}
                   value={data.literature?.name ?? t("common.dash")}
                 />
                 <DetailRow
                   label={t("orders.details.price")}
-                  value={data.price != null ? Number(data.price).toFixed(2) : t("common.dash")}
+                  value={formatPrice(data.price)}
                 />
                 <DetailRow
                   label={t("orders.details.phone")}

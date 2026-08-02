@@ -76,9 +76,38 @@ export function I18nProvider({ children }) {
     [formatDate]
   );
 
+  /**
+   * Prices are in euro. Intl places the symbol and decimal separator per locale, so
+   * sr-ME renders "12,50 €" and en renders "€12.50" — both correct for their reader.
+   */
+  const formatPrice = useCallback(
+    (value) => {
+      if (value === null || value === undefined || value === "") return "—";
+      const n = Number(value);
+      if (Number.isNaN(n)) return "—";
+      try {
+        return new Intl.NumberFormat(locale, {
+          style: "currency",
+          currency: "EUR",
+        }).format(n);
+      } catch {
+        return `${n.toFixed(2)} €`;
+      }
+    },
+    [locale]
+  );
+
   const value = useMemo(
-    () => ({ locale, setLocale, t, formatDate, formatDateTime, locales: LOCALES }),
-    [locale, setLocale, t, formatDate, formatDateTime]
+    () => ({
+      locale,
+      setLocale,
+      t,
+      formatDate,
+      formatDateTime,
+      formatPrice,
+      locales: LOCALES,
+    }),
+    [locale, setLocale, t, formatDate, formatDateTime, formatPrice]
   );
 
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;

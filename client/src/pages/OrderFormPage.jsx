@@ -307,7 +307,7 @@ function StepFaculty({ faculty, onSelect }) {
                 : "border-slate-200 bg-white text-slate-800 hover:border-slate-300",
             ].join(" ")}
           >
-            {f}
+            {t(`faculty.${f}`)}
           </button>
         ))}
       </div>
@@ -334,7 +334,7 @@ function StepYear({ year, onSelect }) {
                 : "bg-slate-100 text-slate-700 hover:bg-slate-200",
             ].join(" ")}
           >
-            {y}
+            {t(`year.${y}`)}
           </button>
         ))}
       </div>
@@ -351,7 +351,7 @@ function StepLiterature({
   selectedId,
   onSelect,
 }) {
-  const { t } = useI18n();
+  const { t, formatPrice } = useI18n();
   return (
     <div>
       <h2 className="mb-1 text-lg font-semibold text-slate-900">
@@ -418,7 +418,7 @@ function StepLiterature({
                         selected ? "text-slate-300" : "text-slate-600",
                       ].join(" ")}
                     >
-                      {Number(item.price).toFixed(2)}
+                      {formatPrice(item.price)}
                     </span>
                   </span>
                   <span
@@ -459,7 +459,7 @@ function SummaryRow({ label, value, strong }) {
 }
 
 function StepOverview({ faculty, year, literature, total, email, phone, onPhone }) {
-  const { t } = useI18n();
+  const { t, formatPrice } = useI18n();
   return (
     <div>
       <h2 className="mb-1 text-lg font-semibold text-slate-900">
@@ -468,8 +468,8 @@ function StepOverview({ faculty, year, literature, total, email, phone, onPhone 
       <p className="mb-6 text-sm text-slate-500">{t("form.overview.subtitle")}</p>
 
       <dl className="space-y-3 text-sm">
-        <SummaryRow label={t("orders.details.faculty")} value={faculty} />
-        <SummaryRow label={t("orders.details.year")} value={year} />
+        <SummaryRow label={t("orders.details.faculty")} value={faculty ? t(`faculty.${faculty}`) : t("common.dash")} />
+        <SummaryRow label={t("orders.details.year")} value={year ? t(`year.${year}`) : t("common.dash")} />
         <SummaryRow
           label={t("orders.details.literature")}
           value={literature?.name ?? t("common.dash")}
@@ -478,7 +478,7 @@ function StepOverview({ faculty, year, literature, total, email, phone, onPhone 
         <div className="border-t border-slate-100 pt-3">
           <SummaryRow
             label={t("common.total")}
-            value={literature ? total.toFixed(2) : t("common.dash")}
+            value={literature ? formatPrice(total) : t("common.dash")}
             strong
           />
         </div>
@@ -517,7 +517,7 @@ function StepConfirm({
   submitting,
   error,
 }) {
-  const { t } = useI18n();
+  const { t, formatPrice } = useI18n();
   return (
     <div>
       <h2 className="mb-1 text-lg font-semibold text-slate-900">
@@ -526,8 +526,8 @@ function StepConfirm({
       <p className="mb-6 text-sm text-slate-500">{t("form.confirm.subtitle")}</p>
 
       <dl className="mb-6 space-y-2 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm">
-        <SummaryRow label={t("orders.details.faculty")} value={faculty} />
-        <SummaryRow label={t("orders.details.year")} value={year} />
+        <SummaryRow label={t("orders.details.faculty")} value={faculty ? t(`faculty.${faculty}`) : t("common.dash")} />
+        <SummaryRow label={t("orders.details.year")} value={year ? t(`year.${year}`) : t("common.dash")} />
         <SummaryRow
           label={t("orders.details.literature")}
           value={literature?.name ?? t("common.dash")}
@@ -536,7 +536,7 @@ function StepConfirm({
         {phone ? (
           <SummaryRow label={t("orders.details.phone")} value={phone} />
         ) : null}
-        <SummaryRow label={t("common.total")} value={total.toFixed(2)} strong />
+        <SummaryRow label={t("common.total")} value={formatPrice(total)} strong />
       </dl>
 
       {error && (

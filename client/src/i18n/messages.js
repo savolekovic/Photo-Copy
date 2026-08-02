@@ -85,6 +85,22 @@ export const messages = {
     "status.preuzeto": "Preuzeto",
     "status.otkazano": "Otkazano",
 
+    // PLACEHOLDER faculty names. The keys are the stable codes stored in the database;
+    // only these labels are translated. Replace with the client's real faculty list —
+    // these are plausible UCG names, not a confirmed roster.
+    "faculty.Law": "Pravni fakultet",
+    "faculty.Economics": "Ekonomski fakultet",
+    "faculty.Engineering": "Elektrotehnički fakultet",
+    "faculty.Medicine": "Medicinski fakultet",
+    "faculty.Arts": "Filozofski fakultet",
+    "faculty.Sciences": "Prirodno-matematički fakultet",
+
+    "year.1st": "I godina",
+    "year.2nd": "II godina",
+    "year.3rd": "III godina",
+    "year.4th": "IV godina",
+    "year.Master": "Master",
+
     "form.heading": "Poručivanje literature",
     "form.title": "Nova narudžbina",
     "form.step.faculty": "Fakultet",
@@ -273,6 +289,20 @@ export const messages = {
     "status.spremno": "Ready for pickup",
     "status.preuzeto": "Picked up",
     "status.otkazano": "Cancelled",
+
+    // PLACEHOLDER — see the sr-ME block. Keys are the database codes.
+    "faculty.Law": "Faculty of Law",
+    "faculty.Economics": "Faculty of Economics",
+    "faculty.Engineering": "Faculty of Electrical Engineering",
+    "faculty.Medicine": "Faculty of Medicine",
+    "faculty.Arts": "Faculty of Philosophy",
+    "faculty.Sciences": "Faculty of Natural Sciences",
+
+    "year.1st": "1st year",
+    "year.2nd": "2nd year",
+    "year.3rd": "3rd year",
+    "year.4th": "4th year",
+    "year.Master": "Master",
 
     "form.heading": "Academic photocopies",
     "form.title": "New order",

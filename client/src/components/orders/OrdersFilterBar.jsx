@@ -128,13 +128,13 @@ export default function OrdersFilterBar({
             onChange={onFacultyChange}
             options={[
               { value: "", label: t("orders.filter.facultyAll") },
-              ...FACULTIES.map((f) => ({ value: f, label: f })),
+              ...FACULTIES.map((f) => ({ value: f, label: t(`faculty.${f}`) })),
             ]}
             ariaLabel={t("orders.filter.faculty")}
             active={Boolean(facultyFilter)}
             title={
               facultyFilter
-                ? `${t("orders.filter.faculty")}: ${facultyFilter}`
+                ? `${t("orders.filter.faculty")}: ${t(`faculty.${facultyFilter}`)}`
                 : t("orders.filter.facultyAll")
             }
           />
@@ -144,12 +144,12 @@ export default function OrdersFilterBar({
             onChange={onYearChange}
             options={[
               { value: "", label: t("orders.filter.yearAll") },
-              ...YEARS.map((y) => ({ value: y, label: y })),
+              ...YEARS.map((y) => ({ value: y, label: t(`year.${y}`) })),
             ]}
             ariaLabel={t("orders.filter.year")}
             active={Boolean(yearFilter)}
             title={
-              yearFilter ? `${t("orders.filter.year")}: ${yearFilter}` : t("orders.filter.yearAll")
+              yearFilter ? `${t("orders.filter.year")}: ${t(`year.${yearFilter}`)}` : t("orders.filter.yearAll")
             }
           />
           <IconSelect
