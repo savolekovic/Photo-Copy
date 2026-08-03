@@ -3,6 +3,7 @@ import { fileURLToPath } from "url";
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import adminRoutes from "./routes/adminRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import literatureRoutes from "./routes/literatureRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
@@ -38,6 +39,8 @@ app.get("/api/health", (_req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+// Catalogue administration (fakulteti, programi, godine, predmeti, materijali, cijene).
+app.use("/api/admin", adminRoutes);
 app.use("/api/literature", literatureRoutes);
 app.use("/api/orders", orderRoutes);
 

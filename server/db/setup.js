@@ -28,8 +28,22 @@ function migrationFiles() {
 async function setup() {
   const client = await pool.connect();
   try {
-    // Base tables. Idempotent (CREATE TABLE IF NOT EXISTS), so it runs on every setup.
-    await client.query(fs.readFileSync(path.join(__dirname, "schema.sql"), "utf8"));
+    // schema.sql is the ORIGINAL bootstrap and still creates `literature`. Migration 004
+    // renames that table to `materials`, so re-running schema.sql afterwards would
+    // resurrect an empty `literature` alongside it. Once `materials` exists the bootstrap
+    // has served its purpose and every further change belongs in a migration.
+    const { rows: bootstrapped } = await client.query(
+      `SELECT EXISTS (
+         SELECT 1 FROM information_schema.tables
+          WHERE table_schema = 'public' AND table_name = 'materials'
+       ) AS done`
+    );
+    if (bootstrapped[0].done) {
+      console.log("  base schema already bootstrapped; skipping schema.sql");
+    } else {
+      await client.query(fs.readFileSync(path.join(__dirname, "schema.sql"), "utf8"));
+    }
+
     await client.query(LEDGER);
 
     const { rows } = await client.query("SELECT filename FROM schema_migrations");

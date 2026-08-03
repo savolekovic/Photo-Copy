@@ -13,17 +13,6 @@ import {
   sendOrderReadyEmail,
 } from "../services/emailService.js";
 
-const FACULTIES = [
-  "Law",
-  "Economics",
-  "Engineering",
-  "Medicine",
-  "Arts",
-  "Sciences",
-];
-
-const YEARS = ["1st", "2nd", "3rd", "4th", "Master"];
-
 /** Columns every order response is built from. */
 const ORDER_SELECT = `
   o.id,
@@ -42,14 +31,18 @@ const ORDER_SELECT = `
   o.last_reminder_at,
   o.user_id,
   u.index_number AS student_index_number,
-  l.id AS lit_id,
-  l.name AS lit_name,
-  l.price::float8 AS lit_price`;
+  m.id AS lit_id,
+  m.title AS lit_name,
+  m.price::float8 AS lit_price,
+  m.material_type,
+  o.programme_id,
+  prog.name AS programme_name`;
 
 const ORDER_FROM = `
   FROM orders o
-  INNER JOIN literature l ON l.id = o.literature_id
-  LEFT JOIN users u ON u.id = o.user_id`;
+  INNER JOIN materials m ON m.id = o.material_id
+  LEFT JOIN users u ON u.id = o.user_id
+  LEFT JOIN study_programmes prog ON prog.id = o.programme_id`;
 
 function mapOrder(r) {
   return {
@@ -76,7 +69,9 @@ function mapOrder(r) {
       id: r.lit_id,
       name: r.lit_name,
       price: r.lit_price,
+      materialType: r.material_type,
     },
+    programme: r.programme_id ? { id: r.programme_id, name: r.programme_name } : null,
     // Lets the client render only the buttons that will actually succeed.
     allowedTransitions: allowedTransitionsFrom(r.status),
   };
@@ -85,9 +80,9 @@ function mapOrder(r) {
 /* ------------------------------------------------------------------ create ---- */
 
 export const orderValidators = [
-  body("faculty").isIn(FACULTIES).withMessage("Invalid faculty"),
-  body("year").isIn(YEARS).withMessage("Invalid year"),
-  body("literature_id").isInt({ min: 1 }).toInt(),
+  body("faculty_id").isInt({ min: 1 }).toInt(),
+  body("year_id").isInt({ min: 1 }).toInt(),
+  body("material_id").isInt({ min: 1 }).toInt(),
   body("price").isFloat({ min: 0 }).toFloat(),
   body("phone")
     .optional({ values: "falsy" })
@@ -102,6 +97,10 @@ export const orderValidators = [
  * The recipient address is taken from the authenticated account, never from the request
  * body: the spec ties an order to a verified university address, and accepting a
  * client-supplied address would let anyone direct confirmations elsewhere.
+ *
+ * The material must genuinely be placed in the chosen faculty and year. Checking that here
+ * rather than trusting the client stops anyone ordering a material that is not on offer for
+ * their selection.
  */
 export async function createOrder(req, res, next) {
   try {
@@ -110,28 +109,48 @@ export async function createOrder(req, res, next) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { faculty, year, literature_id, price, phone } = req.body;
+    const { faculty_id, year_id, material_id, price, phone } = req.body;
     const email = req.user.email;
 
-    const lit = await pool.query(
-      `SELECT id, name, faculty, year, price::float8 AS price
-       FROM literature
-       WHERE id = $1 AND faculty = $2 AND year = $3`,
-      [literature_id, faculty, year]
+    const lookup = await pool.query(
+      `SELECT
+         m.id,
+         m.title,
+         m.price::float8 AS price,
+         f.name AS faculty_name,
+         y.code AS year_code,
+         ARRAY_AGG(DISTINCT p.id) AS programme_ids
+       FROM materials m
+       JOIN material_placements pl ON pl.material_id = m.id
+       JOIN study_programmes p ON p.id = pl.programme_id AND p.is_active
+       JOIN faculties f ON f.id = p.faculty_id AND f.is_active
+       JOIN study_years y ON y.id = pl.study_year_id AND y.is_active
+      WHERE m.id = $1 AND f.id = $2 AND pl.study_year_id = $3 AND m.is_active
+      GROUP BY m.id, m.title, m.price, f.name, y.code`,
+      [material_id, faculty_id, year_id]
     );
 
-    if (lit.rows.length === 0) {
+    if (lookup.rows.length === 0) {
       return res.status(400).json({
-        error: "Literature not found for the selected faculty and year",
+        error: "That material is not available for the selected faculty and year",
+        code: "material_unavailable",
       });
     }
 
-    const row = lit.rows[0];
+    const row = lookup.rows[0];
     const expected = Number(row.price);
     const submitted = Number(price);
     if (Math.abs(expected - submitted) > 0.009) {
-      return res.status(400).json({ error: "Price does not match literature" });
+      return res
+        .status(400)
+        .json({ error: "Price does not match the material", code: "price_mismatch" });
     }
+
+    // The spec has the student choose a faculty, not a programme, so a material shared by
+    // several programmes of that faculty is genuinely ambiguous. Record the programme only
+    // when there is exactly one, rather than guessing.
+    const programmeIds = row.programme_ids ?? [];
+    const programmeId = programmeIds.length === 1 ? programmeIds[0] : null;
 
     // Insert the order and its first history row together, so no order can exist
     // without an origin entry in the audit trail.
@@ -140,18 +159,24 @@ export async function createOrder(req, res, next) {
     try {
       await client.query("BEGIN");
       const insert = await client.query(
-        `INSERT INTO orders (faculty, year, literature_id, price, email, phone, user_id, status)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        `INSERT INTO orders
+           (faculty, year, material_id, price, email, phone, user_id, status,
+            programme_id, study_year_id)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
          RETURNING id, created_at`,
         [
-          faculty,
-          year,
-          literature_id,
+          // faculty name and year code are historical snapshots: renaming a faculty later
+          // must not rewrite what this student ordered.
+          row.faculty_name,
+          row.year_code,
+          material_id,
           submitted,
           email,
           phone || null,
           req.user.id,
           STATUS.NOVA,
+          programmeId,
+          year_id,
         ]
       );
       created = insert.rows[0];
@@ -176,9 +201,9 @@ export async function createOrder(req, res, next) {
       const result = await sendOrderConfirmationEmails({
         orderId: created.id,
         createdAt: created.created_at,
-        faculty,
-        year,
-        literatureName: row.name,
+        faculty: row.faculty_name,
+        year: row.year_code,
+        literatureName: row.title,
         price: submitted,
         email,
         phone: phone || "",
@@ -301,12 +326,12 @@ function buildListQuery(reqQuery, extraConditions = [], extraParams = []) {
     return { error: "Invalid status filter" };
   }
 
+  // faculty and year are historical text snapshots on the order, and the real values now
+  // live in administrable tables, so there is no fixed list to validate against. An
+  // unknown value simply matches nothing — the query is parameterised either way.
   const facultyQ = reqQuery.faculty;
   const faculty =
     typeof facultyQ === "string" ? facultyQ : Array.isArray(facultyQ) ? facultyQ[0] : "";
-  if (faculty !== "" && !FACULTIES.includes(faculty)) {
-    return { error: "Invalid faculty filter" };
-  }
   if (faculty) {
     conditions.push(`o.faculty = $${i++}`);
     params.push(faculty);
@@ -315,9 +340,6 @@ function buildListQuery(reqQuery, extraConditions = [], extraParams = []) {
   const yearQ = reqQuery.year;
   const year =
     typeof yearQ === "string" ? yearQ : Array.isArray(yearQ) ? yearQ[0] : "";
-  if (year !== "" && !YEARS.includes(year)) {
-    return { error: "Invalid year filter" };
-  }
   if (year) {
     conditions.push(`o.year = $${i++}`);
     params.push(year);
@@ -332,7 +354,7 @@ function buildListQuery(reqQuery, extraConditions = [], extraParams = []) {
       : "";
   if (safePattern) {
     conditions.push(
-      `(o.email ILIKE $${i} OR l.name ILIKE $${i} OR COALESCE(u.index_number, '') ILIKE $${i})`
+      `(o.email ILIKE $${i} OR m.title ILIKE $${i} OR COALESCE(u.index_number, '') ILIKE $${i})`
     );
     params.push(safePattern);
     i++;
