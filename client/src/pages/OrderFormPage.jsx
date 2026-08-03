@@ -10,14 +10,14 @@ import { useAuth } from "../auth/AuthContext.jsx";
 import { useI18n } from "../i18n/I18nProvider.jsx";
 import { apiErrorMessage } from "../lib/apiErrorMessage.js";
 import { yearLabel } from "../lib/orderLabels.js";
+import { useCart } from "../lib/useCart.js";
 
 /**
  * The student ordering flow. Five steps, mirroring the spec: fakultet → godina →
- * materijali → pregled → potvrda.
+ * materijali (korpa) → pregled → potvrda.
  *
  * Faculties, years and materials all come from the administrable catalogue, so nothing is
- * hardcoded. Each step only offers options that actually have something behind them —
- * a faculty with no material never appears, and neither does an empty year.
+ * hardcoded, and each step only offers options that have something behind them.
  *
  * There is no e-mail step: the address comes from the verified university account.
  */
@@ -42,7 +42,6 @@ export default function OrderFormPage() {
   const [years, setYears] = useState([]);
   const [yearId, setYearId] = useState(null);
   const [materials, setMaterials] = useState([]);
-  const [materialId, setMaterialId] = useState(null);
 
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState("");
@@ -54,15 +53,13 @@ export default function OrderFormPage() {
   const [orderDone, setOrderDone] = useState(false);
   const [completedOrder, setCompletedOrder] = useState(null);
 
+  const cart = useCart(facultyId, yearId);
+
   const faculty = useMemo(
     () => faculties.find((f) => f.id === facultyId) ?? null,
     [faculties, facultyId]
   );
   const year = useMemo(() => years.find((y) => y.id === yearId) ?? null, [years, yearId]);
-  const material = useMemo(
-    () => materials.find((m) => m.id === materialId) ?? null,
-    [materials, materialId]
-  );
 
   const filteredMaterials = useMemo(() => {
     const q = litSearch.trim().toLowerCase();
@@ -75,7 +72,6 @@ export default function OrderFormPage() {
     );
   }, [materials, litSearch]);
 
-  // Faculties, once.
   useEffect(() => {
     const ac = new AbortController();
     setLoading(true);
@@ -89,7 +85,6 @@ export default function OrderFormPage() {
     return () => ac.abort();
   }, [t]);
 
-  // Years for the chosen faculty. Selecting a different faculty invalidates the rest.
   useEffect(() => {
     if (!facultyId) return;
     const ac = new AbortController();
@@ -107,17 +102,13 @@ export default function OrderFormPage() {
     return () => ac.abort();
   }, [facultyId, t]);
 
-  // Materials for faculty + year.
   useEffect(() => {
     if (!facultyId || !yearId) return;
     const ac = new AbortController();
     setLoading(true);
     setLoadError("");
     fetchLiterature(facultyId, yearId, { signal: ac.signal })
-      .then((rows) => {
-        setMaterials(rows);
-        setMaterialId((prev) => (rows.some((r) => r.id === prev) ? prev : rows[0]?.id ?? null));
-      })
+      .then(setMaterials)
       .catch((e) => {
         if (e.name !== "AbortError") setLoadError(apiErrorMessage(e, t));
       })
@@ -129,10 +120,10 @@ export default function OrderFormPage() {
     (s) => {
       if (s === 0) return Boolean(facultyId);
       if (s === 1) return Boolean(yearId);
-      if (s === 2) return Boolean(material);
+      if (s === 2) return cart.count > 0;
       return true;
     },
-    [facultyId, yearId, material]
+    [facultyId, yearId, cart.count]
   );
 
   const goNext = () => {
@@ -145,21 +136,35 @@ export default function OrderFormPage() {
   };
 
   const handleSubmit = async () => {
-    if (!material || !facultyId || !yearId) return;
+    if (cart.count === 0 || !facultyId || !yearId) return;
     setSubmitting(true);
     setSubmitError("");
     try {
       const result = await submitOrder({
         faculty_id: facultyId,
         year_id: yearId,
-        material_id: material.id,
-        price: material.price,
+        items: cart.lines.map((l) => ({ material_id: l.materialId, quantity: l.quantity })),
+        // Guards against the catalogue price changing between review and confirm.
+        expected_total: cart.total,
         phone: phone.trim() || undefined,
       });
       setCompletedOrder(result);
       setOrderDone(true);
+      cart.clear();
     } catch (e) {
-      setSubmitError(apiErrorMessage(e, t));
+      // Both of these are recoverable, so say what happened and send the student back to
+      // the cart rather than leaving them stuck on the confirm step.
+      if (e.code === "price_mismatch") {
+        setSubmitError(t("cart.totalChanged"));
+        setStep(2);
+      } else if (e.code === "material_unavailable") {
+        const gone = new Set(e.materialIds ?? []);
+        cart.lines.filter((l) => gone.has(l.materialId)).forEach((l) => cart.remove(l.materialId));
+        setSubmitError(t("cart.unavailable"));
+        setStep(2);
+      } else {
+        setSubmitError(apiErrorMessage(e, t));
+      }
     } finally {
       setSubmitting(false);
     }
@@ -171,15 +176,13 @@ export default function OrderFormPage() {
     setYears([]);
     setYearId(null);
     setMaterials([]);
-    setMaterialId(null);
     setLitSearch("");
     setPhone("");
     setOrderDone(false);
     setCompletedOrder(null);
     setSubmitError("");
+    cart.clear();
   };
-
-  const total = material ? Number(material.price) : 0;
 
   return (
     <div className="flex min-h-screen flex-col items-center px-4 py-10 sm:py-14">
@@ -233,6 +236,11 @@ export default function OrderFormPage() {
                 {loadError}
               </p>
             )}
+            {submitError && step === 2 && (
+              <p className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900" role="alert">
+                {submitError}
+              </p>
+            )}
 
             {step === 0 && (
               <ChoiceStep
@@ -244,7 +252,6 @@ export default function OrderFormPage() {
                 onSelect={setFacultyId}
                 labelOf={(f) => f.name}
                 subLabelOf={(f) => f.short_name}
-                emptyKey="form.literature.empty"
                 layout="grid"
               />
             )}
@@ -258,7 +265,6 @@ export default function OrderFormPage() {
                 selectedId={yearId}
                 onSelect={setYearId}
                 labelOf={(y) => yearLabel(y, locale)}
-                emptyKey="form.literature.empty"
                 layout="pills"
               />
             )}
@@ -269,8 +275,7 @@ export default function OrderFormPage() {
                 search={litSearch}
                 onSearchChange={setLitSearch}
                 items={filteredMaterials}
-                selectedId={materialId}
-                onSelect={setMaterialId}
+                cart={cart}
               />
             )}
 
@@ -278,8 +283,7 @@ export default function OrderFormPage() {
               <StepOverview
                 facultyName={faculty?.name}
                 yearName={year ? yearLabel(year, locale) : null}
-                material={material}
-                total={total}
+                cart={cart}
                 email={user?.email}
                 phone={phone}
                 onPhone={setPhone}
@@ -290,8 +294,7 @@ export default function OrderFormPage() {
               <StepConfirm
                 facultyName={faculty?.name}
                 yearName={year ? yearLabel(year, locale) : null}
-                material={material}
-                total={total}
+                cart={cart}
                 email={user?.email}
                 phone={phone}
                 onSubmit={handleSubmit}
@@ -313,6 +316,11 @@ export default function OrderFormPage() {
                     ? t("form.done.emailSent", { email: user?.email })
                     : t("form.done.emailFailed", { email: user?.email })}
                 </p>
+                {completedOrder?.total != null && (
+                  <p className="mt-2 text-sm font-medium text-slate-800">
+                    {t("common.total")}: {formatPrice(completedOrder.total)}
+                  </p>
+                )}
                 <p className="mt-3 text-sm text-slate-500">{t("form.done.next")}</p>
                 {completedOrder?.emailError && (
                   <p className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-left text-xs text-amber-900">
@@ -325,7 +333,7 @@ export default function OrderFormPage() {
         </div>
 
         {!(step === LAST_STEP && orderDone) && (
-          <div className="mt-8 flex justify-between gap-3">
+          <div className="mt-8 flex items-center justify-between gap-3">
             <button
               type="button"
               onClick={goBack}
@@ -334,12 +342,17 @@ export default function OrderFormPage() {
             >
               {t("common.back")}
             </button>
+            {cart.count > 0 && step < LAST_STEP && (
+              <span className="text-xs text-slate-500">
+                {t("cart.itemCount", { count: cart.count })} · {formatPrice(cart.total)}
+              </span>
+            )}
             {step < LAST_STEP && (
               <button
                 type="button"
                 onClick={goNext}
                 disabled={!canNext(step)}
-                className="ml-auto rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-medium text-white shadow-soft transition-colors hover:bg-slate-800 disabled:opacity-40"
+                className="rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-medium text-white shadow-soft transition-colors hover:bg-slate-800 disabled:opacity-40"
               >
                 {t("common.continue")}
               </button>
@@ -379,7 +392,6 @@ function ChoiceStep({
   onSelect,
   labelOf,
   subLabelOf,
-  emptyKey,
   layout,
 }) {
   const { t } = useI18n();
@@ -390,7 +402,7 @@ function ChoiceStep({
 
       {loading && <p className="text-sm text-slate-500">{t("common.loading")}</p>}
       {!loading && items.length === 0 && (
-        <p className="text-sm text-slate-500">{t(emptyKey)}</p>
+        <p className="text-sm text-slate-500">{t("form.literature.empty")}</p>
       )}
 
       {layout === "grid" ? (
@@ -445,14 +457,43 @@ function ChoiceStep({
   );
 }
 
-function StepMaterials({ loading, search, onSearchChange, items, selectedId, onSelect }) {
+/** − N + control. Dropping to zero removes the line, which is what students expect. */
+function QuantityStepper({ quantity, onChange }) {
+  const { t } = useI18n();
+  return (
+    <span className="inline-flex items-center rounded-lg border border-slate-200 bg-white">
+      <button
+        type="button"
+        onClick={() => onChange(quantity - 1)}
+        aria-label={t("cart.decrease")}
+        className="px-2 py-1 text-sm font-medium text-slate-600 hover:text-slate-900"
+      >
+        −
+      </button>
+      <span className="min-w-[1.75rem] text-center text-sm font-medium tabular-nums text-slate-900">
+        {quantity}
+      </span>
+      <button
+        type="button"
+        onClick={() => onChange(quantity + 1)}
+        aria-label={t("cart.increase")}
+        className="px-2 py-1 text-sm font-medium text-slate-600 hover:text-slate-900"
+      >
+        +
+      </button>
+    </span>
+  );
+}
+
+function StepMaterials({ loading, search, onSearchChange, items, cart }) {
   const { t, formatPrice } = useI18n();
   return (
     <div>
       <h2 className="mb-1 text-lg font-semibold text-slate-900">
         {t("form.literature.title")}
       </h2>
-      <p className="mb-4 text-sm text-slate-500">{t("form.literature.subtitle")}</p>
+      <p className="mb-1 text-sm text-slate-500">{t("form.literature.subtitle")}</p>
+      <p className="mb-4 text-xs text-slate-400">{t("cart.scopeNote")}</p>
 
       <label htmlFor="lit-search" className="mb-1.5 block text-xs font-medium text-slate-500">
         {t("form.literature.searchLabel")}
@@ -472,131 +513,152 @@ function StepMaterials({ loading, search, onSearchChange, items, selectedId, onS
       )}
 
       {items.length > 0 && (
-        <ul
-          className="max-h-72 space-y-2 overflow-y-auto pr-1"
-          role="listbox"
-          aria-label={t("form.literature.title")}
-        >
+        <ul className="max-h-80 space-y-2 overflow-y-auto pr-1">
           {items.map((item) => {
-            const selected = selectedId === item.id;
+            const qty = cart.quantityOf(item.id);
+            const inCart = qty > 0;
             return (
-              <li key={item.id}>
-                <button
-                  type="button"
-                  role="option"
-                  aria-selected={selected}
-                  onClick={() => onSelect(item.id)}
-                  className={[
-                    "flex w-full items-start justify-between gap-3 rounded-xl border px-3 py-3 text-left transition-all duration-200",
-                    selected
-                      ? "border-slate-900 bg-slate-900 text-white shadow-soft"
-                      : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/80",
-                  ].join(" ")}
-                >
-                  <span className="min-w-0 flex-1">
-                    <span
-                      className={[
-                        "block text-sm font-medium",
-                        selected ? "text-white" : "text-slate-900",
-                      ].join(" ")}
-                    >
-                      {item.name}
+              <li
+                key={item.id}
+                className={[
+                  "flex flex-wrap items-center justify-between gap-3 rounded-xl border px-3 py-3",
+                  inCart ? "border-emerald-300 bg-emerald-50/40" : "border-slate-200 bg-white",
+                ].join(" ")}
+              >
+                <div className="min-w-0 flex-1">
+                  <span className="block text-sm font-medium text-slate-900">{item.name}</span>
+                  {item.author && (
+                    <span className="block text-xs text-slate-500">{item.author}</span>
+                  )}
+                  <span className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-500">
+                    <span className="rounded bg-slate-100 px-1.5 py-0.5">
+                      {t(`materialType.${item.material_type}`)}
                     </span>
-                    {item.author && (
-                      <span
-                        className={[
-                          "block text-xs",
-                          selected ? "text-slate-300" : "text-slate-500",
-                        ].join(" ")}
-                      >
-                        {item.author}
-                      </span>
-                    )}
-                    <span
-                      className={[
-                        "mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs",
-                        selected ? "text-slate-300" : "text-slate-500",
-                      ].join(" ")}
-                    >
-                      <span
-                        className={[
-                          "rounded px-1.5 py-0.5",
-                          selected ? "bg-white/15" : "bg-slate-100",
-                        ].join(" ")}
-                      >
-                        {t(`materialType.${item.material_type}`)}
-                      </span>
-                      {/* Programme is shown rather than being its own step, per the spec's
-                          faculty → year → materials flow. */}
-                      {(item.programmes ?? []).join(" · ")}
-                    </span>
-                    <span
-                      className={[
-                        "mt-1 block text-sm tabular-nums",
-                        selected ? "text-slate-200" : "text-slate-700",
-                      ].join(" ")}
-                    >
-                      {formatPrice(item.price)}
-                    </span>
+                    {(item.programmes ?? []).join(" · ")}
                   </span>
-                  <span
-                    className={[
-                      "flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold",
-                      selected ? "bg-white/20 text-white" : "border-2 border-slate-200 bg-white",
-                    ].join(" ")}
-                    aria-hidden
+                  <span className="mt-1 block text-sm tabular-nums text-slate-700">
+                    {formatPrice(item.price)}
+                  </span>
+                </div>
+
+                {inCart ? (
+                  <div className="flex items-center gap-2">
+                    <QuantityStepper
+                      quantity={qty}
+                      onChange={(q) => cart.setQuantity(item.id, q)}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => cart.remove(item.id)}
+                      className="text-xs font-medium text-rose-700 underline hover:text-rose-900"
+                    >
+                      {t("cart.remove")}
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => cart.add(item)}
+                    className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800"
                   >
-                    {selected ? "✓" : ""}
-                  </span>
-                </button>
+                    {t("cart.add")}
+                  </button>
+                )}
               </li>
             );
           })}
         </ul>
       )}
+
+      <div className="mt-5 border-t border-slate-100 pt-4">
+        <CartPanel cart={cart} />
+      </div>
     </div>
   );
 }
 
-function SummaryRow({ label, value, strong }) {
+/** The korpa itself: line totals and a running sum. */
+function CartPanel({ cart, readOnly = false }) {
+  const { t, formatPrice } = useI18n();
+
+  if (cart.lines.length === 0) {
+    return (
+      <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/60 px-4 py-5 text-center">
+        <p className="text-sm text-slate-600">{t("cart.empty")}</p>
+        <p className="mt-1 text-xs text-slate-500">{t("cart.emptyHint")}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="mb-2 flex items-center justify-between">
+        <h3 className="text-xs font-medium uppercase tracking-wide text-slate-500">
+          {t("cart.title")}
+        </h3>
+        {!readOnly && (
+          <button
+            type="button"
+            onClick={cart.clear}
+            className="text-xs font-medium text-slate-500 underline hover:text-slate-800"
+          >
+            {t("cart.clear")}
+          </button>
+        )}
+      </div>
+
+      <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
+        {cart.lines.map((l) => (
+          <li key={l.materialId} className="flex flex-wrap items-center gap-3 px-3 py-2.5">
+            <span className="min-w-0 flex-1 text-sm text-slate-900">{l.title}</span>
+            {readOnly ? (
+              <span className="text-xs text-slate-500">× {l.quantity}</span>
+            ) : (
+              <QuantityStepper
+                quantity={l.quantity}
+                onChange={(q) => cart.setQuantity(l.materialId, q)}
+              />
+            )}
+            <span className="w-20 text-right text-sm tabular-nums text-slate-800">
+              {formatPrice(l.unitPrice * l.quantity)}
+            </span>
+          </li>
+        ))}
+      </ul>
+
+      <div className="mt-2 flex items-center justify-between px-3">
+        <span className="text-sm font-medium text-slate-700">{t("common.total")}</span>
+        <span className="text-base font-semibold tabular-nums text-slate-900">
+          {formatPrice(cart.total)}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function SummaryRow({ label, value }) {
   return (
     <div className="flex justify-between gap-4">
-      <dt className={strong ? "font-medium text-slate-700" : "text-slate-500"}>{label}</dt>
-      <dd
-        className={[
-          "max-w-[60%] text-right",
-          strong ? "font-semibold text-slate-900" : "font-medium text-slate-900",
-        ].join(" ")}
-      >
-        {value}
-      </dd>
+      <dt className="text-slate-500">{label}</dt>
+      <dd className="max-w-[60%] text-right font-medium text-slate-900">{value}</dd>
     </div>
   );
 }
 
-function StepOverview({ facultyName, yearName, material, total, email, phone, onPhone }) {
-  const { t, formatPrice } = useI18n();
+function StepOverview({ facultyName, yearName, cart, email, phone, onPhone }) {
+  const { t } = useI18n();
   return (
     <div>
       <h2 className="mb-1 text-lg font-semibold text-slate-900">{t("form.overview.title")}</h2>
       <p className="mb-6 text-sm text-slate-500">{t("form.overview.subtitle")}</p>
 
-      <dl className="space-y-3 text-sm">
+      <dl className="mb-6 space-y-3 text-sm">
         <SummaryRow label={t("orders.details.faculty")} value={facultyName ?? t("common.dash")} />
         <SummaryRow label={t("orders.details.year")} value={yearName ?? t("common.dash")} />
-        <SummaryRow
-          label={t("orders.details.literature")}
-          value={material?.name ?? t("common.dash")}
-        />
         <SummaryRow label={t("orders.details.email")} value={email} />
-        <div className="border-t border-slate-100 pt-3">
-          <SummaryRow
-            label={t("common.total")}
-            value={material ? formatPrice(total) : t("common.dash")}
-            strong
-          />
-        </div>
       </dl>
+
+      <CartPanel cart={cart} />
 
       <div className="mt-6 border-t border-slate-100 pt-5">
         <label htmlFor="phone" className="mb-1.5 block text-xs font-medium text-slate-500">
@@ -620,34 +682,31 @@ function StepOverview({ facultyName, yearName, material, total, email, phone, on
 function StepConfirm({
   facultyName,
   yearName,
-  material,
-  total,
+  cart,
   email,
   phone,
   onSubmit,
   submitting,
   error,
 }) {
-  const { t, formatPrice } = useI18n();
+  const { t } = useI18n();
   return (
     <div>
       <h2 className="mb-1 text-lg font-semibold text-slate-900">{t("form.confirm.title")}</h2>
       <p className="mb-6 text-sm text-slate-500">{t("form.confirm.subtitle")}</p>
 
-      <dl className="mb-6 space-y-2 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm">
+      <dl className="mb-4 space-y-2 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm">
         <SummaryRow label={t("orders.details.faculty")} value={facultyName ?? t("common.dash")} />
         <SummaryRow label={t("orders.details.year")} value={yearName ?? t("common.dash")} />
-        <SummaryRow
-          label={t("orders.details.literature")}
-          value={material?.name ?? t("common.dash")}
-        />
         <SummaryRow label={t("orders.details.email")} value={email} />
         {phone ? <SummaryRow label={t("orders.details.phone")} value={phone} /> : null}
-        <SummaryRow label={t("common.total")} value={formatPrice(total)} strong />
       </dl>
 
+      {/* Read-only here: the confirm step should show exactly what is about to be sent. */}
+      <CartPanel cart={cart} readOnly />
+
       {error && (
-        <p className="mb-4 text-sm text-red-600" role="alert">
+        <p className="mt-4 text-sm text-red-600" role="alert">
           {error}
         </p>
       )}
@@ -655,8 +714,8 @@ function StepConfirm({
       <button
         type="button"
         onClick={onSubmit}
-        disabled={submitting}
-        className="w-full rounded-xl bg-slate-900 py-3 text-sm font-medium text-white transition-colors hover:bg-slate-800 disabled:opacity-60"
+        disabled={submitting || cart.count === 0}
+        className="mt-6 w-full rounded-xl bg-slate-900 py-3 text-sm font-medium text-white transition-colors hover:bg-slate-800 disabled:opacity-60"
       >
         {submitting ? t("form.confirm.submitting") : t("form.confirm.submit")}
       </button>

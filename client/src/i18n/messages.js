@@ -85,6 +85,25 @@ export const messages = {
     "status.preuzeto": "Preuzeto",
     "status.otkazano": "Otkazano",
 
+    "cart.title": "Korpa",
+    "cart.empty": "Korpa je prazna.",
+    "cart.emptyHint": "Dodajte materijale iz liste.",
+    "cart.add": "Dodaj u korpu",
+    "cart.added": "U korpi",
+    "cart.remove": "Ukloni",
+    "cart.clear": "Isprazni korpu",
+    "cart.quantity": "Količina",
+    "cart.increase": "Povećaj količinu",
+    "cart.decrease": "Smanji količinu",
+    "cart.items": "Poručeni materijali",
+    "cart.itemCount": "{count} u korpi",
+    "cart.scopeNote":
+      "Korpa se odnosi na izabrani fakultet i godinu. Promjena izbora prazni korpu.",
+    "cart.totalChanged":
+      "Cijena je izmijenjena u međuvremenu. Provjerite ukupan iznos i potvrdite ponovo.",
+    "cart.unavailable":
+      "Neki materijali više nisu dostupni za izabrani fakultet i godinu. Uklonjeni su iz korpe.",
+
     "materialType.knjiga": "Knjiga",
     "materialType.skripta": "Skripta",
     "materialType.ostali_materijal": "Ostali materijal",
@@ -321,6 +340,25 @@ export const messages = {
     "status.spremno": "Ready for pickup",
     "status.preuzeto": "Picked up",
     "status.otkazano": "Cancelled",
+
+    "cart.title": "Cart",
+    "cart.empty": "Your cart is empty.",
+    "cart.emptyHint": "Add materials from the list.",
+    "cart.add": "Add to cart",
+    "cart.added": "In cart",
+    "cart.remove": "Remove",
+    "cart.clear": "Empty cart",
+    "cart.quantity": "Quantity",
+    "cart.increase": "Increase quantity",
+    "cart.decrease": "Decrease quantity",
+    "cart.items": "Ordered materials",
+    "cart.itemCount": "{count} in cart",
+    "cart.scopeNote":
+      "The cart applies to the selected faculty and year. Changing either empties it.",
+    "cart.totalChanged":
+      "The price changed in the meantime. Check the total and confirm again.",
+    "cart.unavailable":
+      "Some materials are no longer available for the selected faculty and year and were removed from your cart.",
 
     "materialType.knjiga": "Book",
     "materialType.skripta": "Course notes",

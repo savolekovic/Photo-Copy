@@ -43,6 +43,7 @@ const dict = {
     "label.order": "Narudžbina",
     "label.notProvided": "Nije unesen",
     "label.deadline": "Rok za preuzimanje",
+    "label.items": "Poručeni materijali",
 
     "magicLink.subject": "Link za prijavu — Fotokopirnica",
     "magicLink.badge": "Prijava",
@@ -127,6 +128,7 @@ const dict = {
     "label.order": "Order",
     "label.notProvided": "Not provided",
     "label.deadline": "Pickup deadline",
+    "label.items": "Ordered materials",
 
     "magicLink.subject": "Your login link — Photocopy",
     "magicLink.badge": "Sign in",

@@ -30,9 +30,15 @@ export default function OrderRow({ order, onView, onStatusChange, busyId }) {
       </td>
 
       <td className="min-w-0 px-3 py-3 align-middle text-sm text-slate-900">
-        <span className="line-clamp-2" title={order.literature?.name}>
-          {order.literature?.name ?? t("common.dash")}
+        <span className="line-clamp-2" title={(order.items ?? []).map((i) => i.title).join(", ")}>
+          {order.items?.[0]?.title ?? t("common.dash")}
         </span>
+        {/* A cart can hold many lines; the rest are listed in the detail modal. */}
+        {order.items?.length > 1 && (
+          <span className="mt-0.5 block text-xs text-slate-500">
+            +{order.items.length - 1}
+          </span>
+        )}
       </td>
 
       <td className="px-3 py-3 align-middle text-sm">

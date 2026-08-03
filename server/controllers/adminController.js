@@ -106,12 +106,24 @@ export async function getCatalogue(_req, res, next) {
 
 /* ---------------------------------------------------------------- faculties ---- */
 
-export const facultyValidators = [
-  body("name").isString().trim().isLength({ min: 1, max: 200 }),
+const facultyFields = [
   body("short_name").optional({ values: "falsy" }).isString().trim().isLength({ max: 40 }),
   body("sort_order").optional().isInt().toInt(),
   body("is_active").optional().isBoolean().toBoolean(),
 ];
+
+/** POST: the name is what identifies a faculty, so it is required. */
+export const facultyCreateValidators = [
+  body("name").isString().trim().isLength({ min: 1, max: 200 }),
+  ...facultyFields,
+];
+
+/** PATCH: partial, so every field is optional. */
+export const facultyUpdateValidators = [
+  body("name").optional().isString().trim().isLength({ min: 1, max: 200 }),
+  ...facultyFields,
+];
+
 
 export async function createFaculty(req, res, next) {
   if (fail(req, res)) return;
@@ -179,11 +191,20 @@ export async function deleteFaculty(req, res, next) {
 
 /* --------------------------------------------------------------- programmes ---- */
 
-export const programmeValidators = [
+const programmeFields = [
   body("faculty_id").optional().isInt({ min: 1 }).toInt(),
-  body("name").isString().trim().isLength({ min: 1, max: 200 }),
   body("sort_order").optional().isInt().toInt(),
   body("is_active").optional().isBoolean().toBoolean(),
+];
+
+export const programmeCreateValidators = [
+  body("name").isString().trim().isLength({ min: 1, max: 200 }),
+  ...programmeFields,
+];
+
+export const programmeUpdateValidators = [
+  body("name").optional().isString().trim().isLength({ min: 1, max: 200 }),
+  ...programmeFields,
 ];
 
 export async function createProgramme(req, res, next) {
@@ -259,13 +280,15 @@ export async function deleteProgramme(req, res, next) {
 
 /* -------------------------------------------------------------- study years ---- */
 
-export const yearValidators = [
+export const yearUpdateValidators = [
   body("code").optional().isString().trim().isLength({ min: 1, max: 40 }),
   body("label_sr").optional().isString().trim().isLength({ min: 1, max: 100 }),
   body("label_en").optional().isString().trim().isLength({ min: 1, max: 100 }),
   body("sort_order").optional().isInt().toInt(),
   body("is_active").optional().isBoolean().toBoolean(),
 ];
+
+export const yearCreateValidators = yearUpdateValidators;
 
 export async function createYear(req, res, next) {
   if (fail(req, res)) return;
@@ -349,12 +372,21 @@ export async function deleteYear(req, res, next) {
 
 /* ----------------------------------------------------------------- subjects ---- */
 
-export const subjectValidators = [
+const subjectFields = [
   body("programme_id").optional().isInt({ min: 1 }).toInt(),
   body("study_year_id").optional().isInt({ min: 1 }).toInt(),
-  body("name").isString().trim().isLength({ min: 1, max: 200 }),
   body("sort_order").optional().isInt().toInt(),
   body("is_active").optional().isBoolean().toBoolean(),
+];
+
+export const subjectCreateValidators = [
+  body("name").isString().trim().isLength({ min: 1, max: 200 }),
+  ...subjectFields,
+];
+
+export const subjectUpdateValidators = [
+  body("name").optional().isString().trim().isLength({ min: 1, max: 200 }),
+  ...subjectFields,
 ];
 
 export async function createSubject(req, res, next) {
@@ -439,13 +471,23 @@ export async function deleteSubject(req, res, next) {
 
 /* ---------------------------------------------------------------- materials ---- */
 
-export const materialValidators = [
-  body("title").isString().trim().isLength({ min: 1, max: 500 }),
+const materialFields = [
   body("author").optional({ values: "falsy" }).isString().trim().isLength({ max: 300 }),
   body("material_type").optional().isIn(MATERIAL_TYPES),
   body("price").optional().isFloat({ min: 0 }).toFloat(),
   body("notes").optional({ values: "falsy" }).isString().trim().isLength({ max: 2000 }),
   body("is_active").optional().isBoolean().toBoolean(),
+];
+
+export const materialCreateValidators = [
+  body("title").isString().trim().isLength({ min: 1, max: 500 }),
+  ...materialFields,
+];
+
+/** PATCH: partial. Editing only the price is the commonest operation of all. */
+export const materialUpdateValidators = [
+  body("title").optional().isString().trim().isLength({ min: 1, max: 500 }),
+  ...materialFields,
 ];
 
 export async function createMaterial(req, res, next) {
@@ -504,7 +546,7 @@ export async function deleteMaterial(req, res, next) {
   if (fail(req, res)) return;
   try {
     const { rows: used } = await pool.query(
-      `SELECT COUNT(*)::int AS c FROM orders WHERE material_id = $1`,
+      `SELECT COUNT(*)::int AS c FROM order_items WHERE material_id = $1`,
       [req.params.id]
     );
     if ((used[0]?.c ?? 0) > 0) {

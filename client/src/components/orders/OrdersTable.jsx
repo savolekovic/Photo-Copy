@@ -80,7 +80,12 @@ function OrderCard({ order, onView, onStatusChange, busyId }) {
           </div>
         </div>
         <p className="mb-1 line-clamp-2 text-sm font-medium text-slate-900">
-          {order.literature?.name ?? t("common.dash")}
+          {order.items?.[0]?.title ?? t("common.dash")}
+          {order.items?.length > 1 && (
+            <span className="ml-1 text-xs font-normal text-slate-500">
+              +{order.items.length - 1}
+            </span>
+          )}
         </p>
         <p className="truncate text-xs text-slate-600">{order.email}</p>
         {order.student?.indexNumber && (

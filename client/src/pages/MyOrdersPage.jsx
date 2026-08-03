@@ -123,9 +123,22 @@ export default function MyOrdersPage() {
                     <StatusBadge status={order.status} />
                   </div>
 
-                  <p className="text-sm font-medium text-slate-900">
-                    {order.literature?.name ?? t("common.dash")}
-                  </p>
+                  {order.items?.length > 0 ? (
+                    <ul className="space-y-0.5">
+                      {order.items.map((it) => (
+                        <li key={it.id} className="text-sm font-medium text-slate-900">
+                          {it.title}
+                          {it.quantity > 1 && (
+                            <span className="ml-1 text-xs font-normal text-slate-500">
+                              × {it.quantity}
+                            </span>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-sm text-slate-500">{t("common.dash")}</p>
+                  )}
 
                   <dl className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-xs text-slate-500">
                     <div className="flex gap-1.5">

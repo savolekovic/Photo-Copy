@@ -63,11 +63,32 @@ function detailRow(label, value) {
   </tr>`;
 }
 
+/** Renders the ordered lines as a small table. Quantity is shown only when above one. */
+function itemsHtml(items, locale) {
+  if (!items || items.length === 0) return "";
+  const rows = items
+    .map((it) => {
+      const qty = it.quantity ?? 1;
+      const line = formatMoney(locale, (it.unitPrice ?? 0) * qty);
+      const name = qty > 1 ? `${it.title} × ${qty}` : it.title;
+      return `<tr>
+        <td style="padding:10px 0;border-bottom:1px solid #eef2f6;vertical-align:top;">
+          <span style="font-size:14px;line-height:1.45;color:#0f172a;">${escapeHtml(name)}</span>
+        </td>
+        <td align="right" style="padding:10px 0 10px 12px;border-bottom:1px solid #eef2f6;vertical-align:top;white-space:nowrap;">
+          <span style="font-size:14px;color:#0f172a;">${escapeHtml(line)}</span>
+        </td>
+      </tr>`;
+    })
+    .join("");
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:0 0 8px;">${rows}</table>`;
+}
+
 function orderSummaryHtml({
   when,
   faculty,
   year,
-  literatureName,
+  items,
   price,
   email,
   phone,
@@ -81,7 +102,6 @@ function orderSummaryHtml({
     detailRow(t(locale, "label.placed"), when) +
     detailRow(t(locale, "label.faculty"), facultyLabel(locale, faculty)) +
     detailRow(t(locale, "label.year"), yearLabel(locale, year)) +
-    detailRow(t(locale, "label.literature"), literatureName) +
     detailRow(t(locale, "label.email"), email) +
     detailRow(t(locale, "label.phone"), phoneDisplay);
 
@@ -89,6 +109,8 @@ function orderSummaryHtml({
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:0 0 8px;">
     ${rows}
   </table>
+  <p style="margin:14px 0 4px;font-size:13px;font-weight:600;color:#64748b;letter-spacing:0.02em;">${escapeHtml(t(locale, "label.items"))}</p>
+  ${itemsHtml(items, locale)}
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;">
     <tr>
       <td style="padding:18px 20px;">
@@ -291,12 +313,18 @@ export async function sendMagicLinkEmail({ to, url, locale }) {
 
 /* ----------------------------------------------------------------- orders ---- */
 
-function summaryTextLines(locale, { when, faculty, year, literatureName, price }) {
+function summaryTextLines(locale, { when, faculty, year, items, price }) {
+  const lines = (items ?? []).map((it) => {
+    const qty = it.quantity ?? 1;
+    const money = formatMoney(locale, (it.unitPrice ?? 0) * qty);
+    return `  - ${it.title}${qty > 1 ? ` x ${qty}` : ""}  ${money}`;
+  });
   return [
     `${t(locale, "label.placed")}: ${when}`,
     `${t(locale, "label.faculty")}: ${facultyLabel(locale, faculty)}`,
     `${t(locale, "label.year")}: ${yearLabel(locale, year)}`,
-    `${t(locale, "label.literature")}: ${literatureName}`,
+    `${t(locale, "label.items")}:`,
+    ...lines,
     `${t(locale, "label.total")}: ${formatMoney(locale, price)}`,
   ];
 }
@@ -311,7 +339,7 @@ export async function sendOrderConfirmationEmails({
   createdAt,
   faculty,
   year,
-  literatureName,
+  items,
   price,
   email,
   phone,
@@ -319,7 +347,7 @@ export async function sendOrderConfirmationEmails({
 }) {
   const studentLocale = resolveLocale(locale);
   const when = formatWhen(createdAt, studentLocale);
-  const summary = { when, faculty, year, literatureName, price, email, phone };
+  const summary = { when, faculty, year, items, price, email, phone };
 
   const studentHtml = buildEmailDocument({
     preheader: t(studentLocale, "confirm.subject", { id: orderId }),
@@ -386,7 +414,7 @@ export async function sendOrderReadyEmail({
   createdAt,
   faculty,
   year,
-  literatureName,
+  items,
   price,
   email,
   phone,
@@ -406,7 +434,7 @@ export async function sendOrderReadyEmail({
       when,
       faculty,
       year,
-      literatureName,
+      items,
       price,
       email,
       phone,
@@ -422,7 +450,7 @@ export async function sendOrderReadyEmail({
       t(loc, "ready.intro"),
       ...(deadlineLine ? ["", deadlineLine] : []),
       "",
-      ...summaryTextLines(loc, { when, faculty, year, literatureName, price }),
+      ...summaryTextLines(loc, { when, faculty, year, items, price }),
     ].join("\n"),
     html: buildEmailDocument({
       preheader: t(loc, "ready.subject", { id: orderId }),
@@ -440,7 +468,7 @@ export async function sendOrderReadyEmail({
 /** Recurring nudge while an order sits in `spremno`. */
 export async function sendPickupReminderEmail({
   orderId,
-  literatureName,
+  items,
   email,
   pickupDeadline,
   locale,
@@ -455,8 +483,8 @@ export async function sendPickupReminderEmail({
     (deadlineLine ? noticeHtml(deadlineLine) : "") +
     `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
        ${detailRow(t(loc, "label.order"), `#${orderId}`)}
-       ${detailRow(t(loc, "label.literature"), literatureName)}
-     </table>`;
+     </table>
+     ${itemsHtml(items, loc)}`;
 
   return deliver({
     to: email,
@@ -467,7 +495,7 @@ export async function sendPickupReminderEmail({
       t(loc, "reminder.intro"),
       ...(deadlineLine ? ["", deadlineLine] : []),
       "",
-      `${t(loc, "label.literature")}: ${literatureName}`,
+      ...(items ?? []).map((it) => `  - ${it.title}`),
     ].join("\n"),
     html: buildEmailDocument({
       preheader: t(loc, "reminder.subject", { id: orderId }),
@@ -485,15 +513,15 @@ export async function sendPickupReminderEmail({
 /** Final message when the pickup deadline lapses without collection. */
 export async function sendPickupExpiredEmail({
   orderId,
-  literatureName,
+  items,
   email,
   locale,
 }) {
   const loc = resolveLocale(locale);
   const inner = `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
        ${detailRow(t(loc, "label.order"), `#${orderId}`)}
-       ${detailRow(t(loc, "label.literature"), literatureName)}
-     </table>`;
+     </table>
+     ${itemsHtml(items, loc)}`;
 
   return deliver({
     to: email,

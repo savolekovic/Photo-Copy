@@ -108,23 +108,44 @@ export default function OrderDetailsModal({
                 />
                 <DetailRow label={t("orders.details.faculty")} value={orderFacultyLabel(data)} />
                 <DetailRow label={t("orders.details.year")} value={orderYearLabel(data, locale)} />
-                <DetailRow
-                  label={t("orders.details.literature")}
-                  value={data.literature?.name ?? t("common.dash")}
-                />
-                {data.literature?.materialType && (
-                  <DetailRow
-                    label={t("admin.type")}
-                    value={t(`materialType.${data.literature.materialType}`)}
-                  />
-                )}
                 {data.programme && (
                   <DetailRow label={t("admin.programme")} value={data.programme.name} />
                 )}
-                <DetailRow
-                  label={t("orders.details.price")}
-                  value={formatPrice(data.price)}
-                />
+                <div>
+                  <dt className="mb-1 text-xs font-medium text-slate-500">
+                    {t("cart.items")}
+                  </dt>
+                  <dd>
+                    <ul className="divide-y divide-slate-100 rounded-lg border border-slate-200">
+                      {(data.items ?? []).map((it) => (
+                        <li key={it.id} className="flex items-center gap-2 px-2.5 py-2 text-sm">
+                          <span className="min-w-0 flex-1 text-slate-900">
+                            {it.title}
+                            {it.materialType && (
+                              <span className="ml-1.5 rounded bg-slate-100 px-1 py-0.5 text-[11px] text-slate-600">
+                                {t(`materialType.${it.materialType}`)}
+                              </span>
+                            )}
+                          </span>
+                          {it.quantity > 1 && (
+                            <span className="text-xs text-slate-500">× {it.quantity}</span>
+                          )}
+                          <span className="w-20 text-right tabular-nums text-slate-800">
+                            {formatPrice(it.lineTotal)}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="mt-1.5 flex items-center justify-between px-2.5">
+                      <span className="text-xs font-medium text-slate-600">
+                        {t("common.total")}
+                      </span>
+                      <span className="text-sm font-semibold tabular-nums text-slate-900">
+                        {formatPrice(data.price)}
+                      </span>
+                    </div>
+                  </dd>
+                </div>
                 <DetailRow
                   label={t("orders.details.phone")}
                   value={data.phone || t("common.notProvided")}

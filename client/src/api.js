@@ -7,11 +7,15 @@ const base = import.meta.env.VITE_API_URL || "";
 
 /** Carries the server's machine-readable `code` so the UI can translate the message. */
 export class ApiError extends Error {
-  constructor(message, { status, code } = {}) {
+  constructor(message, { status, code, data } = {}) {
     super(message);
     this.name = "ApiError";
     this.status = status;
     this.code = code;
+    // Some errors carry actionable detail — material_unavailable lists the offending
+    // materialIds so the cart can drop exactly those lines.
+    this.data = data;
+    if (data && Array.isArray(data.materialIds)) this.materialIds = data.materialIds;
   }
 }
 
@@ -32,7 +36,7 @@ async function request(path, { method = "GET", body, signal } = {}) {
   if (!res.ok) {
     throw new ApiError(
       data.errors?.[0]?.msg || data.error || `Request failed (${res.status})`,
-      { status: res.status, code: data.code }
+      { status: res.status, code: data.code, data }
     );
   }
   return data;

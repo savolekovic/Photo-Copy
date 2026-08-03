@@ -13,7 +13,11 @@ import {
   sendOrderReadyEmail,
 } from "../services/emailService.js";
 
-/** Columns every order response is built from. */
+/**
+ * Columns every order response is built from. The lines are aggregated in a subquery so an
+ * order stays a single row — joining order_items directly would multiply the order across
+ * its items and break both COUNT(*) and LIMIT.
+ */
 const ORDER_SELECT = `
   o.id,
   o.faculty,
@@ -31,18 +35,28 @@ const ORDER_SELECT = `
   o.last_reminder_at,
   o.user_id,
   u.index_number AS student_index_number,
-  m.id AS lit_id,
-  m.title AS lit_name,
-  m.price::float8 AS lit_price,
-  m.material_type,
   o.programme_id,
   prog.name AS programme_name,
   sy.label_sr AS year_label_sr,
-  sy.label_en AS year_label_en`;
+  sy.label_en AS year_label_en,
+  (SELECT COALESCE(
+            json_agg(
+              json_build_object(
+                'id', oi.id,
+                'materialId', oi.material_id,
+                'title', oi.title,
+                'quantity', oi.quantity,
+                'unitPrice', oi.unit_price::float8,
+                'lineTotal', (oi.unit_price * oi.quantity)::float8,
+                'materialType', m.material_type
+              ) ORDER BY oi.id
+            ), '[]'::json)
+     FROM order_items oi
+     LEFT JOIN materials m ON m.id = oi.material_id
+    WHERE oi.order_id = o.id) AS items`;
 
 const ORDER_FROM = `
   FROM orders o
-  INNER JOIN materials m ON m.id = o.material_id
   LEFT JOIN users u ON u.id = o.user_id
   LEFT JOIN study_programmes prog ON prog.id = o.programme_id
   LEFT JOIN study_years sy ON sy.id = o.study_year_id`;
@@ -68,12 +82,8 @@ function mapOrder(r) {
       email: r.email,
       indexNumber: r.student_index_number,
     },
-    literature: {
-      id: r.lit_id,
-      name: r.lit_name,
-      price: r.lit_price,
-      materialType: r.material_type,
-    },
+    items: r.items ?? [],
+    itemCount: (r.items ?? []).reduce((n, i) => n + i.quantity, 0),
     programme: r.programme_id ? { id: r.programme_id, name: r.programme_name } : null,
     // Both labels travel with the order so the client can render it in either language
     // without holding a study-years lookup. Falls back to the stored code for legacy rows.
@@ -88,8 +98,12 @@ function mapOrder(r) {
 export const orderValidators = [
   body("faculty_id").isInt({ min: 1 }).toInt(),
   body("year_id").isInt({ min: 1 }).toInt(),
-  body("material_id").isInt({ min: 1 }).toInt(),
-  body("price").isFloat({ min: 0 }).toFloat(),
+  body("items").isArray({ min: 1, max: 50 }).withMessage("Cart is empty"),
+  body("items.*.material_id").isInt({ min: 1 }).toInt(),
+  body("items.*.quantity").optional().isInt({ min: 1, max: 99 }).toInt(),
+  // What the student was shown. Optional, but when present it must agree with what the
+  // catalogue says now, so a price edited mid-session cannot silently change the charge.
+  body("expected_total").optional({ values: "falsy" }).isFloat({ min: 0 }).toFloat(),
   body("phone")
     .optional({ values: "falsy" })
     .trim()
@@ -98,15 +112,14 @@ export const orderValidators = [
 ];
 
 /**
- * POST /api/orders — student only.
+ * POST /api/orders — student only. Places a whole cart.
  *
- * The recipient address is taken from the authenticated account, never from the request
- * body: the spec ties an order to a verified university address, and accepting a
- * client-supplied address would let anyone direct confirmations elsewhere.
+ * Prices are never taken from the request: each line is priced from the catalogue and the
+ * total is summed server-side. Every material must genuinely be placed in the chosen
+ * faculty and year, so nothing off-offer can be ordered.
  *
- * The material must genuinely be placed in the chosen faculty and year. Checking that here
- * rather than trusting the client stops anyone ordering a material that is not on offer for
- * their selection.
+ * The recipient address comes from the authenticated account for the same reason — the
+ * spec ties an order to a verified university address.
  */
 export async function createOrder(req, res, next) {
   try {
@@ -115,10 +128,18 @@ export async function createOrder(req, res, next) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { faculty_id, year_id, material_id, price, phone } = req.body;
+    const { faculty_id, year_id, items, expected_total, phone } = req.body;
     const email = req.user.email;
 
-    const lookup = await pool.query(
+    // Collapse duplicate lines for the same material rather than rejecting them: the unique
+    // index allows only one row per material, and summing is what the student meant.
+    const wanted = new Map();
+    for (const it of items) {
+      wanted.set(it.material_id, (wanted.get(it.material_id) ?? 0) + (it.quantity ?? 1));
+    }
+    const ids = [...wanted.keys()];
+
+    const { rows: available } = await pool.query(
       `SELECT
          m.id,
          m.title,
@@ -131,52 +152,68 @@ export async function createOrder(req, res, next) {
        JOIN study_programmes p ON p.id = pl.programme_id AND p.is_active
        JOIN faculties f ON f.id = p.faculty_id AND f.is_active
        JOIN study_years y ON y.id = pl.study_year_id AND y.is_active
-      WHERE m.id = $1 AND f.id = $2 AND pl.study_year_id = $3 AND m.is_active
+      WHERE m.id = ANY($1) AND f.id = $2 AND pl.study_year_id = $3 AND m.is_active
       GROUP BY m.id, m.title, m.price, f.name, y.code`,
-      [material_id, faculty_id, year_id]
+      [ids, faculty_id, year_id]
     );
 
-    if (lookup.rows.length === 0) {
+    // Anything the student asked for that is not on offer here.
+    const found = new Set(available.map((r) => r.id));
+    const missing = ids.filter((id) => !found.has(id));
+    if (missing.length > 0) {
       return res.status(400).json({
-        error: "That material is not available for the selected faculty and year",
+        error: "Some materials are not available for the selected faculty and year",
         code: "material_unavailable",
+        materialIds: missing,
       });
     }
 
-    const row = lookup.rows[0];
-    const expected = Number(row.price);
-    const submitted = Number(price);
-    if (Math.abs(expected - submitted) > 0.009) {
-      return res
-        .status(400)
-        .json({ error: "Price does not match the material", code: "price_mismatch" });
+    const lines = available.map((r) => ({
+      materialId: r.id,
+      title: r.title,
+      unitPrice: Number(r.price),
+      quantity: wanted.get(r.id),
+    }));
+    const total =
+      Math.round(lines.reduce((sum, l) => sum + l.unitPrice * l.quantity, 0) * 100) / 100;
+
+    if (expected_total !== undefined && Math.abs(total - Number(expected_total)) > 0.009) {
+      return res.status(400).json({
+        error: "The total has changed since you reviewed the order",
+        code: "price_mismatch",
+        total,
+      });
     }
 
-    // The spec has the student choose a faculty, not a programme, so a material shared by
-    // several programmes of that faculty is genuinely ambiguous. Record the programme only
-    // when there is exactly one, rather than guessing.
-    const programmeIds = row.programme_ids ?? [];
-    const programmeId = programmeIds.length === 1 ? programmeIds[0] : null;
+    // The spec has the student choose a faculty, not a programme, so a cart whose materials
+    // span several programmes of that faculty is genuinely ambiguous. Record a programme
+    // only when every line agrees on exactly one.
+    const programmeSets = available.map((r) => new Set(r.programme_ids ?? []));
+    const commonProgrammes = programmeSets.reduce(
+      (acc, set) => (acc === null ? set : new Set([...acc].filter((x) => set.has(x)))),
+      null
+    );
+    const programmeId =
+      commonProgrammes && commonProgrammes.size === 1 ? [...commonProgrammes][0] : null;
 
-    // Insert the order and its first history row together, so no order can exist
-    // without an origin entry in the audit trail.
+    const facultyName = available[0].faculty_name;
+    const yearCode = available[0].year_code;
+
+    // Order, its lines and its first history row all commit together, so no order can
+    // exist without items or without an origin entry in the audit trail.
     const client = await pool.connect();
     let created;
     try {
       await client.query("BEGIN");
       const insert = await client.query(
         `INSERT INTO orders
-           (faculty, year, material_id, price, email, phone, user_id, status,
-            programme_id, study_year_id)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+           (faculty, year, price, email, phone, user_id, status, programme_id, study_year_id)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
          RETURNING id, created_at`,
         [
-          // faculty name and year code are historical snapshots: renaming a faculty later
-          // must not rewrite what this student ordered.
-          row.faculty_name,
-          row.year_code,
-          material_id,
-          submitted,
+          facultyName,
+          yearCode,
+          total,
           email,
           phone || null,
           req.user.id,
@@ -186,6 +223,15 @@ export async function createOrder(req, res, next) {
         ]
       );
       created = insert.rows[0];
+
+      for (const l of lines) {
+        await client.query(
+          `INSERT INTO order_items (order_id, material_id, quantity, unit_price, title)
+           VALUES ($1, $2, $3, $4, $5)`,
+          [created.id, l.materialId, l.quantity, l.unitPrice, l.title]
+        );
+      }
+
       await client.query(
         `INSERT INTO order_status_history (order_id, from_status, to_status, changed_by, changed_by_role, note)
          VALUES ($1, NULL, $2, $3, $4, 'Order placed')`,
@@ -199,18 +245,17 @@ export async function createOrder(req, res, next) {
       client.release();
     }
 
-    // Mail is sent after the commit and never blocks the response contract: a delivery
-    // failure must not lose a persisted order.
+    // Mail is sent after the commit: a delivery failure must not lose a persisted order.
     let emailSent = false;
     let emailError = null;
     try {
       const result = await sendOrderConfirmationEmails({
         orderId: created.id,
         createdAt: created.created_at,
-        faculty: row.faculty_name,
-        year: row.year_code,
-        literatureName: row.title,
-        price: submitted,
+        faculty: facultyName,
+        year: yearCode,
+        items: lines,
+        price: total,
         email,
         phone: phone || "",
         locale: req.user.locale,
@@ -219,15 +264,15 @@ export async function createOrder(req, res, next) {
     } catch (mailErr) {
       console.error("[email]", mailErr);
       emailError =
-        mailErr.message ||
-        mailErr.response ||
-        "Email delivery failed (see server logs)";
+        mailErr.message || mailErr.response || "Email delivery failed (see server logs)";
     }
 
     return res.status(201).json({
       id: created.id,
       created_at: created.created_at,
       status: STATUS.NOVA,
+      total,
+      itemCount: lines.reduce((n, l) => n + l.quantity, 0),
       emailSent,
       ...(emailError ? { emailError } : {}),
     });
@@ -360,7 +405,12 @@ function buildListQuery(reqQuery, extraConditions = [], extraParams = []) {
       : "";
   if (safePattern) {
     conditions.push(
-      `(o.email ILIKE $${i} OR m.title ILIKE $${i} OR COALESCE(u.index_number, '') ILIKE $${i})`
+      `(o.email ILIKE $${i}
+         OR COALESCE(u.index_number, '') ILIKE $${i}
+         OR EXISTS (
+              SELECT 1 FROM order_items oi
+               WHERE oi.order_id = o.id AND oi.title ILIKE $${i}
+            ))`
     );
     params.push(safePattern);
     i++;
@@ -592,7 +642,7 @@ export async function updateOrderStatus(req, res, next) {
           createdAt: order.created_at,
           faculty: order.faculty,
           year: order.year,
-          literatureName: order.literature.name,
+          items: order.items,
           price: order.price,
           email: order.email,
           phone: order.phone || "",
