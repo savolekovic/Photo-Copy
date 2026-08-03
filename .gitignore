@@ -8,3 +8,6 @@ dist/
 .DS_Store
 client/dist/
 server/.env
+
+# Real faculty mapping for the catalogue importer (client data; keep the .example)
+faculty-map.json
