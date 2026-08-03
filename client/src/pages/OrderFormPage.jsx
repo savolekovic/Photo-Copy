@@ -1,17 +1,25 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { fetchLiterature, submitOrder } from "../api.js";
-import { FACULTIES, YEARS } from "../constants.js";
+import {
+  fetchCatalogueFaculties,
+  fetchCatalogueYears,
+  fetchLiterature,
+  submitOrder,
+} from "../api.js";
 import { useAuth } from "../auth/AuthContext.jsx";
 import { useI18n } from "../i18n/I18nProvider.jsx";
 import { apiErrorMessage } from "../lib/apiErrorMessage.js";
+import { yearLabel } from "../lib/orderLabels.js";
 
 /**
  * The student ordering flow. Five steps, mirroring the spec: fakultet → godina →
  * materijali → pregled → potvrda.
  *
- * There is no e-mail step any more: the address comes from the verified university
- * account, which is the whole point of the login requirement.
+ * Faculties, years and materials all come from the administrable catalogue, so nothing is
+ * hardcoded. Each step only offers options that actually have something behind them —
+ * a faculty with no material never appears, and neither does an empty year.
+ *
+ * There is no e-mail step: the address comes from the verified university account.
  */
 const STEP_KEYS = [
   "form.step.faculty",
@@ -24,89 +32,128 @@ const STEP_KEYS = [
 const LAST_STEP = STEP_KEYS.length - 1;
 
 export default function OrderFormPage() {
-  const { t } = useI18n();
+  const { t, locale, formatPrice } = useI18n();
   const { user } = useAuth();
 
   const [step, setStep] = useState(0);
-  const [faculty, setFaculty] = useState("");
-  const [year, setYear] = useState("");
-  const [literatureList, setLiteratureList] = useState([]);
-  const [literatureId, setLiteratureId] = useState(null);
+
+  const [faculties, setFaculties] = useState([]);
+  const [facultyId, setFacultyId] = useState(null);
+  const [years, setYears] = useState([]);
+  const [yearId, setYearId] = useState(null);
+  const [materials, setMaterials] = useState([]);
+  const [materialId, setMaterialId] = useState(null);
+
+  const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState("");
   const [litSearch, setLitSearch] = useState("");
-  const [litLoading, setLitLoading] = useState(false);
-  const [litError, setLitError] = useState("");
+
   const [phone, setPhone] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [orderDone, setOrderDone] = useState(false);
   const [completedOrder, setCompletedOrder] = useState(null);
 
-  const selectedLit = useMemo(
-    () => literatureList.find((l) => l.id === literatureId) || null,
-    [literatureList, literatureId]
+  const faculty = useMemo(
+    () => faculties.find((f) => f.id === facultyId) ?? null,
+    [faculties, facultyId]
+  );
+  const year = useMemo(() => years.find((y) => y.id === yearId) ?? null, [years, yearId]);
+  const material = useMemo(
+    () => materials.find((m) => m.id === materialId) ?? null,
+    [materials, materialId]
   );
 
-  const filteredLiterature = useMemo(() => {
+  const filteredMaterials = useMemo(() => {
     const q = litSearch.trim().toLowerCase();
-    if (!q) return literatureList;
-    return literatureList.filter((l) => l.name.toLowerCase().includes(q));
-  }, [literatureList, litSearch]);
+    if (!q) return materials;
+    return materials.filter(
+      (m) =>
+        m.name.toLowerCase().includes(q) ||
+        (m.author ?? "").toLowerCase().includes(q) ||
+        (m.programmes ?? []).some((p) => p.toLowerCase().includes(q))
+    );
+  }, [materials, litSearch]);
 
+  // Faculties, once.
   useEffect(() => {
-    if (step !== 2 || !faculty || !year) return;
-    let cancelled = false;
-    setLitLoading(true);
-    setLitError("");
-    fetchLiterature(faculty, year)
+    const ac = new AbortController();
+    setLoading(true);
+    setLoadError("");
+    fetchCatalogueFaculties({ signal: ac.signal })
+      .then(setFaculties)
+      .catch((e) => {
+        if (e.name !== "AbortError") setLoadError(apiErrorMessage(e, t));
+      })
+      .finally(() => setLoading(false));
+    return () => ac.abort();
+  }, [t]);
+
+  // Years for the chosen faculty. Selecting a different faculty invalidates the rest.
+  useEffect(() => {
+    if (!facultyId) return;
+    const ac = new AbortController();
+    setLoading(true);
+    setLoadError("");
+    fetchCatalogueYears(facultyId, { signal: ac.signal })
       .then((rows) => {
-        if (cancelled) return;
-        setLiteratureList(rows);
-        setLiteratureId((prev) => {
-          if (prev && rows.some((r) => r.id === prev)) return prev;
-          return rows[0]?.id ?? null;
-        });
+        setYears(rows);
+        setYearId((prev) => (rows.some((r) => r.id === prev) ? prev : null));
       })
       .catch((e) => {
-        if (!cancelled) setLitError(apiErrorMessage(e, t) || t("form.literature.loadFailed"));
+        if (e.name !== "AbortError") setLoadError(apiErrorMessage(e, t));
       })
-      .finally(() => {
-        if (!cancelled) setLitLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [step, faculty, year, t]);
+      .finally(() => setLoading(false));
+    return () => ac.abort();
+  }, [facultyId, t]);
 
-  const canNextFromStep = useCallback(
+  // Materials for faculty + year.
+  useEffect(() => {
+    if (!facultyId || !yearId) return;
+    const ac = new AbortController();
+    setLoading(true);
+    setLoadError("");
+    fetchLiterature(facultyId, yearId, { signal: ac.signal })
+      .then((rows) => {
+        setMaterials(rows);
+        setMaterialId((prev) => (rows.some((r) => r.id === prev) ? prev : rows[0]?.id ?? null));
+      })
+      .catch((e) => {
+        if (e.name !== "AbortError") setLoadError(apiErrorMessage(e, t));
+      })
+      .finally(() => setLoading(false));
+    return () => ac.abort();
+  }, [facultyId, yearId, t]);
+
+  const canNext = useCallback(
     (s) => {
-      if (s === 0) return Boolean(faculty);
-      if (s === 1) return Boolean(year);
-      if (s === 2) return Boolean(selectedLit);
+      if (s === 0) return Boolean(facultyId);
+      if (s === 1) return Boolean(yearId);
+      if (s === 2) return Boolean(material);
       return true;
     },
-    [faculty, year, selectedLit]
+    [facultyId, yearId, material]
   );
 
   const goNext = () => {
-    if (!canNextFromStep(step)) return;
+    if (!canNext(step)) return;
     setStep((x) => Math.min(x + 1, LAST_STEP));
   };
-
   const goBack = () => {
     setSubmitError("");
     setStep((x) => Math.max(x - 1, 0));
   };
 
   const handleSubmit = async () => {
-    if (!selectedLit) return;
+    if (!material || !facultyId || !yearId) return;
     setSubmitting(true);
     setSubmitError("");
     try {
       const result = await submitOrder({
-        faculty,
-        year,
-        literature_id: selectedLit.id,
-        price: selectedLit.price,
+        faculty_id: facultyId,
+        year_id: yearId,
+        material_id: material.id,
+        price: material.price,
         phone: phone.trim() || undefined,
       });
       setCompletedOrder(result);
@@ -120,10 +167,11 @@ export default function OrderFormPage() {
 
   const resetForm = () => {
     setStep(0);
-    setFaculty("");
-    setYear("");
-    setLiteratureList([]);
-    setLiteratureId(null);
+    setFacultyId(null);
+    setYears([]);
+    setYearId(null);
+    setMaterials([]);
+    setMaterialId(null);
     setLitSearch("");
     setPhone("");
     setOrderDone(false);
@@ -131,7 +179,7 @@ export default function OrderFormPage() {
     setSubmitError("");
   };
 
-  const totalPrice = selectedLit ? Number(selectedLit.price) : 0;
+  const total = material ? Number(material.price) : 0;
 
   return (
     <div className="flex min-h-screen flex-col items-center px-4 py-10 sm:py-14">
@@ -180,36 +228,70 @@ export default function OrderFormPage() {
           style={{ minHeight: "320px" }}
         >
           <div key={step} className="animate-fade-in">
-            {step === 0 && <StepFaculty faculty={faculty} onSelect={setFaculty} />}
-            {step === 1 && <StepYear year={year} onSelect={setYear} />}
-            {step === 2 && (
-              <StepLiterature
-                loading={litLoading}
-                error={litError}
-                search={litSearch}
-                onSearchChange={setLitSearch}
-                items={filteredLiterature}
-                selectedId={literatureId}
-                onSelect={setLiteratureId}
+            {loadError && (
+              <p className="mb-4 text-sm text-red-600" role="alert">
+                {loadError}
+              </p>
+            )}
+
+            {step === 0 && (
+              <ChoiceStep
+                titleKey="form.faculty.title"
+                subtitleKey="form.faculty.subtitle"
+                loading={loading && faculties.length === 0}
+                items={faculties}
+                selectedId={facultyId}
+                onSelect={setFacultyId}
+                labelOf={(f) => f.name}
+                subLabelOf={(f) => f.short_name}
+                emptyKey="form.literature.empty"
+                layout="grid"
               />
             )}
+
+            {step === 1 && (
+              <ChoiceStep
+                titleKey="form.year.title"
+                subtitleKey="form.year.subtitle"
+                loading={loading && years.length === 0}
+                items={years}
+                selectedId={yearId}
+                onSelect={setYearId}
+                labelOf={(y) => yearLabel(y, locale)}
+                emptyKey="form.literature.empty"
+                layout="pills"
+              />
+            )}
+
+            {step === 2 && (
+              <StepMaterials
+                loading={loading && materials.length === 0}
+                search={litSearch}
+                onSearchChange={setLitSearch}
+                items={filteredMaterials}
+                selectedId={materialId}
+                onSelect={setMaterialId}
+              />
+            )}
+
             {step === 3 && (
               <StepOverview
-                faculty={faculty}
-                year={year}
-                literature={selectedLit}
-                total={totalPrice}
+                facultyName={faculty?.name}
+                yearName={year ? yearLabel(year, locale) : null}
+                material={material}
+                total={total}
                 email={user?.email}
                 phone={phone}
                 onPhone={setPhone}
               />
             )}
+
             {step === 4 && !orderDone && (
               <StepConfirm
-                faculty={faculty}
-                year={year}
-                literature={selectedLit}
-                total={totalPrice}
+                facultyName={faculty?.name}
+                yearName={year ? yearLabel(year, locale) : null}
+                material={material}
+                total={total}
                 email={user?.email}
                 phone={phone}
                 onSubmit={handleSubmit}
@@ -217,6 +299,7 @@ export default function OrderFormPage() {
                 error={submitError}
               />
             )}
+
             {step === 4 && orderDone && (
               <div className="py-6 text-center">
                 <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 text-2xl text-emerald-700">
@@ -255,7 +338,7 @@ export default function OrderFormPage() {
               <button
                 type="button"
                 onClick={goNext}
-                disabled={!canNextFromStep(step)}
+                disabled={!canNext(step)}
                 className="ml-auto rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-medium text-white shadow-soft transition-colors hover:bg-slate-800 disabled:opacity-40"
               >
                 {t("common.continue")}
@@ -286,71 +369,83 @@ export default function OrderFormPage() {
   );
 }
 
-function StepFaculty({ faculty, onSelect }) {
-  const { t } = useI18n();
-  return (
-    <div>
-      <h2 className="mb-1 text-lg font-semibold text-slate-900">
-        {t("form.faculty.title")}
-      </h2>
-      <p className="mb-6 text-sm text-slate-500">{t("form.faculty.subtitle")}</p>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        {FACULTIES.map((f) => (
-          <button
-            key={f}
-            type="button"
-            onClick={() => onSelect(f)}
-            className={[
-              "rounded-xl border px-4 py-3 text-left text-sm font-medium transition-all duration-200",
-              faculty === f
-                ? "border-slate-900 bg-slate-900 text-white shadow-soft"
-                : "border-slate-200 bg-white text-slate-800 hover:border-slate-300",
-            ].join(" ")}
-          >
-            {t(`faculty.${f}`)}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function StepYear({ year, onSelect }) {
-  const { t } = useI18n();
-  return (
-    <div>
-      <h2 className="mb-1 text-lg font-semibold text-slate-900">{t("form.year.title")}</h2>
-      <p className="mb-6 text-sm text-slate-500">{t("form.year.subtitle")}</p>
-      <div className="flex flex-wrap gap-2">
-        {YEARS.map((y) => (
-          <button
-            key={y}
-            type="button"
-            onClick={() => onSelect(y)}
-            className={[
-              "rounded-full px-4 py-2 text-sm font-medium transition-all duration-200",
-              year === y
-                ? "bg-slate-900 text-white"
-                : "bg-slate-100 text-slate-700 hover:bg-slate-200",
-            ].join(" ")}
-          >
-            {t(`year.${y}`)}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function StepLiterature({
+/** Faculty and year steps differ only in layout and labelling, so they share one component. */
+function ChoiceStep({
+  titleKey,
+  subtitleKey,
   loading,
-  error,
-  search,
-  onSearchChange,
   items,
   selectedId,
   onSelect,
+  labelOf,
+  subLabelOf,
+  emptyKey,
+  layout,
 }) {
+  const { t } = useI18n();
+  return (
+    <div>
+      <h2 className="mb-1 text-lg font-semibold text-slate-900">{t(titleKey)}</h2>
+      <p className="mb-6 text-sm text-slate-500">{t(subtitleKey)}</p>
+
+      {loading && <p className="text-sm text-slate-500">{t("common.loading")}</p>}
+      {!loading && items.length === 0 && (
+        <p className="text-sm text-slate-500">{t(emptyKey)}</p>
+      )}
+
+      {layout === "grid" ? (
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {items.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => onSelect(item.id)}
+              className={[
+                "rounded-xl border px-4 py-3 text-left text-sm font-medium transition-all duration-200",
+                selectedId === item.id
+                  ? "border-slate-900 bg-slate-900 text-white shadow-soft"
+                  : "border-slate-200 bg-white text-slate-800 hover:border-slate-300",
+              ].join(" ")}
+            >
+              {labelOf(item)}
+              {subLabelOf?.(item) ? (
+                <span
+                  className={
+                    selectedId === item.id
+                      ? "ml-2 text-xs text-slate-300"
+                      : "ml-2 text-xs text-slate-500"
+                  }
+                >
+                  {subLabelOf(item)}
+                </span>
+              ) : null}
+            </button>
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-wrap gap-2">
+          {items.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => onSelect(item.id)}
+              className={[
+                "rounded-full px-4 py-2 text-sm font-medium transition-all duration-200",
+                selectedId === item.id
+                  ? "bg-slate-900 text-white"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200",
+              ].join(" ")}
+            >
+              {labelOf(item)}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function StepMaterials({ loading, search, onSearchChange, items, selectedId, onSelect }) {
   const { t, formatPrice } = useI18n();
   return (
     <div>
@@ -358,10 +453,8 @@ function StepLiterature({
         {t("form.literature.title")}
       </h2>
       <p className="mb-4 text-sm text-slate-500">{t("form.literature.subtitle")}</p>
-      <label
-        htmlFor="lit-search"
-        className="mb-1.5 block text-xs font-medium text-slate-500"
-      >
+
+      <label htmlFor="lit-search" className="mb-1.5 block text-xs font-medium text-slate-500">
         {t("form.literature.searchLabel")}
       </label>
       <input
@@ -372,18 +465,15 @@ function StepLiterature({
         placeholder={t("form.literature.searchPlaceholder")}
         className="mb-4 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900/15"
       />
+
       {loading && <p className="text-sm text-slate-500">{t("common.loading")}</p>}
-      {error && (
-        <p className="text-sm text-red-600" role="alert">
-          {error}
-        </p>
-      )}
-      {!loading && !error && items.length === 0 && (
+      {!loading && items.length === 0 && (
         <p className="text-sm text-slate-500">{t("form.literature.empty")}</p>
       )}
-      {!loading && !error && items.length > 0 && (
+
+      {items.length > 0 && (
         <ul
-          className="max-h-56 space-y-2 overflow-y-auto pr-1"
+          className="max-h-72 space-y-2 overflow-y-auto pr-1"
           role="listbox"
           aria-label={t("form.literature.title")}
         >
@@ -399,7 +489,7 @@ function StepLiterature({
                   className={[
                     "flex w-full items-start justify-between gap-3 rounded-xl border px-3 py-3 text-left transition-all duration-200",
                     selected
-                      ? "border-slate-900 bg-slate-900 text-white shadow-soft ring-0"
+                      ? "border-slate-900 bg-slate-900 text-white shadow-soft"
                       : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50/80",
                   ].join(" ")}
                 >
@@ -412,10 +502,38 @@ function StepLiterature({
                     >
                       {item.name}
                     </span>
+                    {item.author && (
+                      <span
+                        className={[
+                          "block text-xs",
+                          selected ? "text-slate-300" : "text-slate-500",
+                        ].join(" ")}
+                      >
+                        {item.author}
+                      </span>
+                    )}
                     <span
                       className={[
-                        "text-sm tabular-nums",
-                        selected ? "text-slate-300" : "text-slate-600",
+                        "mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs",
+                        selected ? "text-slate-300" : "text-slate-500",
+                      ].join(" ")}
+                    >
+                      <span
+                        className={[
+                          "rounded px-1.5 py-0.5",
+                          selected ? "bg-white/15" : "bg-slate-100",
+                        ].join(" ")}
+                      >
+                        {t(`materialType.${item.material_type}`)}
+                      </span>
+                      {/* Programme is shown rather than being its own step, per the spec's
+                          faculty → year → materials flow. */}
+                      {(item.programmes ?? []).join(" · ")}
+                    </span>
+                    <span
+                      className={[
+                        "mt-1 block text-sm tabular-nums",
+                        selected ? "text-slate-200" : "text-slate-700",
                       ].join(" ")}
                     >
                       {formatPrice(item.price)}
@@ -424,9 +542,7 @@ function StepLiterature({
                   <span
                     className={[
                       "flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold",
-                      selected
-                        ? "bg-white/20 text-white"
-                        : "border-2 border-slate-200 bg-white",
+                      selected ? "bg-white/20 text-white" : "border-2 border-slate-200 bg-white",
                     ].join(" ")}
                     aria-hidden
                   >
@@ -458,37 +574,32 @@ function SummaryRow({ label, value, strong }) {
   );
 }
 
-function StepOverview({ faculty, year, literature, total, email, phone, onPhone }) {
+function StepOverview({ facultyName, yearName, material, total, email, phone, onPhone }) {
   const { t, formatPrice } = useI18n();
   return (
     <div>
-      <h2 className="mb-1 text-lg font-semibold text-slate-900">
-        {t("form.overview.title")}
-      </h2>
+      <h2 className="mb-1 text-lg font-semibold text-slate-900">{t("form.overview.title")}</h2>
       <p className="mb-6 text-sm text-slate-500">{t("form.overview.subtitle")}</p>
 
       <dl className="space-y-3 text-sm">
-        <SummaryRow label={t("orders.details.faculty")} value={faculty ? t(`faculty.${faculty}`) : t("common.dash")} />
-        <SummaryRow label={t("orders.details.year")} value={year ? t(`year.${year}`) : t("common.dash")} />
+        <SummaryRow label={t("orders.details.faculty")} value={facultyName ?? t("common.dash")} />
+        <SummaryRow label={t("orders.details.year")} value={yearName ?? t("common.dash")} />
         <SummaryRow
           label={t("orders.details.literature")}
-          value={literature?.name ?? t("common.dash")}
+          value={material?.name ?? t("common.dash")}
         />
         <SummaryRow label={t("orders.details.email")} value={email} />
         <div className="border-t border-slate-100 pt-3">
           <SummaryRow
             label={t("common.total")}
-            value={literature ? formatPrice(total) : t("common.dash")}
+            value={material ? formatPrice(total) : t("common.dash")}
             strong
           />
         </div>
       </dl>
 
       <div className="mt-6 border-t border-slate-100 pt-5">
-        <label
-          htmlFor="phone"
-          className="mb-1.5 block text-xs font-medium text-slate-500"
-        >
+        <label htmlFor="phone" className="mb-1.5 block text-xs font-medium text-slate-500">
           {t("form.contact.phoneLabel")}{" "}
           <span className="text-slate-400">({t("common.optional")})</span>
         </label>
@@ -507,9 +618,9 @@ function StepOverview({ faculty, year, literature, total, email, phone, onPhone 
 }
 
 function StepConfirm({
-  faculty,
-  year,
-  literature,
+  facultyName,
+  yearName,
+  material,
   total,
   email,
   phone,
@@ -520,22 +631,18 @@ function StepConfirm({
   const { t, formatPrice } = useI18n();
   return (
     <div>
-      <h2 className="mb-1 text-lg font-semibold text-slate-900">
-        {t("form.confirm.title")}
-      </h2>
+      <h2 className="mb-1 text-lg font-semibold text-slate-900">{t("form.confirm.title")}</h2>
       <p className="mb-6 text-sm text-slate-500">{t("form.confirm.subtitle")}</p>
 
       <dl className="mb-6 space-y-2 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm">
-        <SummaryRow label={t("orders.details.faculty")} value={faculty ? t(`faculty.${faculty}`) : t("common.dash")} />
-        <SummaryRow label={t("orders.details.year")} value={year ? t(`year.${year}`) : t("common.dash")} />
+        <SummaryRow label={t("orders.details.faculty")} value={facultyName ?? t("common.dash")} />
+        <SummaryRow label={t("orders.details.year")} value={yearName ?? t("common.dash")} />
         <SummaryRow
           label={t("orders.details.literature")}
-          value={literature?.name ?? t("common.dash")}
+          value={material?.name ?? t("common.dash")}
         />
         <SummaryRow label={t("orders.details.email")} value={email} />
-        {phone ? (
-          <SummaryRow label={t("orders.details.phone")} value={phone} />
-        ) : null}
+        {phone ? <SummaryRow label={t("orders.details.phone")} value={phone} /> : null}
         <SummaryRow label={t("common.total")} value={formatPrice(total)} strong />
       </dl>
 

@@ -16,14 +16,22 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const { locale } = useI18n();
   const syncedLocaleRef = useRef(null);
+  // Set once a login link has been redeemed. The initial /me may still be in flight at
+  // that point, and if it was issued under a previous session it would otherwise resolve
+  // afterwards and overwrite the freshly signed-in account.
+  const verifiedRef = useRef(false);
 
-  const refresh = useCallback(async (signal) => {
+  const refresh = useCallback(async (signal, { initial = false } = {}) => {
     try {
       const data = await api.fetchMe({ signal });
+      // A verify() that landed while this was in flight is the newer truth.
+      if (initial && verifiedRef.current) return data.user ?? null;
       setUser(data.user ?? null);
       return data.user ?? null;
     } catch (err) {
-      if (err.name === "AbortError") return null;
+      // Rethrow aborts so the caller can tell "cancelled" from "not signed in" — they
+      // must be treated differently, see below.
+      if (err.name === "AbortError") throw err;
       // A failed /me means "not signed in" as far as the UI is concerned.
       setUser(null);
       return null;
@@ -33,8 +41,15 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     const ac = new AbortController();
     (async () => {
-      await refresh(ac.signal);
-      setLoading(false);
+      try {
+        await refresh(ac.signal, { initial: true });
+        setLoading(false);
+      } catch {
+        // Aborted, so the session is still unknown and `loading` must stay true.
+        // StrictMode double-invokes this effect and the cleanup cancels the first call;
+        // clearing `loading` here would briefly report "not signed in" and bounce the
+        // user off any guarded route they loaded directly.
+      }
     })();
     return () => ac.abort();
   }, [refresh]);
@@ -64,7 +79,9 @@ export function AuthProvider({ children }) {
 
   const verify = useCallback(async (token) => {
     const data = await api.verifyLoginToken(token);
+    verifiedRef.current = true;
     setUser(data.user);
+    setLoading(false);
     return data.user;
   }, []);
 
@@ -76,6 +93,7 @@ export function AuthProvider({ children }) {
       // in against a session the server has already dropped.
       setUser(null);
       syncedLocaleRef.current = null;
+      verifiedRef.current = false;
     }
   }, []);
 

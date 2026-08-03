@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { fetchOrderSummary, fetchOrders, patchOrderStatus } from "../api.js";
+import {
+  fetchAdminCatalogue,
+  fetchOrderSummary,
+  fetchOrders,
+  patchOrderStatus,
+} from "../api.js";
 import OrderDetailsModal from "../components/orders/OrderDetailsModal.jsx";
 import OrdersFilterBar from "../components/orders/OrdersFilterBar.jsx";
 import OrdersTable from "../components/orders/OrdersTable.jsx";
@@ -26,6 +31,9 @@ export default function OrdersPage() {
   const [viewOrderId, setViewOrderId] = useState(null);
   const [notice, setNotice] = useState(null);
   const [summary, setSummary] = useState(null);
+  // Filter options come from the administrable catalogue rather than a fixed list.
+  const [facultyOptions, setFacultyOptions] = useState([]);
+  const [yearOptions, setYearOptions] = useState([]);
   // Bumped after every mutation so both the list and the open modal re-fetch.
   const [version, setVersion] = useState(0);
 
@@ -87,6 +95,20 @@ export default function OrdersPage() {
       .catch(() => setSummary(null));
     return () => ac.abort();
   }, [version]);
+
+  // Faculty and year filter options. Fetched once; the catalogue changes rarely.
+  useEffect(() => {
+    const ac = new AbortController();
+    fetchAdminCatalogue({ signal: ac.signal })
+      .then((c) => {
+        setFacultyOptions(c.faculties ?? []);
+        setYearOptions(c.years ?? []);
+      })
+      .catch(() => {
+        // Filters simply offer nothing if this fails; the list itself still works.
+      });
+    return () => ac.abort();
+  }, []);
 
   const handleStatusChange = useCallback(
     async (id, status) => {
@@ -232,6 +254,8 @@ export default function OrdersPage() {
           setSort(v);
           setPage(1);
         }}
+        facultyOptions={facultyOptions}
+        yearOptions={yearOptions}
       />
 
       {loading && (

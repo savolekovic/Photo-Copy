@@ -1,13 +1,7 @@
-export const FACULTIES = [
-  "Law",
-  "Economics",
-  "Engineering",
-  "Medicine",
-  "Arts",
-  "Sciences",
-];
-
-export const YEARS = ["1st", "2nd", "3rd", "4th", "Master"];
+/**
+ * Faculties and study years are no longer listed here: they are administrable data served
+ * by the API. Anything that needs them fetches them.
+ */
 
 /** Mirrors server/lib/statuses.js — keep the two in step. */
 export const ORDER_STATUSES = [
@@ -17,6 +11,9 @@ export const ORDER_STATUSES = [
   "preuzeto",
   "otkazano",
 ];
+
+/** Mirrors the materials_type_check constraint in migrations/004. */
+export const MATERIAL_TYPES = ["knjiga", "skripta", "ostali_materijal"];
 
 /**
  * Shown in the sign-in hint only. The server holds the authoritative list

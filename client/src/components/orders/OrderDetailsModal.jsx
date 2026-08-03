@@ -5,6 +5,7 @@ import OrderStatusTimeline from "./OrderStatusTimeline.jsx";
 import StatusActionButton from "./StatusActionButton.jsx";
 import { useI18n } from "../../i18n/I18nProvider.jsx";
 import { apiErrorMessage } from "../../lib/apiErrorMessage.js";
+import { orderFacultyLabel, orderYearLabel } from "../../lib/orderLabels.js";
 
 /**
  * Operator detail view. Unlike the table row, this exposes *every* legal transition —
@@ -20,7 +21,7 @@ export default function OrderDetailsModal({
   busy,
   refreshKey,
 }) {
-  const { t, formatDateTime, formatPrice } = useI18n();
+  const { t, locale, formatDateTime, formatPrice } = useI18n();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -105,12 +106,21 @@ export default function OrderDetailsModal({
                   value={data.student?.indexNumber || t("common.dash")}
                   mono={Boolean(data.student?.indexNumber)}
                 />
-                <DetailRow label={t("orders.details.faculty")} value={t(`faculty.${data.faculty}`)} />
-                <DetailRow label={t("orders.details.year")} value={t(`year.${data.year}`)} />
+                <DetailRow label={t("orders.details.faculty")} value={orderFacultyLabel(data)} />
+                <DetailRow label={t("orders.details.year")} value={orderYearLabel(data, locale)} />
                 <DetailRow
                   label={t("orders.details.literature")}
                   value={data.literature?.name ?? t("common.dash")}
                 />
+                {data.literature?.materialType && (
+                  <DetailRow
+                    label={t("admin.type")}
+                    value={t(`materialType.${data.literature.materialType}`)}
+                  />
+                )}
+                {data.programme && (
+                  <DetailRow label={t("admin.programme")} value={data.programme.name} />
+                )}
                 <DetailRow
                   label={t("orders.details.price")}
                   value={formatPrice(data.price)}

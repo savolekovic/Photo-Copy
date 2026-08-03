@@ -65,9 +65,56 @@ export function updateLocale(locale) {
 
 /* -------------------------------------------------------------- literature ---- */
 
-export function fetchLiterature(faculty, year) {
-  const q = new URLSearchParams({ faculty, year });
-  return request(`/api/literature?${q}`);
+/** Faculties that currently have orderable material. */
+export function fetchCatalogueFaculties(options = {}) {
+  return request("/api/literature/faculties", { signal: options.signal });
+}
+
+/** Study years that have material for that faculty, so no empty year is offered. */
+export function fetchCatalogueYears(facultyId, options = {}) {
+  return request(`/api/literature/years?faculty_id=${facultyId}`, { signal: options.signal });
+}
+
+export function fetchLiterature(facultyId, yearId, options = {}) {
+  const q = new URLSearchParams({ faculty_id: facultyId, year_id: yearId });
+  return request(`/api/literature?${q}`, { signal: options.signal });
+}
+
+/* ------------------------------------------------------------------- admin ---- */
+
+/** The whole catalogue tree in one request, for the Administracija screens. */
+export function fetchAdminCatalogue(options = {}) {
+  return request("/api/admin/catalogue", { signal: options.signal });
+}
+
+/**
+ * CRUD helpers per entity kind. `kind` is the URL segment: faculties, programmes,
+ * years, subjects or materials.
+ */
+export function createEntity(kind, body) {
+  return request(`/api/admin/${kind}`, { method: "POST", body });
+}
+
+export function updateEntity(kind, id, body) {
+  return request(`/api/admin/${kind}/${id}`, { method: "PATCH", body });
+}
+
+/**
+ * Returns the updated row when the server deactivated it instead of deleting (because
+ * something still references it), or null on a hard delete.
+ */
+export function deleteEntity(kind, id) {
+  return request(`/api/admin/${kind}/${id}`, { method: "DELETE" });
+}
+
+export function addPlacement(materialId, body) {
+  return request(`/api/admin/materials/${materialId}/placements`, { method: "POST", body });
+}
+
+export function removePlacement(materialId, placementId) {
+  return request(`/api/admin/materials/${materialId}/placements/${placementId}`, {
+    method: "DELETE",
+  });
 }
 
 /* ------------------------------------------------------------------ orders ---- */

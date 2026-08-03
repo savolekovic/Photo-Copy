@@ -36,13 +36,16 @@ const ORDER_SELECT = `
   m.price::float8 AS lit_price,
   m.material_type,
   o.programme_id,
-  prog.name AS programme_name`;
+  prog.name AS programme_name,
+  sy.label_sr AS year_label_sr,
+  sy.label_en AS year_label_en`;
 
 const ORDER_FROM = `
   FROM orders o
   INNER JOIN materials m ON m.id = o.material_id
   LEFT JOIN users u ON u.id = o.user_id
-  LEFT JOIN study_programmes prog ON prog.id = o.programme_id`;
+  LEFT JOIN study_programmes prog ON prog.id = o.programme_id
+  LEFT JOIN study_years sy ON sy.id = o.study_year_id`;
 
 function mapOrder(r) {
   return {
@@ -72,6 +75,9 @@ function mapOrder(r) {
       materialType: r.material_type,
     },
     programme: r.programme_id ? { id: r.programme_id, name: r.programme_name } : null,
+    // Both labels travel with the order so the client can render it in either language
+    // without holding a study-years lookup. Falls back to the stored code for legacy rows.
+    yearLabel: { sr: r.year_label_sr, en: r.year_label_en },
     // Lets the client render only the buttons that will actually succeed.
     allowedTransitions: allowedTransitionsFrom(r.status),
   };

@@ -1,0 +1,165 @@
+- generic [ref=f5e3]:
+  - banner [ref=f5e4]:
+    - generic [ref=f5e5]:
+      - link "Fotokopirnica" [ref=f5e6] [cursor=pointer]:
+        - /url: /
+      - generic [ref=f5e7]:
+        - navigation "Main" [ref=f5e8]:
+          - link "Narudžbine" [ref=f5e9] [cursor=pointer]:
+            - /url: /narudzbine
+          - link "Administracija" [ref=f5e10] [cursor=pointer]:
+            - /url: /administracija
+        - group "Jezik" [ref=f5e11]:
+          - button "CG" [pressed] [ref=f5e12] [cursor=pointer]
+          - button "EN" [ref=f5e13] [cursor=pointer]
+        - generic [ref=f5e14]:
+          - generic "savolekovic15+operater@gmail.com" [ref=f5e15]
+          - button "Odjava" [ref=f5e16] [cursor=pointer]
+  - main [ref=f5e17]:
+    - generic [ref=f5e18]:
+      - generic [ref=f5e19]:
+        - paragraph [ref=f5e20]: Operater
+        - heading "Administracija" [level=1] [ref=f5e21]
+        - paragraph [ref=f5e22]: Upravljanje fakultetima, programima, godinama, predmetima i materijalima.
+      - navigation "Administracija" [ref=f5e23]:
+        - button "Fakulteti" [ref=f5e24] [cursor=pointer]
+        - button "Studijski programi" [active] [ref=f5e25] [cursor=pointer]
+        - button "Godine studija" [ref=f5e26] [cursor=pointer]
+        - button "Predmeti" [ref=f5e27] [cursor=pointer]
+        - button "Materijali" [ref=f5e28] [cursor=pointer]
+      - paragraph [ref=f5e93]: Program možete premjestiti na drugi fakultet izmjenom polja Fakultet.
+      - generic [ref=f5e94]:
+        - generic [ref=f5e95]:
+          - generic [ref=f5e96]:
+            - generic [ref=f5e97]: Naziv
+            - textbox "Naziv" [ref=f5e98]
+          - generic [ref=f5e99]:
+            - generic [ref=f5e100]: Fakultet
+            - combobox "Fakultet" [ref=f5e101]:
+              - option "—" [selected]
+              - option "Centar za strane jezike"
+              - option "Fakultet pravnih nauka"
+              - option "Fakultet umjetnosti"
+              - option "Fakultet za kulturu i turizam"
+              - option "Fakultet za prehrambenu tehnologiju"
+              - option "Filološki fakultet"
+              - option "FMEFB"
+              - option "Humanističke studije"
+              - option "Politehnika"
+          - button "Dodaj" [disabled] [ref=f5e102]
+        - list [ref=f5e103]:
+          - listitem [ref=f5e104]:
+            - generic [ref=f5e105]: Ekonomija FMEFBFMEFB
+            - generic [ref=f5e106]:
+              - button "Izmijeni" [ref=f5e107] [cursor=pointer]
+              - button "Ukloni" [ref=f5e108] [cursor=pointer]
+          - listitem [ref=f5e109]:
+            - generic [ref=f5e110]: EngleskiCentar za strane jezike
+            - generic [ref=f5e111]:
+              - button "Izmijeni" [ref=f5e112] [cursor=pointer]
+              - button "Ukloni" [ref=f5e113] [cursor=pointer]
+          - listitem [ref=f5e114]:
+            - generic [ref=f5e115]: FiloloskiFilološki fakultet
+            - generic [ref=f5e116]:
+              - button "Izmijeni" [ref=f5e117] [cursor=pointer]
+              - button "Ukloni" [ref=f5e118] [cursor=pointer]
+          - listitem [ref=f5e119]:
+            - generic [ref=f5e120]: FKTFakultet za kulturu i turizam
+            - generic [ref=f5e121]:
+              - button "Izmijeni" [ref=f5e122] [cursor=pointer]
+              - button "Ukloni" [ref=f5e123] [cursor=pointer]
+          - listitem [ref=f5e124]:
+            - generic [ref=f5e125]: FUFakultet umjetnosti
+            - generic [ref=f5e126]:
+              - button "Izmijeni" [ref=f5e127] [cursor=pointer]
+              - button "Ukloni" [ref=f5e128] [cursor=pointer]
+          - listitem [ref=f5e129]:
+            - generic [ref=f5e130]: GeodezijaPolitehnika
+            - generic [ref=f5e131]:
+              - button "Izmijeni" [ref=f5e132] [cursor=pointer]
+              - button "Ukloni" [ref=f5e133] [cursor=pointer]
+          - listitem [ref=f5e134]:
+            - generic [ref=f5e135]: HSHumanističke studije
+            - generic [ref=f5e136]:
+              - button "Izmijeni" [ref=f5e137] [cursor=pointer]
+              - button "Ukloni" [ref=f5e138] [cursor=pointer]
+          - listitem [ref=f5e139]:
+            - generic [ref=f5e140]: ItalijanskiCentar za strane jezike
+            - generic [ref=f5e141]:
+              - button "Izmijeni" [ref=f5e142] [cursor=pointer]
+              - button "Ukloni" [ref=f5e143] [cursor=pointer]
+          - listitem [ref=f5e144]:
+            - generic [ref=f5e145]: JapanskiCentar za strane jezike
+            - generic [ref=f5e146]:
+              - button "Izmijeni" [ref=f5e147] [cursor=pointer]
+              - button "Ukloni" [ref=f5e148] [cursor=pointer]
+          - listitem [ref=f5e149]:
+            - generic [ref=f5e150]: KineskiCentar za strane jezike
+            - generic [ref=f5e151]:
+              - button "Izmijeni" [ref=f5e152] [cursor=pointer]
+              - button "Ukloni" [ref=f5e153] [cursor=pointer]
+          - listitem [ref=f5e154]:
+            - generic [ref=f5e155]: MatematikaPolitehnika
+            - generic [ref=f5e156]:
+              - button "Izmijeni" [ref=f5e157] [cursor=pointer]
+              - button "Ukloni" [ref=f5e158] [cursor=pointer]
+          - listitem [ref=f5e159]:
+            - generic [ref=f5e160]: NjemackiCentar za strane jezike
+            - generic [ref=f5e161]:
+              - button "Izmijeni" [ref=f5e162] [cursor=pointer]
+              - button "Ukloni" [ref=f5e163] [cursor=pointer]
+          - listitem [ref=f5e164]:
+            - generic [ref=f5e165]: Ostali jeziciCentar za strane jezike
+            - generic [ref=f5e166]:
+              - button "Izmijeni" [ref=f5e167] [cursor=pointer]
+              - button "Ukloni" [ref=f5e168] [cursor=pointer]
+          - listitem [ref=f5e169]:
+            - generic [ref=f5e170]: PMBFMEFB
+            - generic [ref=f5e171]:
+              - button "Izmijeni" [ref=f5e172] [cursor=pointer]
+              - button "Ukloni" [ref=f5e173] [cursor=pointer]
+          - listitem [ref=f5e174]:
+            - generic [ref=f5e175]: PolitehnikaPolitehnika
+            - generic [ref=f5e176]:
+              - button "Izmijeni" [ref=f5e177] [cursor=pointer]
+              - button "Ukloni" [ref=f5e178] [cursor=pointer]
+          - listitem [ref=f5e179]:
+            - generic [ref=f5e180]: PravoFakultet pravnih nauka
+            - generic [ref=f5e181]:
+              - button "Izmijeni" [ref=f5e182] [cursor=pointer]
+              - button "Ukloni" [ref=f5e183] [cursor=pointer]
+          - listitem [ref=f5e184]:
+            - generic [ref=f5e185]: Prehrambena tehnologijaFakultet za prehrambenu tehnologiju
+            - generic [ref=f5e186]:
+              - button "Izmijeni" [ref=f5e187] [cursor=pointer]
+              - button "Ukloni" [ref=f5e188] [cursor=pointer]
+          - listitem [ref=f5e189]:
+            - generic [ref=f5e190]: Primijenjena matematikaPolitehnika
+            - generic [ref=f5e191]:
+              - button "Izmijeni" [ref=f5e192] [cursor=pointer]
+              - button "Ukloni" [ref=f5e193] [cursor=pointer]
+          - listitem [ref=f5e194]:
+            - generic [ref=f5e195]: PsihologijaHumanističke studije
+            - generic [ref=f5e196]:
+              - button "Izmijeni" [ref=f5e197] [cursor=pointer]
+              - button "Ukloni" [ref=f5e198] [cursor=pointer]
+          - listitem [ref=f5e199]:
+            - generic [ref=f5e200]: Ruski A11Centar za strane jezike
+            - generic [ref=f5e201]:
+              - button "Izmijeni" [ref=f5e202] [cursor=pointer]
+              - button "Ukloni" [ref=f5e203] [cursor=pointer]
+          - listitem [ref=f5e204]:
+            - generic [ref=f5e205]: Ruski A2.1Centar za strane jezike
+            - generic [ref=f5e206]:
+              - button "Izmijeni" [ref=f5e207] [cursor=pointer]
+              - button "Ukloni" [ref=f5e208] [cursor=pointer]
+          - listitem [ref=f5e209]:
+            - generic [ref=f5e210]: SpanskiCentar za strane jezike
+            - generic [ref=f5e211]:
+              - button "Izmijeni" [ref=f5e212] [cursor=pointer]
+              - button "Ukloni" [ref=f5e213] [cursor=pointer]
+          - listitem [ref=f5e214]:
+            - generic [ref=f5e215]: Sportski menadzmentHumanističke studije
+            - generic [ref=f5e216]:
+              - button "Izmijeni" [ref=f5e217] [cursor=pointer]
+              - button "Ukloni" [ref=f5e218] [cursor=pointer]

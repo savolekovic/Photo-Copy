@@ -5,6 +5,7 @@ import StatusBadge from "../components/StatusBadge.jsx";
 import OrderStatusTimeline from "../components/orders/OrderStatusTimeline.jsx";
 import { useI18n } from "../i18n/I18nProvider.jsx";
 import { apiErrorMessage } from "../lib/apiErrorMessage.js";
+import { orderFacultyLabel, orderYearLabel } from "../lib/orderLabels.js";
 
 const PAGE_SIZE = 10;
 
@@ -13,7 +14,7 @@ const PAGE_SIZE = 10;
  * status." Scoped server-side to the signed-in account.
  */
 export default function MyOrdersPage() {
-  const { t, formatDate, formatDateTime, formatPrice } = useI18n();
+  const { t, locale, formatDate, formatDateTime, formatPrice } = useI18n();
 
   const [orders, setOrders] = useState([]);
   const [total, setTotal] = useState(0);
@@ -129,11 +130,11 @@ export default function MyOrdersPage() {
                   <dl className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-xs text-slate-500">
                     <div className="flex gap-1.5">
                       <dt>{t("orders.details.faculty")}:</dt>
-                      <dd className="text-slate-700">{t(`faculty.${order.faculty}`)}</dd>
+                      <dd className="text-slate-700">{orderFacultyLabel(order)}</dd>
                     </div>
                     <div className="flex gap-1.5">
                       <dt>{t("orders.details.year")}:</dt>
-                      <dd className="text-slate-700">{t(`year.${order.year}`)}</dd>
+                      <dd className="text-slate-700">{orderYearLabel(order, locale)}</dd>
                     </div>
                     <div className="flex gap-1.5">
                       <dt>{t("common.total")}:</dt>

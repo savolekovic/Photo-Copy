@@ -46,9 +46,14 @@ export default function Layout() {
                 </>
               )}
               {isOperator && (
-                <NavLink to="/narudzbine" className={linkClass}>
-                  {t("nav.orders")}
-                </NavLink>
+                <>
+                  <NavLink to="/narudzbine" className={linkClass}>
+                    {t("nav.orders")}
+                  </NavLink>
+                  <NavLink to="/administracija" className={linkClass}>
+                    {t("nav.admin")}
+                  </NavLink>
+                </>
               )}
               {!user && (
                 <NavLink to="/prijava" className={linkClass}>

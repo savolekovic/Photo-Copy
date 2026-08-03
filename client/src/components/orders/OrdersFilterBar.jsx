@@ -1,4 +1,4 @@
-import { FACULTIES, ORDER_STATUSES, YEARS } from "../../constants.js";
+import { ORDER_STATUSES } from "../../constants.js";
 import { useI18n } from "../../i18n/I18nProvider.jsx";
 
 const SORTS = [
@@ -62,6 +62,13 @@ function IconSelect({ icon: Icon, value, onChange, options, ariaLabel, title, ac
   );
 }
 
+/**
+ * @param {Array<{name: string}>} facultyOptions
+ * @param {Array<{code: string, label_sr: string, label_en: string}>} yearOptions
+ *
+ * Orders store the faculty NAME and the year CODE as historical snapshots, so those are
+ * what the filters match on — not ids, which would miss orders placed before a rename.
+ */
 export default function OrdersFilterBar({
   search,
   onSearchChange,
@@ -73,8 +80,10 @@ export default function OrdersFilterBar({
   onYearChange,
   sort,
   onSortChange,
+  facultyOptions = [],
+  yearOptions = [],
 }) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
 
   // "active" and "all" are pseudo-statuses the API understands alongside real ones.
   const statusOptions = [
@@ -128,13 +137,13 @@ export default function OrdersFilterBar({
             onChange={onFacultyChange}
             options={[
               { value: "", label: t("orders.filter.facultyAll") },
-              ...FACULTIES.map((f) => ({ value: f, label: t(`faculty.${f}`) })),
+              ...facultyOptions.map((f) => ({ value: f.name, label: f.name })),
             ]}
             ariaLabel={t("orders.filter.faculty")}
             active={Boolean(facultyFilter)}
             title={
               facultyFilter
-                ? `${t("orders.filter.faculty")}: ${t(`faculty.${facultyFilter}`)}`
+                ? `${t("orders.filter.faculty")}: ${facultyFilter}`
                 : t("orders.filter.facultyAll")
             }
           />
@@ -144,12 +153,19 @@ export default function OrdersFilterBar({
             onChange={onYearChange}
             options={[
               { value: "", label: t("orders.filter.yearAll") },
-              ...YEARS.map((y) => ({ value: y, label: t(`year.${y}`) })),
+              ...yearOptions.map((y) => ({
+                value: y.code,
+                label: (locale === "en" ? y.label_en : y.label_sr) || y.code,
+              })),
             ]}
             ariaLabel={t("orders.filter.year")}
             active={Boolean(yearFilter)}
             title={
-              yearFilter ? `${t("orders.filter.year")}: ${t(`year.${yearFilter}`)}` : t("orders.filter.yearAll")
+              yearFilter
+                ? `${t("orders.filter.year")}: ${
+                    yearOptions.find((y) => y.code === yearFilter)?.label_sr ?? yearFilter
+                  }`
+                : t("orders.filter.yearAll")
             }
           />
           <IconSelect

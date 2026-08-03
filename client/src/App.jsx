@@ -3,6 +3,7 @@ import Layout from "./components/Layout.jsx";
 import RequireRole from "./auth/RequireRole.jsx";
 import { useAuth } from "./auth/AuthContext.jsx";
 import { useI18n } from "./i18n/I18nProvider.jsx";
+import AdminPage from "./pages/AdminPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import LoginVerifyPage from "./pages/LoginVerifyPage.jsx";
 import MyOrdersPage from "./pages/MyOrdersPage.jsx";
@@ -51,6 +52,15 @@ export default function App() {
             element={
               <RequireRole role="operator">
                 <OrdersPage />
+              </RequireRole>
+            }
+          />
+
+          <Route
+            path="/administracija"
+            element={
+              <RequireRole role="operator">
+                <AdminPage />
               </RequireRole>
             }
           />
