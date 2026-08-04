@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   addPlacement,
@@ -596,28 +596,28 @@ function SubjectsTab({ catalogue, run }) {
 /**
  * Materials.
  *
- * An operator thinks in terms of "what does a Pravo first-year see?" — the same way their
- * folders are organised. So programme + year is a SCOPE you work inside: it filters the
- * list, and anything added while it is set is assigned there immediately. That removes the
- * three things that made the old screen confusing — 198 ungrouped rows, no way to see where
- * a material belongs, and newly created materials silently invisible to students.
+ * An operator asks "what does a Pravo first-year see?" — the same way their folders are
+ * organised. Programme + year is therefore a filter that also prefills the create dialog,
+ * so a new material is placed the moment it exists.
+ *
+ * The whole toolbar is one row: search, a single Filteri popover holding every filter, and
+ * a button that opens the create dialog. Active filters appear as removable chips, because
+ * a collapsed popover would otherwise hide the fact that the list is filtered.
  */
 function MaterialsTab({ catalogue, run }) {
   const { t, locale, formatPrice } = useI18n();
 
-  // Scope is programme + year only. A subject filter was disabled for most
-  // combinations (only 8 of 23 programmes use subjects), so it was mostly noise.
-  // Assigning a material TO a subject still happens in the per-material picker.
-  const [scopeProgramme, setScopeProgramme] = useState("");
-  const [scopeYear, setScopeYear] = useState("");
+  const [fProgramme, setFProgramme] = useState("");
+  const [fYear, setFYear] = useState("");
+  const [fType, setFType] = useState("");
+  const [fInactive, setFInactive] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const filtersRef = useRef(null);
 
   const [search, setSearch] = useState("");
-  const [typeFilter, setTypeFilter] = useState("");
-  const [showInactive, setShowInactive] = useState(false);
-
+  const [creating, setCreating] = useState(false);
   const [editId, setEditId] = useState(null);
   const [edit, setEdit] = useState({});
-  const [draft, setDraft] = useState({ title: "", material_type: "knjiga", price: "" });
   const [addingTo, setAddingTo] = useState(null);
 
   const programmeById = useMemo(
@@ -641,207 +641,206 @@ function MaterialsTab({ catalogue, run }) {
     return [...byFaculty.values()].filter((g) => g.programmes.length > 0);
   }, [catalogue.faculties, catalogue.programmes]);
 
-
   const placementsOf = useCallback(
     (materialId) => catalogue.placements.filter((pl) => pl.material_id === materialId),
     [catalogue.placements]
   );
 
-  const scopeActive = Boolean(scopeProgramme && scopeYear);
-  const scopeLabel = scopeActive
-    ? [programmeById[scopeProgramme]?.name, yearLabel(yearById[scopeYear], locale)]
-        .filter(Boolean)
-        .join(" · ")
-    : "";
+  const scoped = Boolean(fProgramme && fYear);
 
   const inScope = useCallback(
     (materialId) =>
       // Matches whether the material sits directly under the year or inside one of its
       // subjects — both mean a student in that year sees it.
       placementsOf(materialId).some(
-        (pl) =>
-          pl.programme_id === Number(scopeProgramme) &&
-          pl.study_year_id === Number(scopeYear)
+        (pl) => pl.programme_id === Number(fProgramme) && pl.study_year_id === Number(fYear)
       ),
-    [placementsOf, scopeProgramme, scopeYear]
+    [placementsOf, fProgramme, fYear]
   );
 
   const shown = useMemo(() => {
     const q = search.trim().toLowerCase();
     return catalogue.materials.filter((m) => {
-      if (!showInactive && !m.is_active) return false;
-      if (typeFilter && m.material_type !== typeFilter) return false;
+      if (!fInactive && !m.is_active) return false;
+      if (fType && m.material_type !== fType) return false;
       if (q && !m.title.toLowerCase().includes(q) && !(m.author ?? "").toLowerCase().includes(q))
         return false;
-      if (scopeProgramme && !scopeYear) {
-        return placementsOf(m.id).some((pl) => pl.programme_id === Number(scopeProgramme));
+      if (fProgramme && !fYear) {
+        return placementsOf(m.id).some((pl) => pl.programme_id === Number(fProgramme));
       }
-      if (scopeActive) return inScope(m.id);
+      if (scoped) return inScope(m.id);
       return true;
     });
-  }, [
-    catalogue.materials, search, typeFilter, showInactive,
-    scopeProgramme, scopeYear, scopeActive, inScope, placementsOf,
-  ]);
+  }, [catalogue.materials, search, fType, fInactive, fProgramme, fYear, scoped, inScope, placementsOf]);
 
-  const addMaterial = async () => {
-    if (!draft.title.trim()) return;
-    const created = await run(() =>
-      createEntity("materials", {
-        title: draft.title,
-        material_type: draft.material_type,
-        price: draft.price === "" ? 0 : Number(draft.price),
-      })
-    );
-    if (!created?.id) return;
-    // Assigned straight away when a scope is set, so a new material is never invisible to
-    // students by accident — which was the single most confusing thing about the old screen.
-    if (scopeActive) {
-      await run(() =>
-        addPlacement(created.id, {
-          programme_id: Number(scopeProgramme),
-          study_year_id: Number(scopeYear),
-        })
-      );
-    }
-    setDraft({ title: "", material_type: "knjiga", price: "" });
+  const activeChips = [
+    fProgramme && {
+      key: "p",
+      label: programmeById[fProgramme]?.name,
+      clear: () => setFProgramme(""),
+    },
+    fYear && { key: "y", label: yearLabel(yearById[fYear], locale), clear: () => setFYear("") },
+    fType && { key: "t", label: t(`materialType.${fType}`), clear: () => setFType("") },
+    fInactive && { key: "i", label: t("admin.includeInactive"), clear: () => setFInactive(false) },
+  ].filter(Boolean);
+
+  const clearAll = () => {
+    setFProgramme("");
+    setFYear("");
+    setFType("");
+    setFInactive(false);
   };
 
+  useEffect(() => {
+    if (!filtersOpen) return;
+    const onDown = (e) => {
+      if (!filtersRef.current?.contains(e.target)) setFiltersOpen(false);
+    };
+    const onKey = (e) => {
+      if (e.key === "Escape") setFiltersOpen(false);
+    };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [filtersOpen]);
+
   return (
-    <div className="flex flex-col gap-5">
-      {/* ---------- scope ---------- */}
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-soft">
-        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
-          {t("admin.scope.label")}
-        </p>
-        <div className="flex flex-wrap items-end gap-2">
-          <Labelled label={t("admin.programme")} className="min-w-[13rem] flex-1">
-            <Select
-              value={scopeProgramme}
-              onChange={(e) => setScopeProgramme(e.target.value)}
-            >
-              <option value="">{t("admin.scope.allPrograms")}</option>
-              {programmeGroups.map((g) => (
-                <optgroup key={g.faculty.id} label={g.faculty.name}>
-                  {g.programmes.map((p) => (
-                    <option key={p.id} value={p.id}>{p.name}</option>
-                  ))}
-                </optgroup>
-              ))}
-            </Select>
-          </Labelled>
-          <Labelled label={t("admin.year")} className="min-w-[10rem]">
-            <Select
-              value={scopeYear}
-              onChange={(e) => setScopeYear(e.target.value)}
-            >
-              <option value="">{t("admin.scope.allYears")}</option>
-              {catalogue.years.map((y) => (
-                <option key={y.id} value={y.id}>{yearLabel(y, locale)}</option>
-              ))}
-            </Select>
-          </Labelled>
-          {(scopeProgramme || scopeYear) && (
-            <button
-              type="button"
-              onClick={() => {
-                setScopeProgramme("");
-                setScopeYear("");
-              }}
-              className="h-9 rounded-lg border border-slate-200 px-3 text-sm font-medium text-slate-600 hover:bg-slate-50"
-            >
-              {t("admin.showAll")}
-            </button>
-          )}
-        </div>
-        <p className="mt-2 text-xs text-slate-500">
-          {scopeActive
-            ? t("admin.scope.count", { count: shown.length })
-            : t("admin.scope.hint")}
-        </p>
-      </div>
-
-      {/* ---------- add ---------- */}
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-soft">
-        <div className="flex flex-wrap items-end gap-2">
-          <Labelled label={t("admin.title_")} className="min-w-[16rem] flex-1">
-            <Input
-              value={draft.title}
-              onChange={(e) => setDraft({ ...draft, title: e.target.value })}
-            />
-          </Labelled>
-          <Labelled label={t("admin.type")} className="w-44">
-            <Select
-              value={draft.material_type}
-              onChange={(e) => setDraft({ ...draft, material_type: e.target.value })}
-            >
-              {MATERIAL_TYPES.map((ty) => (
-                <option key={ty} value={ty}>{t(`materialType.${ty}`)}</option>
-              ))}
-            </Select>
-          </Labelled>
-          <Labelled label={t("admin.price")} className="w-28">
-            <Input
-              type="number"
-              min="0"
-              step="0.01"
-              value={draft.price}
-              onChange={(e) => setDraft({ ...draft, price: e.target.value })}
-            />
-          </Labelled>
-          <button
-            type="button"
-            onClick={addMaterial}
-            disabled={!draft.title.trim()}
-            className="h-9 rounded-lg bg-slate-900 px-4 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-40"
-          >
-            {scopeActive ? t("admin.addHere") : t("admin.add")}
-          </button>
-        </div>
-        <p className="mt-2 text-xs text-slate-500">
-          {scopeActive
-            ? t("admin.addHereHint", { scope: scopeLabel })
-            : t("admin.addNoScopeHint")}
-        </p>
-      </div>
-
-      {/* ---------- filters ---------- */}
-      <div className="flex flex-wrap items-center gap-3">
+    <div className="flex flex-col gap-4">
+      {/* ---------- toolbar ---------- */}
+      <div className="flex flex-wrap items-center gap-2">
         <Input
           type="search"
           placeholder={t("admin.searchMaterials")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="max-w-xs"
+          className="max-w-xs flex-1"
         />
-        <div className="w-40">
-          <Select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
-            <option value="">{t("admin.typeAll")}</option>
-            {MATERIAL_TYPES.map((ty) => (
-              <option key={ty} value={ty}>{t(`materialType.${ty}`)}</option>
-            ))}
-          </Select>
+
+        <div className="relative" ref={filtersRef}>
+          <button
+            type="button"
+            onClick={() => setFiltersOpen((v) => !v)}
+            aria-expanded={filtersOpen}
+            className={[
+              "flex h-9 items-center gap-2 rounded-lg border px-3 text-sm font-medium transition-colors",
+              activeChips.length
+                ? "border-slate-900/25 bg-slate-900 text-white"
+                : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
+            ].join(" ")}
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" strokeWidth="1.6" aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 5h14M6 10h8M8.5 15h3" />
+            </svg>
+            {t("admin.filters")}
+            {activeChips.length > 0 && (
+              <span className="rounded-full bg-white/20 px-1.5 text-xs tabular-nums">
+                {activeChips.length}
+              </span>
+            )}
+          </button>
+
+          {filtersOpen && (
+            <div className="absolute left-0 z-40 mt-2 w-80 rounded-xl border border-slate-200 bg-white p-3 shadow-lg">
+                <div className="flex flex-col gap-3">
+                  <Labelled label={t("admin.programme")}>
+                    <Select value={fProgramme} onChange={(e) => setFProgramme(e.target.value)}>
+                      <option value="">{t("admin.scope.allPrograms")}</option>
+                      {programmeGroups.map((g) => (
+                        <optgroup key={g.faculty.id} label={g.faculty.name}>
+                          {g.programmes.map((p) => (
+                            <option key={p.id} value={p.id}>{p.name}</option>
+                          ))}
+                        </optgroup>
+                      ))}
+                    </Select>
+                  </Labelled>
+                  <Labelled label={t("admin.year")}>
+                    <Select value={fYear} onChange={(e) => setFYear(e.target.value)}>
+                      <option value="">{t("admin.scope.allYears")}</option>
+                      {catalogue.years.map((y) => (
+                        <option key={y.id} value={y.id}>{yearLabel(y, locale)}</option>
+                      ))}
+                    </Select>
+                  </Labelled>
+                  <Labelled label={t("admin.type")}>
+                    <Select value={fType} onChange={(e) => setFType(e.target.value)}>
+                      <option value="">{t("admin.typeAll")}</option>
+                      {MATERIAL_TYPES.map((ty) => (
+                        <option key={ty} value={ty}>{t(`materialType.${ty}`)}</option>
+                      ))}
+                    </Select>
+                  </Labelled>
+                  <label className="flex items-start gap-2 text-sm text-slate-700">
+                    <input
+                      type="checkbox"
+                      checked={fInactive}
+                      onChange={(e) => setFInactive(e.target.checked)}
+                      className="mt-0.5"
+                    />
+                    <span>
+                      {t("admin.includeInactive")}
+                      <span className="mt-0.5 block text-xs text-slate-500">
+                        {t("admin.includeInactiveWhy")}
+                      </span>
+                    </span>
+                  </label>
+                  {activeChips.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={clearAll}
+                      className="self-start text-xs font-medium text-slate-500 underline hover:text-slate-800"
+                    >
+                      {t("admin.clearFilters")}
+                    </button>
+                  )}
+                </div>
+            </div>
+          )}
         </div>
-        <label className="flex items-center gap-2 text-xs text-slate-600">
-          <input
-            type="checkbox"
-            checked={showInactive}
-            onChange={(e) => setShowInactive(e.target.checked)}
-          />
-          {t("admin.showInactive")}
-        </label>
+
+        <button
+          type="button"
+          onClick={() => setCreating(true)}
+          className="h-9 rounded-lg bg-slate-900 px-3 text-sm font-medium text-white hover:bg-slate-800"
+        >
+          + {t("admin.newMaterial")}
+        </button>
+
         <span className="ml-auto text-xs tabular-nums text-slate-500">{shown.length}</span>
       </div>
+
+      {/* Active filters stay visible even when the popover is shut. */}
+      {activeChips.length > 0 && (
+        <div className="flex flex-wrap items-center gap-1.5">
+          {activeChips.map((c) => (
+            <span
+              key={c.key}
+              className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white py-0.5 pl-2 pr-1 text-xs text-slate-700"
+            >
+              {c.label}
+              <button
+                type="button"
+                onClick={c.clear}
+                aria-label={t("admin.clearFilters")}
+                className="rounded-full px-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+              >
+                ×
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
 
       {/* ---------- list ---------- */}
       {shown.length === 0 ? (
         <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/60 px-6 py-12 text-center">
           <p className="text-sm text-slate-600">
-            {scopeActive ? t("admin.noneInScope") : t("admin.empty")}
+            {scoped ? t("admin.noneInScope") : t("admin.empty")}
           </p>
-          {scopeActive && (
-            <p className="mt-1 text-xs text-slate-500">{t("admin.noneInScopeHint")}</p>
-          )}
+          {scoped && <p className="mt-1 text-xs text-slate-500">{t("admin.noneInScopeHint")}</p>}
         </div>
       ) : (
         <ul className="flex flex-col gap-2">
@@ -942,11 +941,11 @@ function MaterialsTab({ catalogue, run }) {
                       </div>
                     </div>
 
-                    {/* Where it appears — inline, because this is the thing that decides
-                        whether a student ever sees it. */}
+                    {/* Where it appears — inline, because this decides whether a student
+                        ever sees it. */}
                     <div className="mt-2 flex flex-wrap items-center gap-1.5 border-t border-slate-100 pt-2">
                       {orphan ? (
-                        <span className="text-xs font-medium text-amber-800" title={t("admin.notAssignedHint")}>
+                        <span className="text-xs font-medium text-amber-800">
                           {t("admin.notAssigned")} — {t("admin.notAssignedHint")}
                         </span>
                       ) : (
@@ -980,21 +979,20 @@ function MaterialsTab({ catalogue, run }) {
                         </>
                       )}
 
-                      {/* One click when a scope is set, otherwise the full picker. */}
-                      {scopeActive && !inScope(m.id) ? (
+                      {scoped && !inScope(m.id) ? (
                         <button
                           type="button"
                           onClick={() =>
                             run(() =>
                               addPlacement(m.id, {
-                                programme_id: Number(scopeProgramme),
-                                study_year_id: Number(scopeYear),
+                                programme_id: Number(fProgramme),
+                                study_year_id: Number(fYear),
                               })
                             )
                           }
                           className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-800 hover:bg-emerald-100"
                         >
-                          + {scopeLabel}
+                          + {programmeById[fProgramme]?.name} · {yearLabel(yearById[fYear], locale)}
                         </button>
                       ) : (
                         <button
@@ -1023,6 +1021,211 @@ function MaterialsTab({ catalogue, run }) {
           })}
         </ul>
       )}
+
+      {creating && (
+        <NewMaterialDialog
+          catalogue={catalogue}
+          run={run}
+          programmeGroups={programmeGroups}
+          defaultProgramme={fProgramme}
+          defaultYear={fYear}
+          onClose={() => setCreating(false)}
+        />
+      )}
+    </div>
+  );
+}
+
+/**
+ * Create dialog. Programme and year are required here rather than optional, which makes an
+ * invisible material impossible to create instead of merely discouraged.
+ */
+function NewMaterialDialog({
+  catalogue,
+  run,
+  programmeGroups,
+  defaultProgramme,
+  defaultYear,
+  onClose,
+}) {
+  const { t, locale } = useI18n();
+  const [form, setForm] = useState({
+    title: "",
+    material_type: "knjiga",
+    price: "",
+    author: "",
+    programme_id: defaultProgramme || "",
+    study_year_id: defaultYear || "",
+    subject_id: "",
+  });
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  const subjectsFor = catalogue.subjects.filter(
+    (x) =>
+      x.programme_id === Number(form.programme_id) &&
+      x.study_year_id === Number(form.study_year_id)
+  );
+
+  const ready = form.title.trim() && form.programme_id && form.study_year_id;
+
+  const submit = async () => {
+    if (!ready || busy) return;
+    setBusy(true);
+    try {
+      const created = await run(() =>
+        createEntity("materials", {
+          title: form.title,
+          author: form.author || undefined,
+          material_type: form.material_type,
+          price: form.price === "" ? 0 : Number(form.price),
+        })
+      );
+      if (!created?.id) return;
+      await run(() =>
+        addPlacement(created.id, {
+          programme_id: Number(form.programme_id),
+          study_year_id: Number(form.study_year_id),
+          ...(form.subject_id ? { subject_id: Number(form.subject_id) } : {}),
+        })
+      );
+      onClose();
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center p-4 sm:items-center"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="new-material-title"
+    >
+      <button
+        type="button"
+        aria-label={t("admin.close")}
+        onClick={onClose}
+        className="absolute inset-0 bg-slate-900/40 backdrop-blur-[1px]"
+      />
+      <div className="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white shadow-xl ring-1 ring-slate-200/80">
+        <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
+          <h2 id="new-material-title" className="text-base font-semibold text-slate-900">
+            {t("admin.newMaterial")}
+          </h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-lg p-1.5 text-sm font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-900"
+          >
+            {t("admin.cancel")}
+          </button>
+        </div>
+
+        <div className="flex flex-col gap-3 px-5 py-4">
+          <Labelled label={t("admin.title_")}>
+            <Input
+              autoFocus
+              value={form.title}
+              onChange={(e) => setForm({ ...form, title: e.target.value })}
+            />
+          </Labelled>
+          <Labelled label={t("admin.author")}>
+            <Input value={form.author} onChange={(e) => setForm({ ...form, author: e.target.value })} />
+          </Labelled>
+          <div className="flex gap-3">
+            <Labelled label={t("admin.type")} className="flex-1">
+              <Select
+                value={form.material_type}
+                onChange={(e) => setForm({ ...form, material_type: e.target.value })}
+              >
+                {MATERIAL_TYPES.map((ty) => (
+                  <option key={ty} value={ty}>{t(`materialType.${ty}`)}</option>
+                ))}
+              </Select>
+            </Labelled>
+            <Labelled label={t("admin.price")} className="w-28">
+              <Input
+                type="number"
+                min="0"
+                step="0.01"
+                value={form.price}
+                onChange={(e) => setForm({ ...form, price: e.target.value })}
+              />
+            </Labelled>
+          </div>
+
+          <div className="mt-1 border-t border-slate-100 pt-3">
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Labelled label={t("admin.programme")} className="flex-1">
+                <Select
+                  value={form.programme_id}
+                  onChange={(e) => setForm({ ...form, programme_id: e.target.value, subject_id: "" })}
+                >
+                  <option value="">—</option>
+                  {programmeGroups.map((g) => (
+                    <optgroup key={g.faculty.id} label={g.faculty.name}>
+                      {g.programmes.map((p) => (
+                        <option key={p.id} value={p.id}>{p.name}</option>
+                      ))}
+                    </optgroup>
+                  ))}
+                </Select>
+              </Labelled>
+              <Labelled label={t("admin.year")} className="sm:w-40">
+                <Select
+                  value={form.study_year_id}
+                  onChange={(e) => setForm({ ...form, study_year_id: e.target.value, subject_id: "" })}
+                >
+                  <option value="">—</option>
+                  {catalogue.years.map((y) => (
+                    <option key={y.id} value={y.id}>{yearLabel(y, locale)}</option>
+                  ))}
+                </Select>
+              </Labelled>
+            </div>
+            {subjectsFor.length > 0 && (
+              <Labelled label={`${t("admin.subject")} (${t("common.optional")})`} className="mt-3">
+                <Select
+                  value={form.subject_id}
+                  onChange={(e) => setForm({ ...form, subject_id: e.target.value })}
+                >
+                  <option value="">—</option>
+                  {subjectsFor.map((x) => (
+                    <option key={x.id} value={x.id}>{x.name}</option>
+                  ))}
+                </Select>
+              </Labelled>
+            )}
+            <p className="mt-2 text-xs text-slate-500">{t("admin.placeRequired")}</p>
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-2 border-t border-slate-100 px-5 py-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="h-9 rounded-lg border border-slate-200 px-3 text-sm font-medium text-slate-600 hover:bg-slate-50"
+          >
+            {t("admin.cancel")}
+          </button>
+          <button
+            type="button"
+            onClick={submit}
+            disabled={!ready || busy}
+            className="h-9 rounded-lg bg-slate-900 px-4 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-40"
+          >
+            {t("admin.add")}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

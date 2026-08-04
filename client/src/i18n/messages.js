@@ -181,6 +181,15 @@ export const messages = {
     "admin.noneInScope": "Nema materijala za izabrani program i godinu.",
     "admin.noneInScopeHint": "Dodajte prvi materijal obrascem iznad.",
     "admin.showAll": "Prikaži sve materijale",
+    "admin.filters": "Filteri",
+    "admin.clearFilters": "Očisti filtere",
+    "admin.newMaterial": "Novi materijal",
+    "admin.includeInactive": "Uključi neaktivne",
+    "admin.includeInactiveWhy":
+      "Materijal koji je već poručivan ne može se izbrisati, samo označiti neaktivnim. Ovdje ga možete vidjeti i vratiti.",
+    "admin.placeRequired":
+      "Program i godina su obavezni — bez njih materijal ne bi bio vidljiv studentima.",
+    "admin.close": "Zatvori",
     "admin.subjectNone": "Za ovaj izbor nema predmeta — materijali stoje direktno pod godinom.",
     "admin.showInactive": "Prikaži neaktivne",
 
@@ -469,6 +478,15 @@ export const messages = {
     "admin.noneInScope": "No materials for the selected programme and year.",
     "admin.noneInScopeHint": "Add the first one with the form above.",
     "admin.showAll": "Show all materials",
+    "admin.filters": "Filters",
+    "admin.clearFilters": "Clear filters",
+    "admin.newMaterial": "New material",
+    "admin.includeInactive": "Include inactive",
+    "admin.includeInactiveWhy":
+      "A material that has been ordered cannot be deleted, only marked inactive. This is where you see and restore it.",
+    "admin.placeRequired":
+      "Programme and year are required — without them the material would not be visible to students.",
+    "admin.close": "Close",
     "admin.subjectNone": "No subjects for this selection — materials sit directly under the year.",
     "admin.showInactive": "Show inactive",
 
