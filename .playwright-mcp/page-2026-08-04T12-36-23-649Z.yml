@@ -1,0 +1,112 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e6]:
+      - link "Fotokopirnica" [ref=e8] [cursor=pointer]:
+        - /url: /narudzbine
+      - navigation "Meni" [ref=e9]:
+        - paragraph [ref=e10]: Narudžbine
+        - link "Aktivne" [ref=e11] [cursor=pointer]:
+          - /url: /narudzbine?status=active
+        - link "Spremno za preuzimanje" [ref=e13] [cursor=pointer]:
+          - /url: /narudzbine?status=spremno
+        - link "Sve narudžbine" [ref=e15] [cursor=pointer]:
+          - /url: /narudzbine?status=all
+        - paragraph [ref=e17]: Administracija
+        - link "Fakulteti" [ref=e18] [cursor=pointer]:
+          - /url: /administracija/fakulteti
+        - link "Studijski programi" [ref=e20] [cursor=pointer]:
+          - /url: /administracija/programi
+        - link "Godine studija" [ref=e22] [cursor=pointer]:
+          - /url: /administracija/godine
+        - link "Predmeti" [ref=e24] [cursor=pointer]:
+          - /url: /administracija/predmeti
+        - link "Materijali" [ref=e26] [cursor=pointer]:
+          - /url: /administracija/materijali
+      - generic [ref=e28]:
+        - group "Jezik" [ref=e29]:
+          - button "CG" [pressed] [ref=e30] [cursor=pointer]
+          - button "EN" [ref=e31] [cursor=pointer]
+        - generic [ref=e32]:
+          - paragraph [ref=e33]: Prijavljeni kao
+          - paragraph [ref=e34]: savolekovic15+operater@gmail.com
+        - button "Odjava" [ref=e35] [cursor=pointer]
+  - main [ref=e37]:
+    - generic [ref=e38]:
+      - generic [ref=e39]:
+        - generic [ref=e40]:
+          - paragraph [ref=e41]: Operater
+          - heading "Narudžbine" [level=1] [ref=e42]
+          - paragraph [ref=e43]: Pregled i obrada pristiglih narudžbina.
+        - button "Osvježi" [ref=e44] [cursor=pointer]
+      - generic [ref=e45]:
+        - button [ref=e46] [cursor=pointer]:
+          - paragraph [ref=e47]: Nove
+          - paragraph [ref=e48]: "1"
+        - button [ref=e49] [cursor=pointer]:
+          - paragraph [ref=e50]: U pripremi
+          - paragraph [ref=e51]: "0"
+        - button [ref=e52] [cursor=pointer]:
+          - paragraph [ref=e53]: Spremno
+          - paragraph [ref=e54]: "0"
+        - button [ref=e55] [cursor=pointer]:
+          - paragraph [ref=e56]: Rok istekao
+          - paragraph [ref=e57]: "0"
+      - generic [ref=e58]:
+        - generic [ref=e59]:
+          - generic [ref=e60]: Pretraga
+          - searchbox "Pretraga" [ref=e61]
+        - generic [ref=e62]:
+          - generic [ref=e63]:
+            - generic [ref=e64]: Status
+            - combobox "Status" [ref=e65]:
+              - option "Aktivne narudžbine" [selected]
+              - option "Svi statusi"
+              - option "Nova"
+              - option "U pripremi"
+              - option "Spremno za preuzimanje"
+              - option "Preuzeto"
+              - option "Otkazano"
+          - generic [ref=e66]:
+            - generic "Svi fakulteti" [ref=e67]:
+              - combobox "Fakultet" [ref=e68] [cursor=pointer]:
+                - option "Svi fakulteti" [selected]
+            - generic "Sve godine" [ref=e69]:
+              - combobox "Godina" [ref=e70] [cursor=pointer]:
+                - option "Sve godine" [selected]
+            - 'generic "Sortiranje: Najnovije prvo" [ref=e71]':
+              - combobox "Sortiranje" [ref=e72] [cursor=pointer]:
+                - option "Najnovije prvo" [selected]
+                - option "Najstarije prvo"
+                - 'option "Cijena: opadajuće"'
+                - 'option "Cijena: rastuće"'
+      - table [ref=e74]:
+        - rowgroup [ref=e75]:
+          - row [ref=e76]:
+            - columnheader "#" [ref=e77]
+            - columnheader "Literatura" [ref=e78]
+            - columnheader "Student" [ref=e79]
+            - columnheader "Status" [ref=e80]
+            - columnheader "Datum" [ref=e81]
+            - columnheader "Radnje" [ref=e82]
+        - rowgroup [ref=e84]:
+          - row [ref=e85] [cursor=pointer]:
+            - cell "#1" [ref=e86]
+            - cell "Bogišićeve kodifikacije +1" [ref=e87]:
+              - generic "Bogišićeve kodifikacije, Gradjansko pravo -Zoran Rasovic" [ref=e88]: Bogišićeve kodifikacije
+              - generic [ref=e89]: "+1"
+            - cell "korpa.ui@udg.edu.me 2024/777" [ref=e90]:
+              - generic "korpa.ui@udg.edu.me" [ref=e91]
+              - generic [ref=e92]: 2024/777
+            - cell "Nova" [ref=e93]
+            - cell "4. 8. 2026." [ref=e96]
+            - cell [ref=e97]:
+              - generic [ref=e98]:
+                - button "Detalji" [ref=e99]
+                - 'button "Označi: u pripremi" [ref=e103]'
+                - button "Otkaži narudžbinu" [ref=e106]
+      - generic [ref=e109]:
+        - paragraph [ref=e110]: Prikazano 1–1 od 1
+        - generic [ref=e111]:
+          - button "Prethodna" [disabled]
+          - generic [ref=e112]: Strana 1 od 1
+          - button "Sljedeća" [disabled]

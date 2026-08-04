@@ -109,6 +109,15 @@ export const messages = {
     "materialType.ostali_materijal": "Ostali materijal",
 
     "nav.admin": "Administracija",
+
+    "op.group.orders": "Narudžbine",
+    "op.group.admin": "Administracija",
+    "op.queue.active": "Aktivne",
+    "op.queue.ready": "Spremno za preuzimanje",
+    "op.queue.all": "Sve narudžbine",
+    "op.menu": "Meni",
+    "op.closeMenu": "Zatvori meni",
+    "op.signedInAs": "Prijavljeni kao",
     "admin.title": "Administracija",
     "admin.subtitle": "Upravljanje fakultetima, programima, godinama, predmetima i materijalima.",
     "admin.tab.faculties": "Fakulteti",
@@ -365,6 +374,15 @@ export const messages = {
     "materialType.ostali_materijal": "Other material",
 
     "nav.admin": "Administration",
+
+    "op.group.orders": "Orders",
+    "op.group.admin": "Administration",
+    "op.queue.active": "Active",
+    "op.queue.ready": "Ready for pickup",
+    "op.queue.all": "All orders",
+    "op.menu": "Menu",
+    "op.closeMenu": "Close menu",
+    "op.signedInAs": "Signed in as",
     "admin.title": "Administration",
     "admin.subtitle": "Manage faculties, programmes, years, subjects and materials.",
     "admin.tab.faculties": "Faculties",

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   fetchAdminCatalogue,
   fetchOrderSummary,
@@ -39,7 +40,18 @@ export default function OrdersPage() {
 
   const [searchInput, setSearchInput] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("active");
+  // Driven by the URL so the sidebar links select a view and each is bookmarkable.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const statusFilter = searchParams.get("status") ?? "active";
+  const setStatusFilter = useCallback(
+    (next) => {
+      const params = new URLSearchParams(searchParams);
+      if (next === "active") params.delete("status");
+      else params.set("status", next);
+      setSearchParams(params, { replace: true });
+    },
+    [searchParams, setSearchParams]
+  );
   const [facultyFilter, setFacultyFilter] = useState("");
   const [yearFilter, setYearFilter] = useState("");
   const [sort, setSort] = useState("date-desc");
@@ -149,7 +161,7 @@ export default function OrdersPage() {
   const rangeEnd = Math.min(page * PAGE_SIZE, total);
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10 sm:py-12">
+    <div className="w-full px-4 py-8 sm:px-6">
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="mb-1 text-xs font-medium uppercase tracking-widest text-slate-500">

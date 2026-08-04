@@ -13,7 +13,7 @@ const linkClass = ({ isActive }) =>
 
 export default function Layout() {
   const { t } = useI18n();
-  const { user, isStudent, isOperator, signOut } = useAuth();
+  const { user, isStudent, signOut } = useAuth();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -42,16 +42,6 @@ export default function Layout() {
                   </NavLink>
                   <NavLink to="/moje-narudzbine" className={linkClass}>
                     {t("nav.myOrders")}
-                  </NavLink>
-                </>
-              )}
-              {isOperator && (
-                <>
-                  <NavLink to="/narudzbine" className={linkClass}>
-                    {t("nav.orders")}
-                  </NavLink>
-                  <NavLink to="/administracija" className={linkClass}>
-                    {t("nav.admin")}
                   </NavLink>
                 </>
               )}

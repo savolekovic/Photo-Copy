@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout.jsx";
+import OperatorLayout from "./components/OperatorLayout.jsx";
 import RequireRole from "./auth/RequireRole.jsx";
 import { useAuth } from "./auth/AuthContext.jsx";
 import { useI18n } from "./i18n/I18nProvider.jsx";
@@ -47,25 +48,23 @@ export default function App() {
             }
           />
 
-          <Route
-            path="/narudzbine"
-            element={
-              <RequireRole role="operator">
-                <OrdersPage />
-              </RequireRole>
-            }
-          />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Route>
 
+        {/* Operator screens use the back-office shell, not the student header. */}
+        <Route
+          element={
+            <RequireRole role="operator">
+              <OperatorLayout />
+            </RequireRole>
+          }
+        >
+          <Route path="/narudzbine" element={<OrdersPage />} />
           <Route
             path="/administracija"
-            element={
-              <RequireRole role="operator">
-                <AdminPage />
-              </RequireRole>
-            }
+            element={<Navigate to="/administracija/fakulteti" replace />}
           />
-
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/administracija/:section" element={<AdminPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

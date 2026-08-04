@@ -1,0 +1,112 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e6]:
+      - link "Photocopy" [ref=e115] [cursor=pointer]:
+        - /url: /narudzbine
+      - navigation "Menu" [ref=e116]:
+        - paragraph [ref=e10]: Orders
+        - link "Active 1" [ref=e117] [cursor=pointer]:
+          - /url: /narudzbine?status=active
+          - generic [ref=e12]: Active
+          - generic [ref=e114]: "1"
+        - link "Ready for pickup" [ref=e118] [cursor=pointer]:
+          - /url: /narudzbine?status=spremno
+        - link "All orders" [ref=e119] [cursor=pointer]:
+          - /url: /narudzbine?status=all
+        - paragraph [ref=e17]: Administration
+        - link "Faculties" [active] [ref=e120] [cursor=pointer]:
+          - /url: /administracija/fakulteti
+        - link "Study programmes" [ref=e121] [cursor=pointer]:
+          - /url: /administracija/programi
+        - link "Study years" [ref=e122] [cursor=pointer]:
+          - /url: /administracija/godine
+        - link "Subjects" [ref=e123] [cursor=pointer]:
+          - /url: /administracija/predmeti
+        - link "Materials" [ref=e124] [cursor=pointer]:
+          - /url: /administracija/materijali
+      - generic [ref=e28]:
+        - group "Language" [ref=e125]:
+          - button "CG" [ref=e30] [cursor=pointer]
+          - button "EN" [pressed] [ref=e31] [cursor=pointer]
+        - generic [ref=e32]:
+          - paragraph [ref=e33]: Signed in as
+          - paragraph [ref=e34]: savolekovic15+operater@gmail.com
+        - button "Sign out" [ref=e126] [cursor=pointer]
+  - main [ref=e37]:
+    - generic [ref=e127]:
+      - generic [ref=e128]:
+        - paragraph [ref=e129]: Administration
+        - heading "Faculties" [level=1] [ref=e2129]
+      - generic [ref=e2130]:
+        - generic [ref=e2131]:
+          - generic [ref=e2132]:
+            - generic [ref=e2133]: Name
+            - textbox "Name" [ref=e2134]
+          - generic [ref=e2135]:
+            - generic [ref=e2136]: Abbreviation
+            - textbox "Abbreviation" [ref=e2137]
+          - button "Add" [disabled] [ref=e2138]
+        - list [ref=e2139]:
+          - listitem [ref=e2140]:
+            - generic [ref=e2141]:
+              - text: Centar za strane jezike
+              - generic [ref=e2142]: 9 study programmes
+            - generic [ref=e2143]:
+              - button "Edit" [ref=e2144] [cursor=pointer]
+              - button "Remove" [ref=e2145] [cursor=pointer]
+          - listitem [ref=e2146]:
+            - generic [ref=e2147]:
+              - text: Fakultet pravnih nauka
+              - generic [ref=e2148]: 1 study programmes
+            - generic [ref=e2149]:
+              - button "Edit" [ref=e2150] [cursor=pointer]
+              - button "Remove" [ref=e2151] [cursor=pointer]
+          - listitem [ref=e2152]:
+            - generic [ref=e2153]:
+              - text: Fakultet umjetnosti
+              - generic [ref=e2154]: 1 study programmes
+            - generic [ref=e2155]:
+              - button "Edit" [ref=e2156] [cursor=pointer]
+              - button "Remove" [ref=e2157] [cursor=pointer]
+          - listitem [ref=e2158]:
+            - generic [ref=e2159]:
+              - text: Fakultet za kulturu i turizam
+              - generic [ref=e2160]: 1 study programmes
+            - generic [ref=e2161]:
+              - button "Edit" [ref=e2162] [cursor=pointer]
+              - button "Remove" [ref=e2163] [cursor=pointer]
+          - listitem [ref=e2164]:
+            - generic [ref=e2165]:
+              - text: Fakultet za prehrambenu tehnologiju
+              - generic [ref=e2166]: 1 study programmes
+            - generic [ref=e2167]:
+              - button "Edit" [ref=e2168] [cursor=pointer]
+              - button "Remove" [ref=e2169] [cursor=pointer]
+          - listitem [ref=e2170]:
+            - generic [ref=e2171]:
+              - text: Filološki fakultet
+              - generic [ref=e2172]: 1 study programmes
+            - generic [ref=e2173]:
+              - button "Edit" [ref=e2174] [cursor=pointer]
+              - button "Remove" [ref=e2175] [cursor=pointer]
+          - listitem [ref=e2176]:
+            - generic [ref=e2177]:
+              - text: FMEFB
+              - generic [ref=e2178]: 2 study programmes
+            - generic [ref=e2179]:
+              - button "Edit" [ref=e2180] [cursor=pointer]
+              - button "Remove" [ref=e2181] [cursor=pointer]
+          - listitem [ref=e2182]:
+            - generic [ref=e2183]:
+              - text: Humanističke studije
+              - generic [ref=e2184]: 3 study programmes
+            - generic [ref=e2185]:
+              - button "Edit" [ref=e2186] [cursor=pointer]
+              - button "Remove" [ref=e2187] [cursor=pointer]
+          - listitem [ref=e2188]:
+            - generic [ref=e2189]:
+              - text: Politehnika
+              - generic [ref=e2190]: 4 study programmes
+            - generic [ref=e2191]:
+              - button "Edit" [ref=e2192] [cursor=pointer]
+              - button "Remove" [ref=e2193] [cursor=pointer]

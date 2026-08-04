@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
 import {
   addPlacement,
   createEntity,
@@ -19,18 +20,28 @@ import { yearLabel } from "../lib/orderLabels.js";
  * simpler than patching local state per entity kind, and the payload is only tens of rows.
  */
 
-const TABS = [
-  { key: "faculties", labelKey: "admin.tab.faculties" },
-  { key: "programmes", labelKey: "admin.tab.programmes" },
-  { key: "years", labelKey: "admin.tab.years" },
-  { key: "subjects", labelKey: "admin.tab.subjects" },
-  { key: "materials", labelKey: "admin.tab.materials" },
-];
+/**
+ * URL slug -> section. Each is a real route so the sidebar can link to it and an operator
+ * can bookmark, say, the materials list.
+ *
+ * `wide` marks the sections that are essentially data tables: those fill the window, while
+ * the narrow list-and-form sections stay capped so fields do not stretch absurdly.
+ */
+const SECTIONS = {
+  fakulteti: { labelKey: "admin.tab.faculties", wide: false },
+  programi: { labelKey: "admin.tab.programmes", wide: false },
+  godine: { labelKey: "admin.tab.years", wide: false },
+  predmeti: { labelKey: "admin.tab.subjects", wide: false },
+  materijali: { labelKey: "admin.tab.materials", wide: true },
+};
+
+export const ADMIN_SECTION_SLUGS = Object.keys(SECTIONS);
 
 export default function AdminPage() {
   const { t } = useI18n();
+  const { section: slug = "fakulteti" } = useParams();
+  const section = SECTIONS[slug] ?? SECTIONS.fakulteti;
   const [catalogue, setCatalogue] = useState(null);
-  const [tab, setTab] = useState("faculties");
   const [error, setError] = useState("");
   const [notice, setNotice] = useState(null);
 
@@ -104,15 +115,19 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10 sm:py-12">
+    <div
+      className={[
+        "w-full px-4 py-8 sm:px-6",
+        section.wide ? "max-w-none" : "mx-auto max-w-3xl",
+      ].join(" ")}
+    >
       <header className="mb-6">
         <p className="mb-1 text-xs font-medium uppercase tracking-widest text-slate-500">
-          {t("orders.roleBadge")}
-        </p>
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
           {t("admin.title")}
+        </p>
+        <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+          {t(section.labelKey)}
         </h1>
-        <p className="mt-1.5 text-sm text-slate-600">{t("admin.subtitle")}</p>
       </header>
 
       {error && (
@@ -137,30 +152,12 @@ export default function AdminPage() {
         </div>
       )}
 
-      <nav className="mb-6 flex flex-wrap gap-1 border-b border-slate-200" aria-label={t("admin.title")}>
-        {TABS.map((tb) => (
-          <button
-            key={tb.key}
-            type="button"
-            onClick={() => setTab(tb.key)}
-            aria-current={tab === tb.key ? "page" : undefined}
-            className={[
-              "-mb-px rounded-t-lg border-b-2 px-3 py-2 text-sm font-medium transition-colors",
-              tab === tb.key
-                ? "border-slate-900 text-slate-900"
-                : "border-transparent text-slate-500 hover:text-slate-800",
-            ].join(" ")}
-          >
-            {t(tb.labelKey)}
-          </button>
-        ))}
-      </nav>
 
-      {tab === "faculties" && <FacultiesTab catalogue={catalogue} run={run} />}
-      {tab === "programmes" && <ProgrammesTab catalogue={catalogue} run={run} />}
-      {tab === "years" && <YearsTab catalogue={catalogue} run={run} />}
-      {tab === "subjects" && <SubjectsTab catalogue={catalogue} run={run} />}
-      {tab === "materials" && <MaterialsTab catalogue={catalogue} run={run} />}
+      {slug === "fakulteti" && <FacultiesTab catalogue={catalogue} run={run} />}
+      {slug === "programi" && <ProgrammesTab catalogue={catalogue} run={run} />}
+      {slug === "godine" && <YearsTab catalogue={catalogue} run={run} />}
+      {slug === "predmeti" && <SubjectsTab catalogue={catalogue} run={run} />}
+      {slug === "materijali" && <MaterialsTab catalogue={catalogue} run={run} />}
     </div>
   );
 }
