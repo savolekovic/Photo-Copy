@@ -1,0 +1,194 @@
+- generic [ref=f2e3]:
+  - complementary [ref=f2e4]:
+    - generic [ref=f2e6]:
+      - link "Fotokopirnica" [ref=f2e8] [cursor=pointer]:
+        - /url: /narudzbine
+      - navigation "Meni" [ref=f2e9]:
+        - paragraph [ref=f2e10]: Narudžbine
+        - link "Aktivne 1" [ref=f2e11] [cursor=pointer]:
+          - /url: /narudzbine?status=active
+          - generic [ref=f2e12]: Aktivne
+          - generic [ref=f2e13]: "1"
+        - link "Spremno za preuzimanje" [ref=f2e14] [cursor=pointer]:
+          - /url: /narudzbine?status=spremno
+        - link "Sve narudžbine" [ref=f2e16] [cursor=pointer]:
+          - /url: /narudzbine?status=all
+        - paragraph [ref=f2e18]: Administracija
+        - link "Fakulteti" [ref=f2e19] [cursor=pointer]:
+          - /url: /administracija/fakulteti
+        - link "Studijski programi" [ref=f2e21] [cursor=pointer]:
+          - /url: /administracija/programi
+        - link "Godine studija" [ref=f2e23] [cursor=pointer]:
+          - /url: /administracija/godine
+        - link "Predmeti" [ref=f2e25] [cursor=pointer]:
+          - /url: /administracija/predmeti
+        - link "Materijali" [ref=f2e27] [cursor=pointer]:
+          - /url: /administracija/materijali
+      - generic [ref=f2e29]:
+        - group "Jezik" [ref=f2e30]:
+          - button "CG" [pressed] [ref=f2e31] [cursor=pointer]
+          - button "EN" [ref=f2e32] [cursor=pointer]
+        - generic [ref=f2e33]:
+          - paragraph [ref=f2e34]: Prijavljeni kao
+          - paragraph [ref=f2e35]: savolekovic15+operater@gmail.com
+        - button "Odjava" [ref=f2e36] [cursor=pointer]
+  - main [ref=f2e38]:
+    - generic [ref=f2e39]:
+      - generic [ref=f2e40]:
+        - paragraph [ref=f2e41]: Administracija
+        - heading "Materijali" [level=1] [ref=f2e42]
+      - generic [ref=f2e43]:
+        - generic [ref=f2e44]:
+          - paragraph [ref=f2e45]: Prikaži materijale za
+          - generic [ref=f2e46]:
+            - generic [ref=f2e47]:
+              - generic [ref=f2e48]: Studijski program
+              - combobox "Studijski program" [ref=f2e50] [cursor=pointer]:
+                - option "Svi programi"
+                - option "Engleski"
+                - option "Italijanski"
+                - option "Japanski"
+                - option "Kineski"
+                - option "Njemacki"
+                - option "Ostali jezici"
+                - option "Ruski A11"
+                - option "Ruski A2.1"
+                - option "Spanski"
+                - option "Pravo" [selected]
+                - option "FU"
+                - option "FKT"
+                - option "Prehrambena tehnologija"
+                - option "Filoloski"
+                - option "Ekonomija FMEFB"
+                - option "PMB"
+                - option "HS"
+                - option "Psihologija"
+                - option "Sportski menadzment"
+                - option "Geodezija"
+                - option "Matematika"
+                - option "Politehnika"
+                - option "Primijenjena matematika"
+            - generic [ref=f2e51]:
+              - generic [ref=f2e52]: Godina studija
+              - combobox "Godina studija" [ref=f2e54] [cursor=pointer]:
+                - option "Sve godine"
+                - option "I godina" [selected]
+                - option "II godina"
+                - option "III godina"
+                - option "IV godina"
+                - option "Master"
+                - option "Doktorske studije"
+            - generic [ref=f2e55]:
+              - generic [ref=f2e56]: Predmet (opciono)
+              - combobox "Predmet (opciono)" [disabled] [ref=f2e58] [cursor=pointer]:
+                - option "—" [selected]
+            - button "Prikaži sve materijale" [ref=f2e3063] [cursor=pointer]
+          - paragraph [ref=f2e59]: 5 materijala u ovom izboru
+        - generic [ref=f2e60]:
+          - generic [ref=f2e61]:
+            - generic [ref=f2e62]:
+              - generic [ref=f2e63]: Naslov
+              - textbox "Naslov" [ref=f2e64]
+            - generic [ref=f2e65]:
+              - generic [ref=f2e66]: Tip
+              - combobox "Tip" [ref=f2e68] [cursor=pointer]:
+                - option "Knjiga" [selected]
+                - option "Skripta"
+                - option "Ostali materijal"
+            - generic [ref=f2e69]:
+              - generic [ref=f2e70]: Cijena
+              - spinbutton "Cijena" [ref=f2e71]
+            - button "Dodaj ovdje" [disabled] [ref=f2e3064]
+          - paragraph [ref=f2e73]: "Novi materijal se odmah dodjeljuje: Pravo · I godina"
+        - generic [ref=f2e74]:
+          - searchbox "Pretraži materijale…" [ref=f2e75]
+          - combobox [ref=f2e78] [cursor=pointer]:
+            - option "Svi tipovi" [selected]
+            - option "Knjiga"
+            - option "Skripta"
+            - option "Ostali materijal"
+          - generic [ref=f2e79]:
+            - checkbox "Prikaži neaktivne" [ref=f2e80]
+            - text: Prikaži neaktivne
+          - generic [ref=f2e81]: "5"
+        - list [ref=f2e82]:
+          - listitem [ref=f2e565]:
+            - generic [ref=f2e566]:
+              - generic [ref=f2e567]:
+                - paragraph [ref=f2e568]: Bogišićeve kodifikacije
+                - paragraph [ref=f2e569]:
+                  - generic [ref=f2e570]: Knjiga
+                  - generic [ref=f2e571]: 13,00 €
+              - generic [ref=f2e572]:
+                - button "Izmijeni" [ref=f2e573] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f2e574] [cursor=pointer]
+            - generic [ref=f2e575]:
+              - generic [ref=f2e576]: Dodijeljen
+              - generic [ref=f2e577]:
+                - text: Pravo · I godina
+                - button "Ukloni iz ovog programa" [ref=f2e578] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f2e579] [cursor=pointer]
+          - listitem [ref=f2e940]:
+            - generic [ref=f2e941]:
+              - generic [ref=f2e942]:
+                - paragraph [ref=f2e943]: Gradjansko pravo -Zoran Rasovic
+                - paragraph [ref=f2e944]:
+                  - generic [ref=f2e945]: Knjiga
+                  - generic [ref=f2e946]: 15,50 €
+              - generic [ref=f2e947]:
+                - button "Izmijeni" [ref=f2e948] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f2e949] [cursor=pointer]
+            - generic [ref=f2e950]:
+              - generic [ref=f2e951]: Dodijeljen
+              - generic [ref=f2e952]:
+                - text: Pravo · I godina
+                - button "Ukloni iz ovog programa" [ref=f2e953] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f2e954] [cursor=pointer]
+          - listitem [ref=f2e2028]:
+            - generic [ref=f2e2029]:
+              - generic [ref=f2e2030]:
+                - paragraph [ref=f2e2031]: Porodično pravo - Dejan Đurđević - Osnovi porodičnog prava Crne Gore - 2017 ljetnji semestar
+                - paragraph [ref=f2e2032]:
+                  - generic [ref=f2e2033]: Knjiga
+                  - generic [ref=f2e2034]: 18,00 €
+              - generic [ref=f2e2035]:
+                - button "Izmijeni" [ref=f2e2036] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f2e2037] [cursor=pointer]
+            - generic [ref=f2e2038]:
+              - generic [ref=f2e2039]: Dodijeljen
+              - generic [ref=f2e2040]:
+                - text: Pravo · I godina
+                - button "Ukloni iz ovog programa" [ref=f2e2041] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f2e2042] [cursor=pointer]
+          - listitem [ref=f2e2073]:
+            - generic [ref=f2e2074]:
+              - generic [ref=f2e2075]:
+                - paragraph [ref=f2e2076]: Prakticna ekonomija -James D.Gwartney (prva dva dijela )
+                - paragraph [ref=f2e2077]:
+                  - generic [ref=f2e2078]: Knjiga
+                  - generic [ref=f2e2079]: 8,00 €
+              - generic [ref=f2e2080]:
+                - button "Izmijeni" [ref=f2e2081] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f2e2082] [cursor=pointer]
+            - generic [ref=f2e2083]:
+              - generic [ref=f2e2084]: Dodijeljen
+              - generic [ref=f2e2085]:
+                - text: Pravo · I godina
+                - button "Ukloni iz ovog programa" [ref=f2e2086] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f2e2087] [cursor=pointer]
+          - listitem [ref=f2e3065]:
+            - generic [ref=f2e3066]:
+              - generic [ref=f2e3067]:
+                - paragraph [ref=f2e3068]: Rimsko pravo — hrestomatija
+                - paragraph [ref=f2e3069]:
+                  - generic [ref=f2e3070]: Knjiga
+                  - generic [ref=f2e3071]: 0,00 €
+              - generic [ref=f2e3072]:
+                - button "Izmijeni" [ref=f2e3073] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f2e3074] [cursor=pointer]
+            - generic [ref=f2e3075]:
+              - generic [ref=f2e3076]: Dodijeljen
+              - generic [ref=f2e3077]:
+                - text: Pravo · I godina
+                - button "Ukloni iz ovog programa" [ref=f2e3078] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f2e3079] [cursor=pointer]

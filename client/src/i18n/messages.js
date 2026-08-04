@@ -158,6 +158,29 @@ export const messages = {
     "admin.pricesZero":
       "Cijene uvezenih materijala su 0,00 € — unesite stvarne cijene.",
     "admin.searchMaterials": "Pretraži materijale…",
+
+    "admin.scope.label": "Prikaži materijale za",
+    "admin.scope.all": "Sve materijale",
+    "admin.scope.allPrograms": "Svi programi",
+    "admin.scope.allYears": "Sve godine",
+    "admin.scope.hint": "Izaberite program i godinu da vidite šta studenti tamo vide.",
+    "admin.scope.count": "{count} materijala u ovom izboru",
+    "admin.scope.countAll": "{count} materijala ukupno",
+    "admin.addHere": "Dodaj ovdje",
+    "admin.addHereHint": "Novi materijal se odmah dodjeljuje: {scope}",
+    "admin.addNoScopeHint":
+      "Izaberite program i godinu iznad da bi novi materijal odmah bio vidljiv studentima.",
+    "admin.notAssigned": "Nije dodijeljen",
+    "admin.notAssignedHint": "Studenti ga ne vide dok mu ne dodijelite program i godinu.",
+    "admin.locations": "Dodijeljen",
+    "admin.removeLocation": "Ukloni iz ovog programa",
+    "admin.deleteMaterial": "Izbriši materijal",
+    "admin.confirmDeleteMaterial":
+      "Izbrisati materijal „{name}“ iz cijelog sistema? Ako je već poručivan, biće samo označen kao neaktivan.",
+    "admin.typeAll": "Svi tipovi",
+    "admin.noneInScope": "Nema materijala za izabrani program i godinu.",
+    "admin.noneInScopeHint": "Dodajte prvi materijal obrascem iznad.",
+    "admin.showAll": "Prikaži sve materijale",
     "admin.showInactive": "Prikaži neaktivne",
 
 
@@ -422,6 +445,29 @@ export const messages = {
     "admin.moveHint": "Move a programme to another faculty by changing its Faculty field.",
     "admin.pricesZero": "Imported materials have a price of €0.00 — set the real prices.",
     "admin.searchMaterials": "Search materials…",
+
+    "admin.scope.label": "Show materials for",
+    "admin.scope.all": "All materials",
+    "admin.scope.allPrograms": "All programmes",
+    "admin.scope.allYears": "All years",
+    "admin.scope.hint": "Pick a programme and year to see what students see there.",
+    "admin.scope.count": "{count} materials in this selection",
+    "admin.scope.countAll": "{count} materials in total",
+    "admin.addHere": "Add here",
+    "admin.addHereHint": "A new material is assigned immediately to: {scope}",
+    "admin.addNoScopeHint":
+      "Pick a programme and year above so a new material is visible to students right away.",
+    "admin.notAssigned": "Not assigned",
+    "admin.notAssignedHint": "Students cannot see it until you assign a programme and year.",
+    "admin.locations": "Assigned to",
+    "admin.removeLocation": "Remove from this programme",
+    "admin.deleteMaterial": "Delete material",
+    "admin.confirmDeleteMaterial":
+      "Delete \"{name}\" from the whole system? If it has been ordered it will only be marked inactive.",
+    "admin.typeAll": "All types",
+    "admin.noneInScope": "No materials for the selected programme and year.",
+    "admin.noneInScopeHint": "Add the first one with the form above.",
+    "admin.showAll": "Show all materials",
     "admin.showInactive": "Show inactive",
 
 

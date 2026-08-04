@@ -79,7 +79,9 @@ export default function AdminPage() {
           });
         }
         await reload();
-        return true;
+        // Return the row itself where there is one, so a caller can use the new id.
+        // A 204 yields null, which would read as failure, so fall back to true.
+        return result ?? true;
       } catch (err) {
         setNotice({ tone: "error", message: apiErrorMessage(err, t) });
         return false;
@@ -164,8 +166,40 @@ export default function AdminPage() {
 
 /* ------------------------------------------------------------------ shared ---- */
 
-const inputClass =
-  "w-full rounded-lg border border-slate-200 px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/15";
+/**
+ * One control height for everything. A native <select> given the same padding as an <input>
+ * renders taller or shorter depending on the browser's own chrome, so the height is set
+ * explicitly and selects drop their native appearance in favour of a drawn chevron.
+ */
+const CTL =
+  "h-9 w-full rounded-lg border border-slate-200 bg-white px-2.5 text-sm text-slate-900 " +
+  "placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900/15";
+
+const inputClass = CTL;
+
+function Input(props) {
+  return <input {...props} className={`${CTL} ${props.className ?? ""}`} />;
+}
+
+function Select({ children, className = "", ...rest }) {
+  return (
+    <div className="relative">
+      <select {...rest} className={`${CTL} cursor-pointer appearance-none pr-8 ${className}`}>
+        {children}
+      </select>
+      <svg
+        className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+        viewBox="0 0 20 20"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        aria-hidden
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6 8l4 4 4-4" />
+      </svg>
+    </div>
+  );
+}
 
 function Card({ children }) {
   return (
@@ -339,12 +373,12 @@ function ProgrammesTab({ catalogue, run }) {
             <input className={inputClass} value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} />
           </Labelled>
           <Labelled label={t("admin.faculty")} className="min-w-[12rem]">
-            <select className={inputClass} value={draft.faculty_id} onChange={(e) => setDraft({ ...draft, faculty_id: e.target.value })}>
+            <Select value={draft.faculty_id} onChange={(e) => setDraft({ ...draft, faculty_id: e.target.value })}>
               <option value="">—</option>
               {catalogue.faculties.map((f) => (
                 <option key={f.id} value={f.id}>{f.name}</option>
               ))}
-            </select>
+            </Select>
           </Labelled>
         </AddBar>
 
@@ -359,11 +393,11 @@ function ProgrammesTab({ catalogue, run }) {
                 {editing ? (
                   <>
                     <input className={`${inputClass} min-w-[12rem] flex-1`} value={edit.name} onChange={(e) => setEdit({ ...edit, name: e.target.value })} />
-                    <select className={`${inputClass} min-w-[12rem]`} value={edit.faculty_id} onChange={(e) => setEdit({ ...edit, faculty_id: e.target.value })}>
+                    <Select className="min-w-[12rem]" value={edit.faculty_id} onChange={(e) => setEdit({ ...edit, faculty_id: e.target.value })}>
                       {catalogue.faculties.map((f) => (
                         <option key={f.id} value={f.id}>{f.name}</option>
                       ))}
-                    </select>
+                    </Select>
                   </>
                 ) : (
                   <div className="min-w-0 flex-1">
@@ -504,30 +538,30 @@ function SubjectsTab({ catalogue, run }) {
           <input className={inputClass} value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} />
         </Labelled>
         <Labelled label={t("admin.programme")} className="min-w-[11rem]">
-          <select className={inputClass} value={draft.programme_id} onChange={(e) => setDraft({ ...draft, programme_id: e.target.value })}>
+          <Select value={draft.programme_id} onChange={(e) => setDraft({ ...draft, programme_id: e.target.value })}>
             <option value="">—</option>
             {catalogue.programmes.map((p) => (
               <option key={p.id} value={p.id}>{p.name}</option>
             ))}
-          </select>
+          </Select>
         </Labelled>
         <Labelled label={t("admin.year")} className="min-w-[9rem]">
-          <select className={inputClass} value={draft.study_year_id} onChange={(e) => setDraft({ ...draft, study_year_id: e.target.value })}>
+          <Select value={draft.study_year_id} onChange={(e) => setDraft({ ...draft, study_year_id: e.target.value })}>
             <option value="">—</option>
             {catalogue.years.map((y) => (
               <option key={y.id} value={y.id}>{yearLabel(y, locale)}</option>
             ))}
-          </select>
+          </Select>
         </Labelled>
       </AddBar>
 
       <div className="border-b border-slate-100 p-3">
-        <select className={`${inputClass} max-w-xs`} value={filterProgramme} onChange={(e) => setFilterProgramme(e.target.value)}>
+        <Select className="max-w-xs" value={filterProgramme} onChange={(e) => setFilterProgramme(e.target.value)}>
           <option value="">{t("orders.filter.facultyAll")}</option>
           {catalogue.programmes.map((p) => (
             <option key={p.id} value={p.id}>{p.name}</option>
           ))}
-        </select>
+        </Select>
       </div>
 
       <ul className="divide-y divide-slate-100">
@@ -559,170 +593,481 @@ function SubjectsTab({ catalogue, run }) {
 
 /* --------------------------------------------------------------- materials ---- */
 
+/**
+ * Materials.
+ *
+ * An operator thinks in terms of "what does a Pravo first-year see?" — the same way their
+ * folders are organised. So programme + year is a SCOPE you work inside: it filters the
+ * list, and anything added while it is set is assigned there immediately. That removes the
+ * three things that made the old screen confusing — 198 ungrouped rows, no way to see where
+ * a material belongs, and newly created materials silently invisible to students.
+ */
 function MaterialsTab({ catalogue, run }) {
   const { t, locale, formatPrice } = useI18n();
+
+  const [scopeProgramme, setScopeProgramme] = useState("");
+  const [scopeYear, setScopeYear] = useState("");
+  const [scopeSubject, setScopeSubject] = useState("");
+
   const [search, setSearch] = useState("");
+  const [typeFilter, setTypeFilter] = useState("");
   const [showInactive, setShowInactive] = useState(false);
-  const [expanded, setExpanded] = useState(null);
+
   const [editId, setEditId] = useState(null);
   const [edit, setEdit] = useState({});
   const [draft, setDraft] = useState({ title: "", material_type: "knjiga", price: "" });
+  const [addingTo, setAddingTo] = useState(null);
 
-  const progName = (id) => catalogue.programmes.find((p) => p.id === id)?.name ?? "—";
-  const yr = (id) => catalogue.years.find((y) => y.id === id);
-  const subjName = (id) => catalogue.subjects.find((s) => s.id === id)?.name;
+  const programmeById = useMemo(
+    () => Object.fromEntries(catalogue.programmes.map((p) => [p.id, p])),
+    [catalogue.programmes]
+  );
+  const yearById = useMemo(
+    () => Object.fromEntries(catalogue.years.map((y) => [y.id, y])),
+    [catalogue.years]
+  );
+  const subjectById = useMemo(
+    () => Object.fromEntries(catalogue.subjects.map((x) => [x.id, x])),
+    [catalogue.subjects]
+  );
+
+  /** Programmes grouped by faculty — 23 in a flat list is hard to scan. */
+  const programmeGroups = useMemo(() => {
+    const byFaculty = new Map();
+    for (const f of catalogue.faculties) byFaculty.set(f.id, { faculty: f, programmes: [] });
+    for (const p of catalogue.programmes) byFaculty.get(p.faculty_id)?.programmes.push(p);
+    return [...byFaculty.values()].filter((g) => g.programmes.length > 0);
+  }, [catalogue.faculties, catalogue.programmes]);
+
+  const scopeSubjects = useMemo(
+    () =>
+      catalogue.subjects.filter(
+        (x) =>
+          x.programme_id === Number(scopeProgramme) && x.study_year_id === Number(scopeYear)
+      ),
+    [catalogue.subjects, scopeProgramme, scopeYear]
+  );
+
+  const placementsOf = useCallback(
+    (materialId) => catalogue.placements.filter((pl) => pl.material_id === materialId),
+    [catalogue.placements]
+  );
+
+  const scopeActive = Boolean(scopeProgramme && scopeYear);
+  const scopeLabel = scopeActive
+    ? [
+        programmeById[scopeProgramme]?.name,
+        yearLabel(yearById[scopeYear], locale),
+        scopeSubject ? subjectById[scopeSubject]?.name : null,
+      ]
+        .filter(Boolean)
+        .join(" · ")
+    : "";
+
+  const inScope = useCallback(
+    (materialId) =>
+      placementsOf(materialId).some(
+        (pl) =>
+          pl.programme_id === Number(scopeProgramme) &&
+          pl.study_year_id === Number(scopeYear) &&
+          (!scopeSubject || pl.subject_id === Number(scopeSubject))
+      ),
+    [placementsOf, scopeProgramme, scopeYear, scopeSubject]
+  );
 
   const shown = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return catalogue.materials.filter(
-      (m) =>
-        (showInactive || m.is_active) &&
-        (!q || m.title.toLowerCase().includes(q) || (m.author ?? "").toLowerCase().includes(q))
-    );
-  }, [catalogue.materials, search, showInactive]);
+    return catalogue.materials.filter((m) => {
+      if (!showInactive && !m.is_active) return false;
+      if (typeFilter && m.material_type !== typeFilter) return false;
+      if (q && !m.title.toLowerCase().includes(q) && !(m.author ?? "").toLowerCase().includes(q))
+        return false;
+      if (scopeProgramme && !scopeYear) {
+        return placementsOf(m.id).some((pl) => pl.programme_id === Number(scopeProgramme));
+      }
+      if (scopeActive) return inScope(m.id);
+      return true;
+    });
+  }, [
+    catalogue.materials, search, typeFilter, showInactive,
+    scopeProgramme, scopeYear, scopeActive, inScope, placementsOf,
+  ]);
 
-  const zeroPriced = catalogue.materials.filter((m) => Number(m.price) === 0).length;
-
-  const add = async () => {
+  const addMaterial = async () => {
     if (!draft.title.trim()) return;
-    const ok = await run(() =>
+    const created = await run(() =>
       createEntity("materials", {
         title: draft.title,
         material_type: draft.material_type,
         price: draft.price === "" ? 0 : Number(draft.price),
       })
     );
-    if (ok) setDraft({ title: "", material_type: "knjiga", price: "" });
+    if (!created?.id) return;
+    // Assigned straight away when a scope is set, so a new material is never invisible to
+    // students by accident — which was the single most confusing thing about the old screen.
+    if (scopeActive) {
+      await run(() =>
+        addPlacement(created.id, {
+          programme_id: Number(scopeProgramme),
+          study_year_id: Number(scopeYear),
+          ...(scopeSubject ? { subject_id: Number(scopeSubject) } : {}),
+        })
+      );
+    }
+    setDraft({ title: "", material_type: "knjiga", price: "" });
   };
 
   return (
-    <>
-      {zeroPriced > 0 && (
-        <p className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-          {t("admin.pricesZero")} ({zeroPriced})
+    <div className="flex flex-col gap-5">
+      {/* ---------- scope ---------- */}
+      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-soft">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+          {t("admin.scope.label")}
         </p>
-      )}
-      <Card>
-        <AddBar onAdd={add} disabled={!draft.title.trim()}>
-          <Labelled label={t("admin.title_")} className="min-w-[14rem] flex-1">
-            <input className={inputClass} value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} />
+        <div className="flex flex-wrap items-end gap-2">
+          <Labelled label={t("admin.programme")} className="min-w-[13rem] flex-1">
+            <Select
+              value={scopeProgramme}
+              onChange={(e) => {
+                setScopeProgramme(e.target.value);
+                setScopeSubject("");
+              }}
+            >
+              <option value="">{t("admin.scope.allPrograms")}</option>
+              {programmeGroups.map((g) => (
+                <optgroup key={g.faculty.id} label={g.faculty.name}>
+                  {g.programmes.map((p) => (
+                    <option key={p.id} value={p.id}>{p.name}</option>
+                  ))}
+                </optgroup>
+              ))}
+            </Select>
           </Labelled>
-          <Labelled label={t("admin.type")} className="min-w-[10rem]">
-            <select className={inputClass} value={draft.material_type} onChange={(e) => setDraft({ ...draft, material_type: e.target.value })}>
+          <Labelled label={t("admin.year")} className="min-w-[10rem]">
+            <Select
+              value={scopeYear}
+              onChange={(e) => {
+                setScopeYear(e.target.value);
+                setScopeSubject("");
+              }}
+            >
+              <option value="">{t("admin.scope.allYears")}</option>
+              {catalogue.years.map((y) => (
+                <option key={y.id} value={y.id}>{yearLabel(y, locale)}</option>
+              ))}
+            </Select>
+          </Labelled>
+          <Labelled label={`${t("admin.subject")} (${t("common.optional")})`} className="min-w-[11rem]">
+            <Select
+              value={scopeSubject}
+              onChange={(e) => setScopeSubject(e.target.value)}
+              disabled={!scopeActive || scopeSubjects.length === 0}
+            >
+              <option value="">—</option>
+              {scopeSubjects.map((x) => (
+                <option key={x.id} value={x.id}>{x.name}</option>
+              ))}
+            </Select>
+          </Labelled>
+          {(scopeProgramme || scopeYear) && (
+            <button
+              type="button"
+              onClick={() => {
+                setScopeProgramme("");
+                setScopeYear("");
+                setScopeSubject("");
+              }}
+              className="h-9 rounded-lg border border-slate-200 px-3 text-sm font-medium text-slate-600 hover:bg-slate-50"
+            >
+              {t("admin.showAll")}
+            </button>
+          )}
+        </div>
+        <p className="mt-2 text-xs text-slate-500">
+          {scopeActive
+            ? t("admin.scope.count", { count: shown.length })
+            : t("admin.scope.hint")}
+        </p>
+      </div>
+
+      {/* ---------- add ---------- */}
+      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-soft">
+        <div className="flex flex-wrap items-end gap-2">
+          <Labelled label={t("admin.title_")} className="min-w-[16rem] flex-1">
+            <Input
+              value={draft.title}
+              onChange={(e) => setDraft({ ...draft, title: e.target.value })}
+            />
+          </Labelled>
+          <Labelled label={t("admin.type")} className="w-44">
+            <Select
+              value={draft.material_type}
+              onChange={(e) => setDraft({ ...draft, material_type: e.target.value })}
+            >
               {MATERIAL_TYPES.map((ty) => (
                 <option key={ty} value={ty}>{t(`materialType.${ty}`)}</option>
               ))}
-            </select>
+            </Select>
           </Labelled>
-          <Labelled label={t("admin.price")} className="w-24">
-            <input type="number" min="0" step="0.01" className={inputClass} value={draft.price} onChange={(e) => setDraft({ ...draft, price: e.target.value })} />
+          <Labelled label={t("admin.price")} className="w-28">
+            <Input
+              type="number"
+              min="0"
+              step="0.01"
+              value={draft.price}
+              onChange={(e) => setDraft({ ...draft, price: e.target.value })}
+            />
           </Labelled>
-        </AddBar>
-
-        <div className="flex flex-wrap items-center gap-3 border-b border-slate-100 p-3">
-          <input
-            type="search"
-            className={`${inputClass} max-w-sm`}
-            placeholder={t("admin.searchMaterials")}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <label className="flex items-center gap-2 text-xs text-slate-600">
-            <input type="checkbox" checked={showInactive} onChange={(e) => setShowInactive(e.target.checked)} />
-            {t("admin.showInactive")}
-          </label>
-          <span className="ml-auto text-xs text-slate-500">{shown.length}</span>
+          <button
+            type="button"
+            onClick={addMaterial}
+            disabled={!draft.title.trim()}
+            className="h-9 rounded-lg bg-slate-900 px-4 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-40"
+          >
+            {scopeActive ? t("admin.addHere") : t("admin.add")}
+          </button>
         </div>
+        <p className="mt-2 text-xs text-slate-500">
+          {scopeActive
+            ? t("admin.addHereHint", { scope: scopeLabel })
+            : t("admin.addNoScopeHint")}
+        </p>
+      </div>
 
-        <ul className="divide-y divide-slate-100">
-          {shown.length === 0 && <li className="p-4 text-sm text-slate-500">{t("admin.empty")}</li>}
+      {/* ---------- filters ---------- */}
+      <div className="flex flex-wrap items-center gap-3">
+        <Input
+          type="search"
+          placeholder={t("admin.searchMaterials")}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="max-w-xs"
+        />
+        <div className="w-40">
+          <Select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
+            <option value="">{t("admin.typeAll")}</option>
+            {MATERIAL_TYPES.map((ty) => (
+              <option key={ty} value={ty}>{t(`materialType.${ty}`)}</option>
+            ))}
+          </Select>
+        </div>
+        <label className="flex items-center gap-2 text-xs text-slate-600">
+          <input
+            type="checkbox"
+            checked={showInactive}
+            onChange={(e) => setShowInactive(e.target.checked)}
+          />
+          {t("admin.showInactive")}
+        </label>
+        <span className="ml-auto text-xs tabular-nums text-slate-500">{shown.length}</span>
+      </div>
+
+      {/* ---------- list ---------- */}
+      {shown.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/60 px-6 py-12 text-center">
+          <p className="text-sm text-slate-600">
+            {scopeActive ? t("admin.noneInScope") : t("admin.empty")}
+          </p>
+          {scopeActive && (
+            <p className="mt-1 text-xs text-slate-500">{t("admin.noneInScopeHint")}</p>
+          )}
+        </div>
+      ) : (
+        <ul className="flex flex-col gap-2">
           {shown.map((m) => {
             const editing = editId === m.id;
-            const places = catalogue.placements.filter((p) => p.material_id === m.id);
+            const places = placementsOf(m.id);
+            const orphan = places.length === 0;
             return (
-              <li key={m.id} className="p-3">
-                <div className="flex flex-wrap items-center gap-3">
-                  {editing ? (
-                    <>
-                      <input className={`${inputClass} min-w-[12rem] flex-1`} value={edit.title} onChange={(e) => setEdit({ ...edit, title: e.target.value })} />
-                      <input className={`${inputClass} w-40`} placeholder={t("admin.author")} value={edit.author ?? ""} onChange={(e) => setEdit({ ...edit, author: e.target.value })} />
-                      <select className={`${inputClass} w-40`} value={edit.material_type} onChange={(e) => setEdit({ ...edit, material_type: e.target.value })}>
+              <li
+                key={m.id}
+                className={[
+                  "rounded-xl border bg-white p-3 shadow-soft",
+                  orphan ? "border-amber-300" : "border-slate-200",
+                ].join(" ")}
+              >
+                {editing ? (
+                  <div className="flex flex-wrap items-end gap-2">
+                    <Labelled label={t("admin.title_")} className="min-w-[14rem] flex-1">
+                      <Input value={edit.title} onChange={(e) => setEdit({ ...edit, title: e.target.value })} />
+                    </Labelled>
+                    <Labelled label={t("admin.author")} className="w-44">
+                      <Input value={edit.author ?? ""} onChange={(e) => setEdit({ ...edit, author: e.target.value })} />
+                    </Labelled>
+                    <Labelled label={t("admin.type")} className="w-40">
+                      <Select value={edit.material_type} onChange={(e) => setEdit({ ...edit, material_type: e.target.value })}>
                         {MATERIAL_TYPES.map((ty) => (
                           <option key={ty} value={ty}>{t(`materialType.${ty}`)}</option>
                         ))}
-                      </select>
-                      <input type="number" min="0" step="0.01" className={`${inputClass} w-24`} value={edit.price} onChange={(e) => setEdit({ ...edit, price: e.target.value })} />
-                    </>
-                  ) : (
-                    <div className="min-w-0 flex-1">
-                      <span className="text-sm font-medium text-slate-900">{m.title}</span>
-                      {!m.is_active && <InactiveBadge />}
-                      <div className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs text-slate-500">
-                        <span className="rounded bg-slate-100 px-1.5 py-0.5">{t(`materialType.${m.material_type}`)}</span>
-                        {m.author && <span>{m.author}</span>}
-                        <span className="tabular-nums">{formatPrice(m.price)}</span>
-                        <button type="button" onClick={() => setExpanded(expanded === m.id ? null : m.id)} className="underline hover:text-slate-800">
-                          {t("admin.placements")} ({places.length})
+                      </Select>
+                    </Labelled>
+                    <Labelled label={t("admin.price")} className="w-28">
+                      <Input type="number" min="0" step="0.01" value={edit.price} onChange={(e) => setEdit({ ...edit, price: e.target.value })} />
+                    </Labelled>
+                    <div className="flex gap-1 pb-0.5">
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          const ok = await run(() =>
+                            updateEntity("materials", m.id, { ...edit, price: Number(edit.price) })
+                          );
+                          if (ok) setEditId(null);
+                        }}
+                        className="h-9 rounded-lg bg-slate-900 px-3 text-sm font-medium text-white hover:bg-slate-800"
+                      >
+                        {t("admin.save")}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setEditId(null)}
+                        className="h-9 rounded-lg border border-slate-200 px-3 text-sm font-medium text-slate-600 hover:bg-slate-50"
+                      >
+                        {t("admin.cancel")}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-slate-900">
+                          {m.title}
+                          {!m.is_active && <InactiveBadge />}
+                        </p>
+                        <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs text-slate-500">
+                          <span className="rounded bg-slate-100 px-1.5 py-0.5">
+                            {t(`materialType.${m.material_type}`)}
+                          </span>
+                          {m.author && <span>{m.author}</span>}
+                          <span className="tabular-nums text-slate-700">{formatPrice(m.price)}</span>
+                        </p>
+                      </div>
+                      <div className="flex shrink-0 gap-1">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditId(m.id);
+                            setEdit({
+                              title: m.title,
+                              author: m.author ?? "",
+                              material_type: m.material_type,
+                              price: String(m.price ?? 0),
+                            });
+                          }}
+                          className="h-8 rounded-lg border border-slate-200 px-2.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                        >
+                          {t("admin.edit")}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (window.confirm(t("admin.confirmDeleteMaterial", { name: m.title })))
+                              run(() => deleteEntity("materials", m.id), { name: m.title });
+                          }}
+                          className="h-8 rounded-lg border border-rose-200 px-2.5 text-xs font-medium text-rose-700 hover:bg-rose-50"
+                        >
+                          {t("admin.deleteMaterial")}
                         </button>
                       </div>
                     </div>
-                  )}
-                  <RowActions
-                    editing={editing}
-                    name={m.title}
-                    onEdit={() => {
-                      setEditId(m.id);
-                      setEdit({
-                        title: m.title,
-                        author: m.author ?? "",
-                        material_type: m.material_type,
-                        price: String(m.price ?? 0),
-                      });
-                    }}
-                    onSave={async () => {
-                      const ok = await run(() =>
-                        updateEntity("materials", m.id, { ...edit, price: Number(edit.price) })
-                      );
-                      if (ok) setEditId(null);
-                    }}
-                    onCancel={() => setEditId(null)}
-                    onRemove={() => run(() => deleteEntity("materials", m.id), { name: m.title })}
-                  />
-                </div>
 
-                {expanded === m.id && (
-                  <PlacementEditor
-                    material={m}
-                    places={places}
-                    catalogue={catalogue}
-                    run={run}
-                    progName={progName}
-                    yr={yr}
-                    subjName={subjName}
-                    locale={locale}
-                  />
+                    {/* Where it appears — inline, because this is the thing that decides
+                        whether a student ever sees it. */}
+                    <div className="mt-2 flex flex-wrap items-center gap-1.5 border-t border-slate-100 pt-2">
+                      {orphan ? (
+                        <span className="text-xs font-medium text-amber-800" title={t("admin.notAssignedHint")}>
+                          {t("admin.notAssigned")} — {t("admin.notAssignedHint")}
+                        </span>
+                      ) : (
+                        <>
+                          <span className="mr-1 text-[11px] uppercase tracking-wide text-slate-400">
+                            {t("admin.locations")}
+                          </span>
+                          {places.map((pl) => (
+                            <span
+                              key={pl.id}
+                              className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 py-0.5 pl-2 pr-1 text-xs text-slate-700"
+                            >
+                              {[
+                                programmeById[pl.programme_id]?.name,
+                                yearLabel(yearById[pl.study_year_id], locale),
+                                pl.subject_id ? subjectById[pl.subject_id]?.name : null,
+                              ]
+                                .filter(Boolean)
+                                .join(" · ")}
+                              <button
+                                type="button"
+                                onClick={() => run(() => removePlacement(m.id, pl.id))}
+                                aria-label={t("admin.removeLocation")}
+                                title={t("admin.removeLocation")}
+                                className="rounded-full px-1 text-slate-400 hover:bg-rose-100 hover:text-rose-700"
+                              >
+                                ×
+                              </button>
+                            </span>
+                          ))}
+                        </>
+                      )}
+
+                      {/* One click when a scope is set, otherwise the full picker. */}
+                      {scopeActive && !inScope(m.id) ? (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            run(() =>
+                              addPlacement(m.id, {
+                                programme_id: Number(scopeProgramme),
+                                study_year_id: Number(scopeYear),
+                                ...(scopeSubject ? { subject_id: Number(scopeSubject) } : {}),
+                              })
+                            )
+                          }
+                          className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-800 hover:bg-emerald-100"
+                        >
+                          + {scopeLabel}
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setAddingTo(addingTo === m.id ? null : m.id)}
+                          className="rounded-full border border-slate-200 px-2 py-0.5 text-xs font-medium text-slate-600 hover:bg-slate-100"
+                        >
+                          + {t("admin.addPlacement")}
+                        </button>
+                      )}
+                    </div>
+
+                    {addingTo === m.id && (
+                      <PlacementPicker
+                        material={m}
+                        catalogue={catalogue}
+                        run={run}
+                        onDone={() => setAddingTo(null)}
+                        programmeGroups={programmeGroups}
+                      />
+                    )}
+                  </>
                 )}
               </li>
             );
           })}
         </ul>
-      </Card>
-    </>
+      )}
+    </div>
   );
 }
 
-/** Where one material appears. This is what lets a shared book live in several programmes. */
-function PlacementEditor({ material, places, catalogue, run, progName, yr, subjName, locale }) {
-  const { t } = useI18n();
+/** Compact picker for assigning a material to a programme + year (+ optional subject). */
+function PlacementPicker({ material, catalogue, run, onDone, programmeGroups }) {
+  const { t, locale } = useI18n();
   const [np, setNp] = useState({ programme_id: "", study_year_id: "", subject_id: "" });
 
   const subjectsFor = catalogue.subjects.filter(
-    (s) =>
-      s.programme_id === Number(np.programme_id) &&
-      s.study_year_id === Number(np.study_year_id)
+    (x) =>
+      x.programme_id === Number(np.programme_id) && x.study_year_id === Number(np.study_year_id)
   );
 
-  const add = async () => {
+  const submit = async () => {
     if (!np.programme_id || !np.study_year_id) return;
     const ok = await run(() =>
       addPlacement(material.id, {
@@ -731,67 +1076,64 @@ function PlacementEditor({ material, places, catalogue, run, progName, yr, subjN
         ...(np.subject_id ? { subject_id: Number(np.subject_id) } : {}),
       })
     );
-    if (ok) setNp({ programme_id: "", study_year_id: "", subject_id: "" });
+    if (ok) onDone();
   };
 
   return (
-    <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50/60 p-3">
-      {places.length === 0 ? (
-        <p className="mb-2 text-xs text-slate-500">{t("admin.noPlacements")}</p>
-      ) : (
-        <ul className="mb-3 space-y-1">
-          {places.map((p) => (
-            <li key={p.id} className="flex items-center justify-between gap-2 text-xs text-slate-700">
-              <span>
-                {progName(p.programme_id)} · {yearLabel(yr(p.study_year_id), locale)}
-                {p.subject_id && ` · ${subjName(p.subject_id) ?? ""}`}
-              </span>
-              <button
-                type="button"
-                onClick={() => run(() => removePlacement(material.id, p.id))}
-                className="rounded border border-rose-200 px-2 py-0.5 font-medium text-rose-700 hover:bg-rose-50"
-              >
-                {t("admin.remove")}
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      <div className="flex flex-wrap items-end gap-2">
-        <Labelled label={t("admin.programme")} className="min-w-[11rem]">
-          <select className={inputClass} value={np.programme_id} onChange={(e) => setNp({ ...np, programme_id: e.target.value, subject_id: "" })}>
-            <option value="">—</option>
-            {catalogue.programmes.map((p) => (
-              <option key={p.id} value={p.id}>{p.name}</option>
-            ))}
-          </select>
-        </Labelled>
-        <Labelled label={t("admin.year")} className="min-w-[9rem]">
-          <select className={inputClass} value={np.study_year_id} onChange={(e) => setNp({ ...np, study_year_id: e.target.value, subject_id: "" })}>
-            <option value="">—</option>
-            {catalogue.years.map((y) => (
-              <option key={y.id} value={y.id}>{yearLabel(y, locale)}</option>
-            ))}
-          </select>
-        </Labelled>
-        <Labelled label={`${t("admin.subject")} (${t("common.optional")})`} className="min-w-[11rem]">
-          <select className={inputClass} value={np.subject_id} onChange={(e) => setNp({ ...np, subject_id: e.target.value })} disabled={subjectsFor.length === 0}>
-            <option value="">—</option>
-            {subjectsFor.map((s) => (
-              <option key={s.id} value={s.id}>{s.name}</option>
-            ))}
-          </select>
-        </Labelled>
-        <button
-          type="button"
-          onClick={add}
-          disabled={!np.programme_id || !np.study_year_id}
-          className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-40"
+    <div className="mt-2 flex flex-wrap items-end gap-2 rounded-lg border border-slate-200 bg-slate-50/70 p-2.5">
+      <Labelled label={t("admin.programme")} className="min-w-[12rem] flex-1">
+        <Select
+          value={np.programme_id}
+          onChange={(e) => setNp({ ...np, programme_id: e.target.value, subject_id: "" })}
         >
-          {t("admin.addPlacement")}
-        </button>
-      </div>
+          <option value="">—</option>
+          {programmeGroups.map((g) => (
+            <optgroup key={g.faculty.id} label={g.faculty.name}>
+              {g.programmes.map((p) => (
+                <option key={p.id} value={p.id}>{p.name}</option>
+              ))}
+            </optgroup>
+          ))}
+        </Select>
+      </Labelled>
+      <Labelled label={t("admin.year")} className="min-w-[9rem]">
+        <Select
+          value={np.study_year_id}
+          onChange={(e) => setNp({ ...np, study_year_id: e.target.value, subject_id: "" })}
+        >
+          <option value="">—</option>
+          {catalogue.years.map((y) => (
+            <option key={y.id} value={y.id}>{yearLabel(y, locale)}</option>
+          ))}
+        </Select>
+      </Labelled>
+      <Labelled label={`${t("admin.subject")} (${t("common.optional")})`} className="min-w-[10rem]">
+        <Select
+          value={np.subject_id}
+          onChange={(e) => setNp({ ...np, subject_id: e.target.value })}
+          disabled={subjectsFor.length === 0}
+        >
+          <option value="">—</option>
+          {subjectsFor.map((x) => (
+            <option key={x.id} value={x.id}>{x.name}</option>
+          ))}
+        </Select>
+      </Labelled>
+      <button
+        type="button"
+        onClick={submit}
+        disabled={!np.programme_id || !np.study_year_id}
+        className="h-9 rounded-lg bg-slate-900 px-3 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-40"
+      >
+        {t("admin.addPlacement")}
+      </button>
+      <button
+        type="button"
+        onClick={onDone}
+        className="h-9 rounded-lg border border-slate-200 px-3 text-sm font-medium text-slate-600 hover:bg-slate-50"
+      >
+        {t("admin.cancel")}
+      </button>
     </div>
   );
 }
