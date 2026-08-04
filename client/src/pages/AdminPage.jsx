@@ -605,7 +605,7 @@ function SubjectsTab({ catalogue, run }) {
  * a collapsed popover would otherwise hide the fact that the list is filtered.
  */
 function MaterialsTab({ catalogue, run }) {
-  const { t, locale, formatPrice } = useI18n();
+  const { t, tn, locale, formatPrice } = useI18n();
 
   const [fProgramme, setFProgramme] = useState("");
   const [fYear, setFYear] = useState("");
@@ -801,15 +801,23 @@ function MaterialsTab({ catalogue, run }) {
           )}
         </div>
 
+        {/* Says what the number counts, and reports both figures when filtered so the
+            total is not lost. */}
+        <span className="text-xs tabular-nums text-slate-500">
+          {shown.length === catalogue.materials.length
+            ? tn("admin.materialsCount", catalogue.materials.length)
+            : tn("admin.materialsFiltered", catalogue.materials.length, {
+                shown: shown.length,
+              })}
+        </span>
+
         <button
           type="button"
           onClick={() => setCreating(true)}
-          className="h-9 rounded-lg bg-slate-900 px-3 text-sm font-medium text-white hover:bg-slate-800"
+          className="ml-auto h-9 rounded-lg bg-slate-900 px-3 text-sm font-medium text-white hover:bg-slate-800"
         >
           + {t("admin.newMaterial")}
         </button>
-
-        <span className="ml-auto text-xs tabular-nums text-slate-500">{shown.length}</span>
       </div>
 
       {/* Active filters stay visible even when the popover is shut. */}

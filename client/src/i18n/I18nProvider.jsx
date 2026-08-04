@@ -58,6 +58,26 @@ export function I18nProvider({ children }) {
     [locale]
   );
 
+  /**
+   * Plural-aware lookup. Montenegrin agrees differently at 1, 2–4 and 5+ ("1 materijal",
+   * "4 materijala"), and the rule is not "n === 1", so Intl.PluralRules decides which of
+   * `<key>.one` / `.few` / `.other` to use rather than a hand-rolled condition.
+   */
+  const tn = useCallback(
+    (baseKey, count, vars) => {
+      let form = "other";
+      try {
+        form = new Intl.PluralRules(locale).select(count);
+      } catch {
+        form = count === 1 ? "one" : "other";
+      }
+      const table = messages[locale] ?? messages[DEFAULT_LOCALE];
+      const key = table[`${baseKey}.${form}`] ? `${baseKey}.${form}` : `${baseKey}.other`;
+      return t(key, { count, ...vars });
+    },
+    [locale, t]
+  );
+
   /** Locale-aware date helpers, so every screen formats dates the same way. */
   const formatDate = useCallback(
     (iso, opts = { dateStyle: "medium" }) => {
@@ -102,12 +122,13 @@ export function I18nProvider({ children }) {
       locale,
       setLocale,
       t,
+      tn,
       formatDate,
       formatDateTime,
       formatPrice,
       locales: LOCALES,
     }),
-    [locale, setLocale, t, formatDate, formatDateTime, formatPrice]
+    [locale, setLocale, t, tn, formatDate, formatDateTime, formatPrice]
   );
 
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
