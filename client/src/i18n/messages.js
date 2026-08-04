@@ -181,9 +181,7 @@ export const messages = {
     "admin.noneInScope": "Nema materijala za izabrani program i godinu.",
     "admin.noneInScopeHint": "Dodajte prvi materijal obrascem iznad.",
     "admin.showAll": "Prikaži sve materijale",
-    "admin.subjectPickFirst": "Predmet se bira nakon programa i godine.",
     "admin.subjectNone": "Za ovaj izbor nema predmeta — materijali stoje direktno pod godinom.",
-    "admin.subjectAddOne": "Dodaj predmet",
     "admin.showInactive": "Prikaži neaktivne",
 
 
@@ -471,9 +469,7 @@ export const messages = {
     "admin.noneInScope": "No materials for the selected programme and year.",
     "admin.noneInScopeHint": "Add the first one with the form above.",
     "admin.showAll": "Show all materials",
-    "admin.subjectPickFirst": "Pick a programme and year first to choose a subject.",
     "admin.subjectNone": "No subjects for this selection — materials sit directly under the year.",
-    "admin.subjectAddOne": "Add a subject",
     "admin.showInactive": "Show inactive",
 
 

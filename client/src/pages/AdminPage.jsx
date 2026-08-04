@@ -605,9 +605,11 @@ function SubjectsTab({ catalogue, run }) {
 function MaterialsTab({ catalogue, run }) {
   const { t, locale, formatPrice } = useI18n();
 
+  // Scope is programme + year only. A subject filter was disabled for most
+  // combinations (only 8 of 23 programmes use subjects), so it was mostly noise.
+  // Assigning a material TO a subject still happens in the per-material picker.
   const [scopeProgramme, setScopeProgramme] = useState("");
   const [scopeYear, setScopeYear] = useState("");
-  const [scopeSubject, setScopeSubject] = useState("");
 
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
@@ -639,14 +641,6 @@ function MaterialsTab({ catalogue, run }) {
     return [...byFaculty.values()].filter((g) => g.programmes.length > 0);
   }, [catalogue.faculties, catalogue.programmes]);
 
-  const scopeSubjects = useMemo(
-    () =>
-      catalogue.subjects.filter(
-        (x) =>
-          x.programme_id === Number(scopeProgramme) && x.study_year_id === Number(scopeYear)
-      ),
-    [catalogue.subjects, scopeProgramme, scopeYear]
-  );
 
   const placementsOf = useCallback(
     (materialId) => catalogue.placements.filter((pl) => pl.material_id === materialId),
@@ -655,24 +649,21 @@ function MaterialsTab({ catalogue, run }) {
 
   const scopeActive = Boolean(scopeProgramme && scopeYear);
   const scopeLabel = scopeActive
-    ? [
-        programmeById[scopeProgramme]?.name,
-        yearLabel(yearById[scopeYear], locale),
-        scopeSubject ? subjectById[scopeSubject]?.name : null,
-      ]
+    ? [programmeById[scopeProgramme]?.name, yearLabel(yearById[scopeYear], locale)]
         .filter(Boolean)
         .join(" · ")
     : "";
 
   const inScope = useCallback(
     (materialId) =>
+      // Matches whether the material sits directly under the year or inside one of its
+      // subjects — both mean a student in that year sees it.
       placementsOf(materialId).some(
         (pl) =>
           pl.programme_id === Number(scopeProgramme) &&
-          pl.study_year_id === Number(scopeYear) &&
-          (!scopeSubject || pl.subject_id === Number(scopeSubject))
+          pl.study_year_id === Number(scopeYear)
       ),
-    [placementsOf, scopeProgramme, scopeYear, scopeSubject]
+    [placementsOf, scopeProgramme, scopeYear]
   );
 
   const shown = useMemo(() => {
@@ -710,7 +701,6 @@ function MaterialsTab({ catalogue, run }) {
         addPlacement(created.id, {
           programme_id: Number(scopeProgramme),
           study_year_id: Number(scopeYear),
-          ...(scopeSubject ? { subject_id: Number(scopeSubject) } : {}),
         })
       );
     }
@@ -728,10 +718,7 @@ function MaterialsTab({ catalogue, run }) {
           <Labelled label={t("admin.programme")} className="min-w-[13rem] flex-1">
             <Select
               value={scopeProgramme}
-              onChange={(e) => {
-                setScopeProgramme(e.target.value);
-                setScopeSubject("");
-              }}
+              onChange={(e) => setScopeProgramme(e.target.value)}
             >
               <option value="">{t("admin.scope.allPrograms")}</option>
               {programmeGroups.map((g) => (
@@ -746,26 +733,11 @@ function MaterialsTab({ catalogue, run }) {
           <Labelled label={t("admin.year")} className="min-w-[10rem]">
             <Select
               value={scopeYear}
-              onChange={(e) => {
-                setScopeYear(e.target.value);
-                setScopeSubject("");
-              }}
+              onChange={(e) => setScopeYear(e.target.value)}
             >
               <option value="">{t("admin.scope.allYears")}</option>
               {catalogue.years.map((y) => (
                 <option key={y.id} value={y.id}>{yearLabel(y, locale)}</option>
-              ))}
-            </Select>
-          </Labelled>
-          <Labelled label={`${t("admin.subject")} (${t("common.optional")})`} className="min-w-[11rem]">
-            <Select
-              value={scopeSubject}
-              onChange={(e) => setScopeSubject(e.target.value)}
-              disabled={!scopeActive || scopeSubjects.length === 0}
-            >
-              <option value="">—</option>
-              {scopeSubjects.map((x) => (
-                <option key={x.id} value={x.id}>{x.name}</option>
               ))}
             </Select>
           </Labelled>
@@ -775,7 +747,6 @@ function MaterialsTab({ catalogue, run }) {
               onClick={() => {
                 setScopeProgramme("");
                 setScopeYear("");
-                setScopeSubject("");
               }}
               className="h-9 rounded-lg border border-slate-200 px-3 text-sm font-medium text-slate-600 hover:bg-slate-50"
             >
@@ -788,18 +759,6 @@ function MaterialsTab({ catalogue, run }) {
             ? t("admin.scope.count", { count: shown.length })
             : t("admin.scope.hint")}
         </p>
-        {/* A disabled control with no explanation reads as broken. Most programme+year
-            combinations genuinely have no subjects, so this is the common case. */}
-        {!scopeActive ? (
-          <p className="mt-1 text-xs text-slate-400">{t("admin.subjectPickFirst")}</p>
-        ) : scopeSubjects.length === 0 ? (
-          <p className="mt-1 text-xs text-slate-400">
-            {t("admin.subjectNone")}{" "}
-            <Link to="/administracija/predmeti" className="underline hover:text-slate-600">
-              {t("admin.subjectAddOne")}
-            </Link>
-          </p>
-        ) : null}
       </div>
 
       {/* ---------- add ---------- */}
@@ -1030,7 +989,6 @@ function MaterialsTab({ catalogue, run }) {
                               addPlacement(m.id, {
                                 programme_id: Number(scopeProgramme),
                                 study_year_id: Number(scopeYear),
-                                ...(scopeSubject ? { subject_id: Number(scopeSubject) } : {}),
                               })
                             )
                           }
