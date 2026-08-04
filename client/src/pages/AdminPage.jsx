@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import {
   addPlacement,
   createEntity,
@@ -788,6 +788,18 @@ function MaterialsTab({ catalogue, run }) {
             ? t("admin.scope.count", { count: shown.length })
             : t("admin.scope.hint")}
         </p>
+        {/* A disabled control with no explanation reads as broken. Most programme+year
+            combinations genuinely have no subjects, so this is the common case. */}
+        {!scopeActive ? (
+          <p className="mt-1 text-xs text-slate-400">{t("admin.subjectPickFirst")}</p>
+        ) : scopeSubjects.length === 0 ? (
+          <p className="mt-1 text-xs text-slate-400">
+            {t("admin.subjectNone")}{" "}
+            <Link to="/administracija/predmeti" className="underline hover:text-slate-600">
+              {t("admin.subjectAddOne")}
+            </Link>
+          </p>
+        ) : null}
       </div>
 
       {/* ---------- add ---------- */}
@@ -1127,6 +1139,9 @@ function PlacementPicker({ material, catalogue, run, onDone, programmeGroups }) 
       >
         {t("admin.addPlacement")}
       </button>
+      {np.programme_id && np.study_year_id && subjectsFor.length === 0 && (
+        <p className="w-full text-xs text-slate-400">{t("admin.subjectNone")}</p>
+      )}
       <button
         type="button"
         onClick={onDone}

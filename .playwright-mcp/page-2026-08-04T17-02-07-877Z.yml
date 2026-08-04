@@ -1,0 +1,3297 @@
+- generic [ref=f4e3]:
+  - complementary [ref=f4e4]:
+    - generic [ref=f4e6]:
+      - link "Fotokopirnica" [ref=f4e8] [cursor=pointer]:
+        - /url: /narudzbine
+      - navigation "Meni" [ref=f4e9]:
+        - paragraph [ref=f4e10]: Narudžbine
+        - link "Aktivne 1" [ref=f4e11] [cursor=pointer]:
+          - /url: /narudzbine?status=active
+          - generic [ref=f4e12]: Aktivne
+          - generic [ref=f4e13]: "1"
+        - link "Spremno za preuzimanje" [ref=f4e14] [cursor=pointer]:
+          - /url: /narudzbine?status=spremno
+        - link "Sve narudžbine" [ref=f4e16] [cursor=pointer]:
+          - /url: /narudzbine?status=all
+        - paragraph [ref=f4e18]: Administracija
+        - link "Fakulteti" [ref=f4e19] [cursor=pointer]:
+          - /url: /administracija/fakulteti
+        - link "Studijski programi" [ref=f4e21] [cursor=pointer]:
+          - /url: /administracija/programi
+        - link "Godine studija" [ref=f4e23] [cursor=pointer]:
+          - /url: /administracija/godine
+        - link "Predmeti" [ref=f4e25] [cursor=pointer]:
+          - /url: /administracija/predmeti
+        - link "Materijali" [ref=f4e27] [cursor=pointer]:
+          - /url: /administracija/materijali
+      - generic [ref=f4e29]:
+        - group "Jezik" [ref=f4e30]:
+          - button "CG" [pressed] [ref=f4e31] [cursor=pointer]
+          - button "EN" [ref=f4e32] [cursor=pointer]
+        - generic [ref=f4e33]:
+          - paragraph [ref=f4e34]: Prijavljeni kao
+          - paragraph [ref=f4e35]: savolekovic15+operater@gmail.com
+        - button "Odjava" [ref=f4e36] [cursor=pointer]
+  - main [ref=f4e38]:
+    - generic [ref=f4e39]:
+      - generic [ref=f4e40]:
+        - paragraph [ref=f4e41]: Administracija
+        - heading "Materijali" [level=1] [ref=f4e42]
+      - generic [ref=f4e43]:
+        - generic [ref=f4e44]:
+          - paragraph [ref=f4e45]: Prikaži materijale za
+          - generic [ref=f4e46]:
+            - generic [ref=f4e47]:
+              - generic [ref=f4e48]: Studijski program
+              - combobox "Studijski program" [ref=f4e50] [cursor=pointer]:
+                - option "Svi programi" [selected]
+                - option "Engleski"
+                - option "Italijanski"
+                - option "Japanski"
+                - option "Kineski"
+                - option "Njemacki"
+                - option "Ostali jezici"
+                - option "Ruski A11"
+                - option "Ruski A2.1"
+                - option "Spanski"
+                - option "Pravo"
+                - option "FU"
+                - option "FKT"
+                - option "Prehrambena tehnologija"
+                - option "Filoloski"
+                - option "Ekonomija FMEFB"
+                - option "PMB"
+                - option "HS"
+                - option "Psihologija"
+                - option "Sportski menadzment"
+                - option "Geodezija"
+                - option "Matematika"
+                - option "Politehnika"
+                - option "Primijenjena matematika"
+            - generic [ref=f4e51]:
+              - generic [ref=f4e52]: Godina studija
+              - combobox "Godina studija" [ref=f4e54] [cursor=pointer]:
+                - option "Sve godine" [selected]
+                - option "I godina"
+                - option "II godina"
+                - option "III godina"
+                - option "IV godina"
+                - option "Master"
+                - option "Doktorske studije"
+            - generic [ref=f4e55]:
+              - generic [ref=f4e56]: Predmet (opciono)
+              - combobox "Predmet (opciono)" [disabled] [ref=f4e58] [cursor=pointer]:
+                - option "—" [selected]
+          - paragraph [ref=f4e59]: Izaberite program i godinu da vidite šta studenti tamo vide.
+          - paragraph [ref=f4e60]: Predmet se bira nakon programa i godine.
+        - generic [ref=f4e61]:
+          - generic [ref=f4e62]:
+            - generic [ref=f4e63]:
+              - generic [ref=f4e64]: Naslov
+              - textbox "Naslov" [ref=f4e65]
+            - generic [ref=f4e66]:
+              - generic [ref=f4e67]: Tip
+              - combobox "Tip" [ref=f4e69] [cursor=pointer]:
+                - option "Knjiga" [selected]
+                - option "Skripta"
+                - option "Ostali materijal"
+            - generic [ref=f4e70]:
+              - generic [ref=f4e71]: Cijena
+              - spinbutton "Cijena" [ref=f4e72]
+            - button "Dodaj" [disabled] [ref=f4e73]
+          - paragraph [ref=f4e74]: Izaberite program i godinu iznad da bi novi materijal odmah bio vidljiv studentima.
+        - generic [ref=f4e75]:
+          - searchbox "Pretraži materijale…" [ref=f4e76]
+          - combobox [ref=f4e79] [cursor=pointer]:
+            - option "Svi tipovi" [selected]
+            - option "Knjiga"
+            - option "Skripta"
+            - option "Ostali materijal"
+          - generic [ref=f4e80]:
+            - checkbox "Prikaži neaktivne" [ref=f4e81]
+            - text: Prikaži neaktivne
+          - generic [ref=f4e82]: "198"
+        - list [ref=f4e83]:
+          - listitem [ref=f4e84]:
+            - generic [ref=f4e85]:
+              - generic [ref=f4e86]:
+                - paragraph [ref=f4e87]: "01"
+                - paragraph [ref=f4e88]:
+                  - generic [ref=f4e89]: Ostali materijal
+                  - generic [ref=f4e90]: 13,00 €
+              - generic [ref=f4e91]:
+                - button "Izmijeni" [ref=f4e92] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e93] [cursor=pointer]
+            - generic [ref=f4e94]:
+              - generic [ref=f4e95]: Dodijeljen
+              - generic [ref=f4e96]:
+                - text: Ruski A2.1 · I godina · Audio
+                - button "Ukloni iz ovog programa" [ref=f4e97] [cursor=pointer]: ×
+              - generic [ref=f4e98]:
+                - text: Engleski · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e99] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e100] [cursor=pointer]
+          - listitem [ref=f4e101]:
+            - generic [ref=f4e102]:
+              - generic [ref=f4e103]:
+                - paragraph [ref=f4e104]: "02"
+                - paragraph [ref=f4e105]:
+                  - generic [ref=f4e106]: Ostali materijal
+                  - generic [ref=f4e107]: 15,50 €
+              - generic [ref=f4e108]:
+                - button "Izmijeni" [ref=f4e109] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e110] [cursor=pointer]
+            - generic [ref=f4e111]:
+              - generic [ref=f4e112]: Dodijeljen
+              - generic [ref=f4e113]:
+                - text: Ruski A2.1 · I godina · Audio
+                - button "Ukloni iz ovog programa" [ref=f4e114] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e115] [cursor=pointer]
+          - listitem [ref=f4e116]:
+            - generic [ref=f4e117]:
+              - generic [ref=f4e118]:
+                - paragraph [ref=f4e119]: "03"
+                - paragraph [ref=f4e120]:
+                  - generic [ref=f4e121]: Ostali materijal
+                  - generic [ref=f4e122]: 18,00 €
+              - generic [ref=f4e123]:
+                - button "Izmijeni" [ref=f4e124] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e125] [cursor=pointer]
+            - generic [ref=f4e126]:
+              - generic [ref=f4e127]: Dodijeljen
+              - generic [ref=f4e128]:
+                - text: Ruski A2.1 · I godina · Audio
+                - button "Ukloni iz ovog programa" [ref=f4e129] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e130] [cursor=pointer]
+          - listitem [ref=f4e131]:
+            - generic [ref=f4e132]:
+              - generic [ref=f4e133]:
+                - paragraph [ref=f4e134]: "04"
+                - paragraph [ref=f4e135]:
+                  - generic [ref=f4e136]: Ostali materijal
+                  - generic [ref=f4e137]: 8,00 €
+              - generic [ref=f4e138]:
+                - button "Izmijeni" [ref=f4e139] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e140] [cursor=pointer]
+            - generic [ref=f4e141]:
+              - generic [ref=f4e142]: Dodijeljen
+              - generic [ref=f4e143]:
+                - text: Ruski A2.1 · I godina · Audio
+                - button "Ukloni iz ovog programa" [ref=f4e144] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e145] [cursor=pointer]
+          - listitem [ref=f4e146]:
+            - generic [ref=f4e147]:
+              - generic [ref=f4e148]:
+                - paragraph [ref=f4e149]: "05"
+                - paragraph [ref=f4e150]:
+                  - generic [ref=f4e151]: Ostali materijal
+                  - generic [ref=f4e152]: 10,50 €
+              - generic [ref=f4e153]:
+                - button "Izmijeni" [ref=f4e154] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e155] [cursor=pointer]
+            - generic [ref=f4e156]:
+              - generic [ref=f4e157]: Dodijeljen
+              - generic [ref=f4e158]:
+                - text: Ruski A2.1 · I godina · Audio
+                - button "Ukloni iz ovog programa" [ref=f4e159] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e160] [cursor=pointer]
+          - listitem [ref=f4e161]:
+            - generic [ref=f4e162]:
+              - generic [ref=f4e163]:
+                - paragraph [ref=f4e164]: "06"
+                - paragraph [ref=f4e165]:
+                  - generic [ref=f4e166]: Ostali materijal
+                  - generic [ref=f4e167]: 13,00 €
+              - generic [ref=f4e168]:
+                - button "Izmijeni" [ref=f4e169] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e170] [cursor=pointer]
+            - generic [ref=f4e171]:
+              - generic [ref=f4e172]: Dodijeljen
+              - generic [ref=f4e173]:
+                - text: Ruski A2.1 · I godina · Audio
+                - button "Ukloni iz ovog programa" [ref=f4e174] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e175] [cursor=pointer]
+          - listitem [ref=f4e176]:
+            - generic [ref=f4e177]:
+              - generic [ref=f4e178]:
+                - paragraph [ref=f4e179]: "07"
+                - paragraph [ref=f4e180]:
+                  - generic [ref=f4e181]: Ostali materijal
+                  - generic [ref=f4e182]: 15,50 €
+              - generic [ref=f4e183]:
+                - button "Izmijeni" [ref=f4e184] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e185] [cursor=pointer]
+            - generic [ref=f4e186]:
+              - generic [ref=f4e187]: Dodijeljen
+              - generic [ref=f4e188]:
+                - text: Ruski A2.1 · I godina · Audio
+                - button "Ukloni iz ovog programa" [ref=f4e189] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e190] [cursor=pointer]
+          - listitem [ref=f4e191]:
+            - generic [ref=f4e192]:
+              - generic [ref=f4e193]:
+                - paragraph [ref=f4e194]: "08"
+                - paragraph [ref=f4e195]:
+                  - generic [ref=f4e196]: Ostali materijal
+                  - generic [ref=f4e197]: 18,00 €
+              - generic [ref=f4e198]:
+                - button "Izmijeni" [ref=f4e199] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e200] [cursor=pointer]
+            - generic [ref=f4e201]:
+              - generic [ref=f4e202]: Dodijeljen
+              - generic [ref=f4e203]:
+                - text: Ruski A2.1 · I godina · Audio
+                - button "Ukloni iz ovog programa" [ref=f4e204] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e205] [cursor=pointer]
+          - listitem [ref=f4e206]:
+            - generic [ref=f4e207]:
+              - generic [ref=f4e208]:
+                - paragraph [ref=f4e209]: "09"
+                - paragraph [ref=f4e210]:
+                  - generic [ref=f4e211]: Ostali materijal
+                  - generic [ref=f4e212]: 8,00 €
+              - generic [ref=f4e213]:
+                - button "Izmijeni" [ref=f4e214] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e215] [cursor=pointer]
+            - generic [ref=f4e216]:
+              - generic [ref=f4e217]: Dodijeljen
+              - generic [ref=f4e218]:
+                - text: Ruski A2.1 · I godina · Audio
+                - button "Ukloni iz ovog programa" [ref=f4e219] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e220] [cursor=pointer]
+          - listitem [ref=f4e221]:
+            - generic [ref=f4e222]:
+              - generic [ref=f4e223]:
+                - paragraph [ref=f4e224]: "10"
+                - paragraph [ref=f4e225]:
+                  - generic [ref=f4e226]: Ostali materijal
+                  - generic [ref=f4e227]: 10,50 €
+              - generic [ref=f4e228]:
+                - button "Izmijeni" [ref=f4e229] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e230] [cursor=pointer]
+            - generic [ref=f4e231]:
+              - generic [ref=f4e232]: Dodijeljen
+              - generic [ref=f4e233]:
+                - text: Ruski A2.1 · I godina · Audio
+                - button "Ukloni iz ovog programa" [ref=f4e234] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e235] [cursor=pointer]
+          - listitem [ref=f4e236]:
+            - generic [ref=f4e237]:
+              - generic [ref=f4e238]:
+                - paragraph [ref=f4e239]: "11"
+                - paragraph [ref=f4e240]:
+                  - generic [ref=f4e241]: Ostali materijal
+                  - generic [ref=f4e242]: 13,00 €
+              - generic [ref=f4e243]:
+                - button "Izmijeni" [ref=f4e244] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e245] [cursor=pointer]
+            - generic [ref=f4e246]:
+              - generic [ref=f4e247]: Dodijeljen
+              - generic [ref=f4e248]:
+                - text: Ruski A2.1 · I godina · Audio
+                - button "Ukloni iz ovog programa" [ref=f4e249] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e250] [cursor=pointer]
+          - listitem [ref=f4e251]:
+            - generic [ref=f4e252]:
+              - generic [ref=f4e253]:
+                - paragraph [ref=f4e254]: "12"
+                - paragraph [ref=f4e255]:
+                  - generic [ref=f4e256]: Ostali materijal
+                  - generic [ref=f4e257]: 15,50 €
+              - generic [ref=f4e258]:
+                - button "Izmijeni" [ref=f4e259] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e260] [cursor=pointer]
+            - generic [ref=f4e261]:
+              - generic [ref=f4e262]: Dodijeljen
+              - generic [ref=f4e263]:
+                - text: Ruski A2.1 · I godina · Audio
+                - button "Ukloni iz ovog programa" [ref=f4e264] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e265] [cursor=pointer]
+          - listitem [ref=f4e266]:
+            - generic [ref=f4e267]:
+              - generic [ref=f4e268]:
+                - paragraph [ref=f4e269]: "13"
+                - paragraph [ref=f4e270]:
+                  - generic [ref=f4e271]: Ostali materijal
+                  - generic [ref=f4e272]: 18,00 €
+              - generic [ref=f4e273]:
+                - button "Izmijeni" [ref=f4e274] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e275] [cursor=pointer]
+            - generic [ref=f4e276]:
+              - generic [ref=f4e277]: Dodijeljen
+              - generic [ref=f4e278]:
+                - text: Ruski A2.1 · I godina · Audio
+                - button "Ukloni iz ovog programa" [ref=f4e279] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e280] [cursor=pointer]
+          - listitem [ref=f4e281]:
+            - generic [ref=f4e282]:
+              - generic [ref=f4e283]:
+                - paragraph [ref=f4e284]: "14"
+                - paragraph [ref=f4e285]:
+                  - generic [ref=f4e286]: Ostali materijal
+                  - generic [ref=f4e287]: 8,00 €
+              - generic [ref=f4e288]:
+                - button "Izmijeni" [ref=f4e289] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e290] [cursor=pointer]
+            - generic [ref=f4e291]:
+              - generic [ref=f4e292]: Dodijeljen
+              - generic [ref=f4e293]:
+                - text: Ruski A2.1 · I godina · Audio
+                - button "Ukloni iz ovog programa" [ref=f4e294] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e295] [cursor=pointer]
+          - listitem [ref=f4e296]:
+            - generic [ref=f4e297]:
+              - generic [ref=f4e298]:
+                - paragraph [ref=f4e299]: "15"
+                - paragraph [ref=f4e300]:
+                  - generic [ref=f4e301]: Ostali materijal
+                  - generic [ref=f4e302]: 10,50 €
+              - generic [ref=f4e303]:
+                - button "Izmijeni" [ref=f4e304] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e305] [cursor=pointer]
+            - generic [ref=f4e306]:
+              - generic [ref=f4e307]: Dodijeljen
+              - generic [ref=f4e308]:
+                - text: Ruski A2.1 · I godina · Audio
+                - button "Ukloni iz ovog programa" [ref=f4e309] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e310] [cursor=pointer]
+          - listitem [ref=f4e311]:
+            - generic [ref=f4e312]:
+              - generic [ref=f4e313]:
+                - paragraph [ref=f4e314]: "16"
+                - paragraph [ref=f4e315]:
+                  - generic [ref=f4e316]: Ostali materijal
+                  - generic [ref=f4e317]: 13,00 €
+              - generic [ref=f4e318]:
+                - button "Izmijeni" [ref=f4e319] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e320] [cursor=pointer]
+            - generic [ref=f4e321]:
+              - generic [ref=f4e322]: Dodijeljen
+              - generic [ref=f4e323]:
+                - text: Ruski A2.1 · I godina · Audio
+                - button "Ukloni iz ovog programa" [ref=f4e324] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e325] [cursor=pointer]
+          - listitem [ref=f4e326]:
+            - generic [ref=f4e327]:
+              - generic [ref=f4e328]:
+                - paragraph [ref=f4e329]: "17"
+                - paragraph [ref=f4e330]:
+                  - generic [ref=f4e331]: Ostali materijal
+                  - generic [ref=f4e332]: 15,50 €
+              - generic [ref=f4e333]:
+                - button "Izmijeni" [ref=f4e334] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e335] [cursor=pointer]
+            - generic [ref=f4e336]:
+              - generic [ref=f4e337]: Dodijeljen
+              - generic [ref=f4e338]:
+                - text: Ruski A2.1 · I godina · Audio
+                - button "Ukloni iz ovog programa" [ref=f4e339] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e340] [cursor=pointer]
+          - listitem [ref=f4e341]:
+            - generic [ref=f4e342]:
+              - generic [ref=f4e343]:
+                - paragraph [ref=f4e344]: "18"
+                - paragraph [ref=f4e345]:
+                  - generic [ref=f4e346]: Ostali materijal
+                  - generic [ref=f4e347]: 18,00 €
+              - generic [ref=f4e348]:
+                - button "Izmijeni" [ref=f4e349] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e350] [cursor=pointer]
+            - generic [ref=f4e351]:
+              - generic [ref=f4e352]: Dodijeljen
+              - generic [ref=f4e353]:
+                - text: Ruski A2.1 · I godina · Audio
+                - button "Ukloni iz ovog programa" [ref=f4e354] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e355] [cursor=pointer]
+          - listitem [ref=f4e356]:
+            - generic [ref=f4e357]:
+              - generic [ref=f4e358]:
+                - paragraph [ref=f4e359]: "19"
+                - paragraph [ref=f4e360]:
+                  - generic [ref=f4e361]: Ostali materijal
+                  - generic [ref=f4e362]: 8,00 €
+              - generic [ref=f4e363]:
+                - button "Izmijeni" [ref=f4e364] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e365] [cursor=pointer]
+            - generic [ref=f4e366]:
+              - generic [ref=f4e367]: Dodijeljen
+              - generic [ref=f4e368]:
+                - text: Ruski A2.1 · I godina · Audio
+                - button "Ukloni iz ovog programa" [ref=f4e369] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e370] [cursor=pointer]
+          - listitem [ref=f4e371]:
+            - generic [ref=f4e372]:
+              - generic [ref=f4e373]:
+                - paragraph [ref=f4e374]: "20"
+                - paragraph [ref=f4e375]:
+                  - generic [ref=f4e376]: Ostali materijal
+                  - generic [ref=f4e377]: 10,50 €
+              - generic [ref=f4e378]:
+                - button "Izmijeni" [ref=f4e379] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e380] [cursor=pointer]
+            - generic [ref=f4e381]:
+              - generic [ref=f4e382]: Dodijeljen
+              - generic [ref=f4e383]:
+                - text: Ruski A2.1 · I godina · Audio
+                - button "Ukloni iz ovog programa" [ref=f4e384] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e385] [cursor=pointer]
+          - listitem [ref=f4e386]:
+            - generic [ref=f4e387]:
+              - generic [ref=f4e388]:
+                - paragraph [ref=f4e389]: A 1.1 Elementary I
+                - paragraph [ref=f4e390]:
+                  - generic [ref=f4e391]: Knjiga
+                  - generic [ref=f4e392]: 15,50 €
+              - generic [ref=f4e393]:
+                - button "Izmijeni" [ref=f4e394] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e395] [cursor=pointer]
+            - generic [ref=f4e396]:
+              - generic [ref=f4e397]: Dodijeljen
+              - generic [ref=f4e398]:
+                - text: Engleski · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e399] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e400] [cursor=pointer]
+          - listitem [ref=f4e401]:
+            - generic [ref=f4e402]:
+              - generic [ref=f4e403]:
+                - paragraph [ref=f4e404]: A 1.2 Elementary II
+                - paragraph [ref=f4e405]:
+                  - generic [ref=f4e406]: Knjiga
+                  - generic [ref=f4e407]: 18,00 €
+              - generic [ref=f4e408]:
+                - button "Izmijeni" [ref=f4e409] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e410] [cursor=pointer]
+            - generic [ref=f4e411]:
+              - generic [ref=f4e412]: Dodijeljen
+              - generic [ref=f4e413]:
+                - text: Engleski · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e414] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e415] [cursor=pointer]
+          - listitem [ref=f4e416]:
+            - generic [ref=f4e417]:
+              - generic [ref=f4e418]:
+                - paragraph [ref=f4e419]: A 2.1 Pre intermediate I
+                - paragraph [ref=f4e420]:
+                  - generic [ref=f4e421]: Knjiga
+                  - generic [ref=f4e422]: 8,00 €
+              - generic [ref=f4e423]:
+                - button "Izmijeni" [ref=f4e424] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e425] [cursor=pointer]
+            - generic [ref=f4e426]:
+              - generic [ref=f4e427]: Dodijeljen
+              - generic [ref=f4e428]:
+                - text: Engleski · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e429] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e430] [cursor=pointer]
+          - listitem [ref=f4e431]:
+            - generic [ref=f4e432]:
+              - generic [ref=f4e433]:
+                - paragraph [ref=f4e434]: A 2.2 Pre intermediate II
+                - paragraph [ref=f4e435]:
+                  - generic [ref=f4e436]: Knjiga
+                  - generic [ref=f4e437]: 10,50 €
+              - generic [ref=f4e438]:
+                - button "Izmijeni" [ref=f4e439] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e440] [cursor=pointer]
+            - generic [ref=f4e441]:
+              - generic [ref=f4e442]: Dodijeljen
+              - generic [ref=f4e443]:
+                - text: Engleski · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e444] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e445] [cursor=pointer]
+          - listitem [ref=f4e446]:
+            - generic [ref=f4e447]:
+              - generic [ref=f4e448]:
+                - paragraph [ref=f4e449]: A framework for classroom observations in English as a Foreign Language (EFL) teacher education
+                - paragraph [ref=f4e450]:
+                  - generic [ref=f4e451]: Ostali materijal
+                  - generic [ref=f4e452]: 15,50 €
+              - generic [ref=f4e453]:
+                - button "Izmijeni" [ref=f4e454] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e455] [cursor=pointer]
+            - generic [ref=f4e456]:
+              - generic [ref=f4e457]: Dodijeljen
+              - generic [ref=f4e458]:
+                - text: Filoloski · Master · praktikum 1 materijali
+                - button "Ukloni iz ovog programa" [ref=f4e459] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e460] [cursor=pointer]
+          - listitem [ref=f4e461]:
+            - generic [ref=f4e462]:
+              - generic [ref=f4e463]:
+                - paragraph [ref=f4e464]: Arhitektonske konstrukcije 3-skripta1
+                - paragraph [ref=f4e465]:
+                  - generic [ref=f4e466]: Skripta
+                  - generic [ref=f4e467]: 10,50 €
+              - generic [ref=f4e468]:
+                - button "Izmijeni" [ref=f4e469] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e470] [cursor=pointer]
+            - generic [ref=f4e471]:
+              - generic [ref=f4e472]: Dodijeljen
+              - generic [ref=f4e473]:
+                - text: Politehnika · Master · Drvene zgrade
+                - button "Ukloni iz ovog programa" [ref=f4e474] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e475] [cursor=pointer]
+          - listitem [ref=f4e476]:
+            - generic [ref=f4e477]:
+              - generic [ref=f4e478]:
+                - paragraph [ref=f4e479]: B1.1 Intermediate I
+                - paragraph [ref=f4e480]:
+                  - generic [ref=f4e481]: Knjiga
+                  - generic [ref=f4e482]: 13,00 €
+              - generic [ref=f4e483]:
+                - button "Izmijeni" [ref=f4e484] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e485] [cursor=pointer]
+            - generic [ref=f4e486]:
+              - generic [ref=f4e487]: Dodijeljen
+              - generic [ref=f4e488]:
+                - text: Engleski · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e489] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e490] [cursor=pointer]
+          - listitem [ref=f4e491]:
+            - generic [ref=f4e492]:
+              - generic [ref=f4e493]:
+                - paragraph [ref=f4e494]: B1.2 Intermediate II
+                - paragraph [ref=f4e495]:
+                  - generic [ref=f4e496]: Knjiga
+                  - generic [ref=f4e497]: 15,50 €
+              - generic [ref=f4e498]:
+                - button "Izmijeni" [ref=f4e499] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e500] [cursor=pointer]
+            - generic [ref=f4e501]:
+              - generic [ref=f4e502]: Dodijeljen
+              - generic [ref=f4e503]:
+                - text: Engleski · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e504] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e505] [cursor=pointer]
+          - listitem [ref=f4e506]:
+            - generic [ref=f4e507]:
+              - generic [ref=f4e508]:
+                - paragraph [ref=f4e509]: B2.1 Upper Intermediate I
+                - paragraph [ref=f4e510]:
+                  - generic [ref=f4e511]: Knjiga
+                  - generic [ref=f4e512]: 18,00 €
+              - generic [ref=f4e513]:
+                - button "Izmijeni" [ref=f4e514] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e515] [cursor=pointer]
+            - generic [ref=f4e516]:
+              - generic [ref=f4e517]: Dodijeljen
+              - generic [ref=f4e518]:
+                - text: Engleski · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e519] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e520] [cursor=pointer]
+          - listitem [ref=f4e521]:
+            - generic [ref=f4e522]:
+              - generic [ref=f4e523]:
+                - paragraph [ref=f4e524]: B2.2 Upper Intermediate II
+                - paragraph [ref=f4e525]:
+                  - generic [ref=f4e526]: Knjiga
+                  - generic [ref=f4e527]: 8,00 €
+              - generic [ref=f4e528]:
+                - button "Izmijeni" [ref=f4e529] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e530] [cursor=pointer]
+            - generic [ref=f4e531]:
+              - generic [ref=f4e532]: Dodijeljen
+              - generic [ref=f4e533]:
+                - text: Engleski · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e534] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e535] [cursor=pointer]
+          - listitem [ref=f4e536]:
+            - generic [ref=f4e537]:
+              - generic [ref=f4e538]:
+                - paragraph [ref=f4e539]: Basic kanji book-Japanski jezik-A1.2
+                - paragraph [ref=f4e540]:
+                  - generic [ref=f4e541]: Knjiga
+                  - generic [ref=f4e542]: 10,50 €
+              - generic [ref=f4e543]:
+                - button "Izmijeni" [ref=f4e544] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e545] [cursor=pointer]
+            - generic [ref=f4e546]:
+              - generic [ref=f4e547]: Dodijeljen
+              - generic [ref=f4e548]:
+                - text: Japanski · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e549] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e550] [cursor=pointer]
+          - listitem [ref=f4e551]:
+            - generic [ref=f4e552]:
+              - generic [ref=f4e553]:
+                - paragraph [ref=f4e554]: Biznis statistika - Business and Economics Douglas Lind - 2018 ljetnji semestar
+                - paragraph [ref=f4e555]:
+                  - generic [ref=f4e556]: Knjiga
+                  - generic [ref=f4e557]: 10,50 €
+              - generic [ref=f4e558]:
+                - button "Izmijeni" [ref=f4e559] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e560] [cursor=pointer]
+            - generic [ref=f4e561]:
+              - generic [ref=f4e562]: Dodijeljen
+              - generic [ref=f4e563]:
+                - text: Ekonomija FMEFB · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e564] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e565] [cursor=pointer]
+          - listitem [ref=f4e566]:
+            - generic [ref=f4e567]:
+              - generic [ref=f4e568]:
+                - paragraph [ref=f4e569]: Bogišićeve kodifikacije
+                - paragraph [ref=f4e570]:
+                  - generic [ref=f4e571]: Knjiga
+                  - generic [ref=f4e572]: 13,00 €
+              - generic [ref=f4e573]:
+                - button "Izmijeni" [ref=f4e574] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e575] [cursor=pointer]
+            - generic [ref=f4e576]:
+              - generic [ref=f4e577]: Dodijeljen
+              - generic [ref=f4e578]:
+                - text: Pravo · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e579] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e580] [cursor=pointer]
+          - listitem [ref=f4e581]:
+            - generic [ref=f4e582]:
+              - generic [ref=f4e583]:
+                - paragraph [ref=f4e584]: C1.1 Advanced I
+                - paragraph [ref=f4e585]:
+                  - generic [ref=f4e586]: Knjiga
+                  - generic [ref=f4e587]: 10,50 €
+              - generic [ref=f4e588]:
+                - button "Izmijeni" [ref=f4e589] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e590] [cursor=pointer]
+            - generic [ref=f4e591]:
+              - generic [ref=f4e592]: Dodijeljen
+              - generic [ref=f4e593]:
+                - text: Engleski · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e594] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e595] [cursor=pointer]
+          - listitem [ref=f4e596]:
+            - generic [ref=f4e597]:
+              - generic [ref=f4e598]:
+                - paragraph [ref=f4e599]: C1.2 Advanced II
+                - paragraph [ref=f4e600]:
+                  - generic [ref=f4e601]: Knjiga
+                  - generic [ref=f4e602]: 13,00 €
+              - generic [ref=f4e603]:
+                - button "Izmijeni" [ref=f4e604] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e605] [cursor=pointer]
+            - generic [ref=f4e606]:
+              - generic [ref=f4e607]: Dodijeljen
+              - generic [ref=f4e608]:
+                - text: Engleski · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e609] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e610] [cursor=pointer]
+          - listitem [ref=f4e611]:
+            - generic [ref=f4e612]:
+              - generic [ref=f4e613]:
+                - paragraph [ref=f4e614]: Chinese Standard Course HSK 1- Work Book
+                - paragraph [ref=f4e615]:
+                  - generic [ref=f4e616]: Knjiga
+                  - generic [ref=f4e617]: 13,00 €
+              - generic [ref=f4e618]:
+                - button "Izmijeni" [ref=f4e619] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e620] [cursor=pointer]
+            - generic [ref=f4e621]:
+              - generic [ref=f4e622]: Dodijeljen
+              - generic [ref=f4e623]:
+                - text: Kineski · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e624] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e625] [cursor=pointer]
+          - listitem [ref=f4e626]:
+            - generic [ref=f4e627]:
+              - generic [ref=f4e628]:
+                - paragraph [ref=f4e629]: Chinese Standard Course HSK 1 - Book
+                - paragraph [ref=f4e630]:
+                  - generic [ref=f4e631]: Knjiga
+                  - generic [ref=f4e632]: 15,50 €
+              - generic [ref=f4e633]:
+                - button "Izmijeni" [ref=f4e634] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e635] [cursor=pointer]
+            - generic [ref=f4e636]:
+              - generic [ref=f4e637]: Dodijeljen
+              - generic [ref=f4e638]:
+                - text: Kineski · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e639] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e640] [cursor=pointer]
+          - listitem [ref=f4e641]:
+            - generic [ref=f4e642]:
+              - generic [ref=f4e643]:
+                - paragraph [ref=f4e644]: Classroom observations
+                - paragraph [ref=f4e645]:
+                  - generic [ref=f4e646]: Ostali materijal
+                  - generic [ref=f4e647]: 18,00 €
+              - generic [ref=f4e648]:
+                - button "Izmijeni" [ref=f4e649] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e650] [cursor=pointer]
+            - generic [ref=f4e651]:
+              - generic [ref=f4e652]: Dodijeljen
+              - generic [ref=f4e653]:
+                - text: Filoloski · Master · praktikum 1 materijali
+                - button "Ukloni iz ovog programa" [ref=f4e654] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e655] [cursor=pointer]
+          - listitem [ref=f4e656]:
+            - generic [ref=f4e657]:
+              - generic [ref=f4e658]:
+                - paragraph [ref=f4e659]: Crnogorski roman -Pavle Goranovic
+                - paragraph [ref=f4e660]:
+                  - generic [ref=f4e661]: Knjiga
+                  - generic [ref=f4e662]: 15,50 €
+              - generic [ref=f4e663]:
+                - button "Izmijeni" [ref=f4e664] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e665] [cursor=pointer]
+            - generic [ref=f4e666]:
+              - generic [ref=f4e667]: Dodijeljen
+              - generic [ref=f4e668]:
+                - text: FU · III godina
+                - button "Ukloni iz ovog programa" [ref=f4e669] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e670] [cursor=pointer]
+          - listitem [ref=f4e671]:
+            - generic [ref=f4e672]:
+              - generic [ref=f4e673]:
+                - paragraph [ref=f4e674]: Cuentos breves y extraordinarios -Jorge Luis Borges
+                - paragraph [ref=f4e675]:
+                  - generic [ref=f4e676]: Knjiga
+                  - generic [ref=f4e677]: 13,00 €
+              - generic [ref=f4e678]:
+                - button "Izmijeni" [ref=f4e679] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e680] [cursor=pointer]
+            - generic [ref=f4e681]:
+              - generic [ref=f4e682]: Dodijeljen
+              - generic [ref=f4e683]:
+                - text: Spanski · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e684] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e685] [cursor=pointer]
+          - listitem [ref=f4e686]:
+            - generic [ref=f4e687]:
+              - generic [ref=f4e688]:
+                - paragraph [ref=f4e689]: Dezmond Dinan - Mijenjanje evrope Istorija evropske unije
+                - paragraph [ref=f4e690]:
+                  - generic [ref=f4e691]: Knjiga
+                  - generic [ref=f4e692]: 8,00 €
+              - generic [ref=f4e693]:
+                - button "Izmijeni" [ref=f4e694] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e695] [cursor=pointer]
+            - generic [ref=f4e696]:
+              - generic [ref=f4e697]: Dodijeljen
+              - generic [ref=f4e698]:
+                - text: HS · II godina · Istorija evropskih integracija
+                - button "Ukloni iz ovog programa" [ref=f4e699] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e700] [cursor=pointer]
+          - listitem [ref=f4e701]:
+            - generic [ref=f4e702]:
+              - generic [ref=f4e703]:
+                - paragraph [ref=f4e704]: Digitalni marketing - Dejv Celfi i PR Smit
+                - paragraph [ref=f4e705]:
+                  - generic [ref=f4e706]: Knjiga
+                  - generic [ref=f4e707]: 13,00 €
+              - generic [ref=f4e708]:
+                - button "Izmijeni" [ref=f4e709] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e710] [cursor=pointer]
+            - generic [ref=f4e711]:
+              - generic [ref=f4e712]: Dodijeljen
+              - generic [ref=f4e713]:
+                - text: Ekonomija FMEFB · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e714] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e715] [cursor=pointer]
+          - listitem [ref=f4e716]:
+            - generic [ref=f4e717]:
+              - generic [ref=f4e718]:
+                - paragraph [ref=f4e719]: Diplomatski protokol - Zoran Veljić - 2017 ljetnji semestar
+                - paragraph [ref=f4e720]:
+                  - generic [ref=f4e721]: Knjiga
+                  - generic [ref=f4e722]: 18,00 €
+              - generic [ref=f4e723]:
+                - button "Izmijeni" [ref=f4e724] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e725] [cursor=pointer]
+            - generic [ref=f4e726]:
+              - generic [ref=f4e727]: Dodijeljen
+              - generic [ref=f4e728]:
+                - text: HS · III godina · Diplomatsko pravo i diplomatska profesija - 2018 ljetnji semestar
+                - button "Ukloni iz ovog programa" [ref=f4e729] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e730] [cursor=pointer]
+          - listitem [ref=f4e731]:
+            - generic [ref=f4e732]:
+              - generic [ref=f4e733]:
+                - paragraph [ref=f4e734]: Diplomatsko i konzularno - Miodrag Mitic - 2017 ljetnji semestar
+                - paragraph [ref=f4e735]:
+                  - generic [ref=f4e736]: Knjiga
+                  - generic [ref=f4e737]: 8,00 €
+              - generic [ref=f4e738]:
+                - button "Izmijeni" [ref=f4e739] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e740] [cursor=pointer]
+            - generic [ref=f4e741]:
+              - generic [ref=f4e742]: Dodijeljen
+              - generic [ref=f4e743]:
+                - text: HS · III godina · Diplomatsko pravo i diplomatska profesija - 2018 ljetnji semestar
+                - button "Ukloni iz ovog programa" [ref=f4e744] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e745] [cursor=pointer]
+          - listitem [ref=f4e746]:
+            - generic [ref=f4e747]:
+              - generic [ref=f4e748]:
+                - paragraph [ref=f4e749]: Drevne muzicke kulture CG 2-Manja Radulovic
+                - paragraph [ref=f4e750]:
+                  - generic [ref=f4e751]: Knjiga
+                  - generic [ref=f4e752]: 15,50 €
+              - generic [ref=f4e753]:
+                - button "Izmijeni" [ref=f4e754] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e755] [cursor=pointer]
+            - generic [ref=f4e756]:
+              - generic [ref=f4e757]: Dodijeljen
+              - generic [ref=f4e758]:
+                - text: FKT · III godina
+                - button "Ukloni iz ovog programa" [ref=f4e759] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e760] [cursor=pointer]
+          - listitem [ref=f4e761]:
+            - generic [ref=f4e762]:
+              - generic [ref=f4e763]:
+                - paragraph [ref=f4e764]: Drevne muzicke kulture Crne Gore-Maja Radulovic Vulic
+                - paragraph [ref=f4e765]:
+                  - generic [ref=f4e766]: Knjiga
+                  - generic [ref=f4e767]: 18,00 €
+              - generic [ref=f4e768]:
+                - button "Izmijeni" [ref=f4e769] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e770] [cursor=pointer]
+            - generic [ref=f4e771]:
+              - generic [ref=f4e772]: Dodijeljen
+              - generic [ref=f4e773]:
+                - text: FKT · III godina
+                - button "Ukloni iz ovog programa" [ref=f4e774] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e775] [cursor=pointer]
+          - listitem [ref=f4e776]:
+            - generic [ref=f4e777]:
+              - generic [ref=f4e778]:
+                - paragraph [ref=f4e779]: Drugi dvadeseti vijek(vek) - Nikola Samardzic - 2019 ljetnji semestar
+                - paragraph [ref=f4e780]:
+                  - generic [ref=f4e781]: Knjiga
+                  - generic [ref=f4e782]: 10,50 €
+              - generic [ref=f4e783]:
+                - button "Izmijeni" [ref=f4e784] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e785] [cursor=pointer]
+            - generic [ref=f4e786]:
+              - generic [ref=f4e787]: Dodijeljen
+              - generic [ref=f4e788]:
+                - text: HS · I godina · Istorija evrope - 2019 ljetnji semestar
+                - button "Ukloni iz ovog programa" [ref=f4e789] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e790] [cursor=pointer]
+          - listitem [ref=f4e791]:
+            - generic [ref=f4e792]:
+              - generic [ref=f4e793]:
+                - paragraph [ref=f4e794]: Ekonomika i menadzment turizma - Turizam, ekonomske osnove - 2017 ljetnji semestar
+                - paragraph [ref=f4e795]:
+                  - generic [ref=f4e796]: Knjiga
+                  - generic [ref=f4e797]: 13,00 €
+              - generic [ref=f4e798]:
+                - button "Izmijeni" [ref=f4e799] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e800] [cursor=pointer]
+            - generic [ref=f4e801]:
+              - generic [ref=f4e802]: Dodijeljen
+              - generic [ref=f4e803]:
+                - text: PMB · III godina
+                - button "Ukloni iz ovog programa" [ref=f4e804] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e805] [cursor=pointer]
+          - listitem [ref=f4e806]:
+            - generic [ref=f4e807]:
+              - generic [ref=f4e808]:
+                - paragraph [ref=f4e809]: Emphasis with inversion
+                - paragraph [ref=f4e810]:
+                  - generic [ref=f4e811]: Knjiga
+                  - generic [ref=f4e812]: 10,50 €
+              - generic [ref=f4e813]:
+                - button "Izmijeni" [ref=f4e814] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e815] [cursor=pointer]
+            - generic [ref=f4e816]:
+              - generic [ref=f4e817]: Dodijeljen
+              - generic [ref=f4e818]:
+                - text: Filoloski · II godina · gramatika
+                - button "Ukloni iz ovog programa" [ref=f4e819] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e820] [cursor=pointer]
+          - listitem [ref=f4e821]:
+            - generic [ref=f4e822]:
+              - generic [ref=f4e823]:
+                - paragraph [ref=f4e824]: Engleska knjizevnost 6-prvi dio
+                - paragraph [ref=f4e825]:
+                  - generic [ref=f4e826]: Knjiga
+                  - generic [ref=f4e827]: 15,50 €
+              - generic [ref=f4e828]:
+                - button "Izmijeni" [ref=f4e829] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e830] [cursor=pointer]
+            - generic [ref=f4e831]:
+              - generic [ref=f4e832]: Dodijeljen
+              - generic [ref=f4e833]:
+                - text: Filoloski · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e834] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e835] [cursor=pointer]
+          - listitem [ref=f4e836]:
+            - generic [ref=f4e837]:
+              - generic [ref=f4e838]:
+                - paragraph [ref=f4e839]: Engleska knjizevnost-drugi dio
+                - paragraph [ref=f4e840]:
+                  - generic [ref=f4e841]: Knjiga
+                  - generic [ref=f4e842]: 18,00 €
+              - generic [ref=f4e843]:
+                - button "Izmijeni" [ref=f4e844] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e845] [cursor=pointer]
+            - generic [ref=f4e846]:
+              - generic [ref=f4e847]: Dodijeljen
+              - generic [ref=f4e848]:
+                - text: Filoloski · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e849] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e850] [cursor=pointer]
+          - listitem [ref=f4e851]:
+            - generic [ref=f4e852]:
+              - generic [ref=f4e853]:
+                - paragraph [ref=f4e854]: Etika u medijima - Luis Alvin Dej
+                - paragraph [ref=f4e855]:
+                  - generic [ref=f4e856]: Knjiga
+                  - generic [ref=f4e857]: 10,50 €
+              - generic [ref=f4e858]:
+                - button "Izmijeni" [ref=f4e859] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e860] [cursor=pointer]
+            - generic [ref=f4e861]:
+              - generic [ref=f4e862]: Dodijeljen
+              - generic [ref=f4e863]:
+                - text: HS · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e864] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e865] [cursor=pointer]
+          - listitem [ref=f4e866]:
+            - generic [ref=f4e867]:
+              - generic [ref=f4e868]:
+                - paragraph [ref=f4e869]: Etika u sportu - Hrestomatija 2016. godina
+                - paragraph [ref=f4e870]:
+                  - generic [ref=f4e871]: Skripta
+                  - generic [ref=f4e872]: 15,50 €
+              - generic [ref=f4e873]:
+                - button "Izmijeni" [ref=f4e874] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e875] [cursor=pointer]
+            - generic [ref=f4e876]:
+              - generic [ref=f4e877]: Dodijeljen
+              - generic [ref=f4e878]:
+                - text: Sportski menadzment · III godina
+                - button "Ukloni iz ovog programa" [ref=f4e879] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e880] [cursor=pointer]
+          - listitem [ref=f4e881]:
+            - generic [ref=f4e882]:
+              - generic [ref=f4e883]:
+                - paragraph [ref=f4e884]: Evroatlantizam - Hrestomatija 2018 ljetnji semestar
+                - paragraph [ref=f4e885]:
+                  - generic [ref=f4e886]: Skripta
+                  - generic [ref=f4e887]: 13,00 €
+              - generic [ref=f4e888]:
+                - button "Izmijeni" [ref=f4e889] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e890] [cursor=pointer]
+            - generic [ref=f4e891]:
+              - generic [ref=f4e892]: Dodijeljen
+              - generic [ref=f4e893]:
+                - text: HS · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e894] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e895] [cursor=pointer]
+          - listitem [ref=f4e896]:
+            - generic [ref=f4e897]:
+              - generic [ref=f4e898]:
+                - paragraph [ref=f4e899]: Exploring grammar in contex - gramatika
+                - paragraph [ref=f4e900]:
+                  - generic [ref=f4e901]: Knjiga
+                  - generic [ref=f4e902]: 10,50 €
+              - generic [ref=f4e903]:
+                - button "Izmijeni" [ref=f4e904] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e905] [cursor=pointer]
+            - generic [ref=f4e906]:
+              - generic [ref=f4e907]: Dodijeljen
+              - generic [ref=f4e908]:
+                - text: Filoloski · III godina · Savremeni 6
+                - button "Ukloni iz ovog programa" [ref=f4e909] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e910] [cursor=pointer]
+          - listitem [ref=f4e911]:
+            - generic [ref=f4e912]:
+              - generic [ref=f4e913]:
+                - paragraph [ref=f4e914]: Filozofija sporta-Matija Skerebic
+                - paragraph [ref=f4e915]:
+                  - generic [ref=f4e916]: Knjiga
+                  - generic [ref=f4e917]: 18,00 €
+              - generic [ref=f4e918]:
+                - button "Izmijeni" [ref=f4e919] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e920] [cursor=pointer]
+            - generic [ref=f4e921]:
+              - generic [ref=f4e922]: Dodijeljen
+              - generic [ref=f4e923]:
+                - text: Sportski menadzment · I godina · Praktična filozofija sporta i života
+                - button "Ukloni iz ovog programa" [ref=f4e924] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e925] [cursor=pointer]
+          - listitem [ref=f4e926]:
+            - generic [ref=f4e927]:
+              - generic [ref=f4e928]:
+                - paragraph [ref=f4e929]: Globalizacija-Hrestomatija 2026 G
+                - paragraph [ref=f4e930]:
+                  - generic [ref=f4e931]: Skripta
+                  - generic [ref=f4e932]: 13,00 €
+              - generic [ref=f4e933]:
+                - button "Izmijeni" [ref=f4e934] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e935] [cursor=pointer]
+            - generic [ref=f4e936]:
+              - generic [ref=f4e937]: Dodijeljen
+              - generic [ref=f4e938]:
+                - text: HS · III godina
+                - button "Ukloni iz ovog programa" [ref=f4e939] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e940] [cursor=pointer]
+          - listitem [ref=f4e941]:
+            - generic [ref=f4e942]:
+              - generic [ref=f4e943]:
+                - paragraph [ref=f4e944]: Gradjansko pravo -Zoran Rasovic
+                - paragraph [ref=f4e945]:
+                  - generic [ref=f4e946]: Knjiga
+                  - generic [ref=f4e947]: 15,50 €
+              - generic [ref=f4e948]:
+                - button "Izmijeni" [ref=f4e949] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e950] [cursor=pointer]
+            - generic [ref=f4e951]:
+              - generic [ref=f4e952]: Dodijeljen
+              - generic [ref=f4e953]:
+                - text: Pravo · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e954] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e955] [cursor=pointer]
+          - listitem [ref=f4e956]:
+            - generic [ref=f4e957]:
+              - generic [ref=f4e958]:
+                - paragraph [ref=f4e959]: Gradjansko procesno pravo - 2017 ljetnji semestar
+                - paragraph [ref=f4e960]:
+                  - generic [ref=f4e961]: Knjiga
+                  - generic [ref=f4e962]: 18,00 €
+              - generic [ref=f4e963]:
+                - button "Izmijeni" [ref=f4e964] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e965] [cursor=pointer]
+            - generic [ref=f4e966]:
+              - generic [ref=f4e967]: Dodijeljen
+              - generic [ref=f4e968]:
+                - text: Pravo · III godina · Gradjansko procesno
+                - button "Ukloni iz ovog programa" [ref=f4e969] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e970] [cursor=pointer]
+          - listitem [ref=f4e971]:
+            - generic [ref=f4e972]:
+              - generic [ref=f4e973]:
+                - paragraph [ref=f4e974]: Gradjevinski Materijali -Mihailo Muravljov
+                - paragraph [ref=f4e975]:
+                  - generic [ref=f4e976]: Knjiga
+                  - generic [ref=f4e977]: 15,50 €
+              - generic [ref=f4e978]:
+                - button "Izmijeni" [ref=f4e979] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e980] [cursor=pointer]
+            - generic [ref=f4e981]:
+              - generic [ref=f4e982]: Dodijeljen
+              - generic [ref=f4e983]:
+                - text: Politehnika · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e984] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e985] [cursor=pointer]
+          - listitem [ref=f4e986]:
+            - generic [ref=f4e987]:
+              - generic [ref=f4e988]:
+                - paragraph [ref=f4e989]: Handout starter
+                - paragraph [ref=f4e990]:
+                  - generic [ref=f4e991]: Ostali materijal
+                  - generic [ref=f4e992]: 8,00 €
+              - generic [ref=f4e993]:
+                - button "Izmijeni" [ref=f4e994] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e995] [cursor=pointer]
+            - generic [ref=f4e996]:
+              - generic [ref=f4e997]: Dodijeljen
+              - generic [ref=f4e998]:
+                - text: Filoloski · Master · praktikum 1 materijali
+                - button "Ukloni iz ovog programa" [ref=f4e999] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1000] [cursor=pointer]
+          - listitem [ref=f4e1001]:
+            - generic [ref=f4e1002]:
+              - generic [ref=f4e1003]:
+                - paragraph [ref=f4e1004]: have -get something done
+                - paragraph [ref=f4e1005]:
+                  - generic [ref=f4e1006]: Knjiga
+                  - generic [ref=f4e1007]: 13,00 €
+              - generic [ref=f4e1008]:
+                - button "Izmijeni" [ref=f4e1009] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1010] [cursor=pointer]
+            - generic [ref=f4e1011]:
+              - generic [ref=f4e1012]: Dodijeljen
+              - generic [ref=f4e1013]:
+                - text: Filoloski · II godina · gramatika
+                - button "Ukloni iz ovog programa" [ref=f4e1014] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1015] [cursor=pointer]
+          - listitem [ref=f4e1016]:
+            - generic [ref=f4e1017]:
+              - generic [ref=f4e1018]:
+                - paragraph [ref=f4e1019]: Hrestomatija za fitnes i upravljanje fitnes centrom
+                - paragraph [ref=f4e1020]:
+                  - generic [ref=f4e1021]: Skripta
+                  - generic [ref=f4e1022]: 13,00 €
+              - generic [ref=f4e1023]:
+                - button "Izmijeni" [ref=f4e1024] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1025] [cursor=pointer]
+            - generic [ref=f4e1026]:
+              - generic [ref=f4e1027]: Dodijeljen
+              - generic [ref=f4e1028]:
+                - text: Sportski menadzment · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e1029] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1030] [cursor=pointer]
+          - listitem [ref=f4e1031]:
+            - generic [ref=f4e1032]:
+              - generic [ref=f4e1033]:
+                - paragraph [ref=f4e1034]: HSK 2
+                - paragraph [ref=f4e1035]:
+                  - generic [ref=f4e1036]: Knjiga
+                  - generic [ref=f4e1037]: 8,00 €
+              - generic [ref=f4e1038]:
+                - button "Izmijeni" [ref=f4e1039] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1040] [cursor=pointer]
+            - generic [ref=f4e1041]:
+              - generic [ref=f4e1042]: Dodijeljen
+              - generic [ref=f4e1043]:
+                - text: Kineski · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e1044] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1045] [cursor=pointer]
+          - listitem [ref=f4e1046]:
+            - generic [ref=f4e1047]:
+              - generic [ref=f4e1048]:
+                - paragraph [ref=f4e1049]: HSK 2.
+                - paragraph [ref=f4e1050]:
+                  - generic [ref=f4e1051]: Knjiga
+                  - generic [ref=f4e1052]: 18,00 €
+              - generic [ref=f4e1053]:
+                - button "Izmijeni" [ref=f4e1054] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1055] [cursor=pointer]
+            - generic [ref=f4e1056]:
+              - generic [ref=f4e1057]: Dodijeljen
+              - generic [ref=f4e1058]:
+                - text: Kineski · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e1059] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1060] [cursor=pointer]
+          - listitem [ref=f4e1061]:
+            - generic [ref=f4e1062]:
+              - generic [ref=f4e1063]:
+                - paragraph [ref=f4e1064]: HSK 3
+                - paragraph [ref=f4e1065]:
+                  - generic [ref=f4e1066]: Knjiga
+                  - generic [ref=f4e1067]: 13,00 €
+              - generic [ref=f4e1068]:
+                - button "Izmijeni" [ref=f4e1069] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1070] [cursor=pointer]
+            - generic [ref=f4e1071]:
+              - generic [ref=f4e1072]: Dodijeljen
+              - generic [ref=f4e1073]:
+                - text: Kineski · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e1074] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1075] [cursor=pointer]
+          - listitem [ref=f4e1076]:
+            - generic [ref=f4e1077]:
+              - generic [ref=f4e1078]:
+                - paragraph [ref=f4e1079]: HSK 3 workbook
+                - paragraph [ref=f4e1080]:
+                  - generic [ref=f4e1081]: Skripta
+                  - generic [ref=f4e1082]: 10,50 €
+              - generic [ref=f4e1083]:
+                - button "Izmijeni" [ref=f4e1084] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1085] [cursor=pointer]
+            - generic [ref=f4e1086]:
+              - generic [ref=f4e1087]: Dodijeljen
+              - generic [ref=f4e1088]:
+                - text: Kineski · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e1089] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1090] [cursor=pointer]
+          - listitem [ref=f4e1091]:
+            - generic [ref=f4e1092]:
+              - generic [ref=f4e1093]:
+                - paragraph [ref=f4e1094]: HSK 5-Workbook -radna sveska B
+                - paragraph [ref=f4e1095]:
+                  - generic [ref=f4e1096]: Skripta
+                  - generic [ref=f4e1097]: 15,50 €
+              - generic [ref=f4e1098]:
+                - button "Izmijeni" [ref=f4e1099] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1100] [cursor=pointer]
+            - generic [ref=f4e1101]:
+              - generic [ref=f4e1102]: Dodijeljen
+              - generic [ref=f4e1103]:
+                - text: Kineski · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e1104] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1105] [cursor=pointer]
+          - listitem [ref=f4e1106]:
+            - generic [ref=f4e1107]:
+              - generic [ref=f4e1108]:
+                - paragraph [ref=f4e1109]: HSK标准教程 5 下
+                - paragraph [ref=f4e1110]:
+                  - generic [ref=f4e1111]: Knjiga
+                  - generic [ref=f4e1112]: 18,00 €
+              - generic [ref=f4e1113]:
+                - button "Izmijeni" [ref=f4e1114] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1115] [cursor=pointer]
+            - generic [ref=f4e1116]:
+              - generic [ref=f4e1117]: Dodijeljen
+              - generic [ref=f4e1118]:
+                - text: Kineski · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e1119] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1120] [cursor=pointer]
+          - listitem [ref=f4e1121]:
+            - generic [ref=f4e1122]:
+              - generic [ref=f4e1123]:
+                - paragraph [ref=f4e1124]: Interpreter of Maladies - Jhumpa Lahiri, lektira
+                - paragraph [ref=f4e1125]:
+                  - generic [ref=f4e1126]: Knjiga
+                  - generic [ref=f4e1127]: 13,00 €
+              - generic [ref=f4e1128]:
+                - button "Izmijeni" [ref=f4e1129] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1130] [cursor=pointer]
+            - generic [ref=f4e1131]:
+              - generic [ref=f4e1132]: Dodijeljen
+              - generic [ref=f4e1133]:
+                - text: Filoloski · III godina · Savremeni 6
+                - button "Ukloni iz ovog programa" [ref=f4e1134] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1135] [cursor=pointer]
+          - listitem [ref=f4e1136]:
+            - generic [ref=f4e1137]:
+              - generic [ref=f4e1138]:
+                - paragraph [ref=f4e1139]: Istorija Crne Gore u 55 prica - Zivko m andrijasevic - uspravna knjiga
+                - paragraph [ref=f4e1140]:
+                  - generic [ref=f4e1141]: Knjiga
+                  - generic [ref=f4e1142]: 18,00 €
+              - generic [ref=f4e1143]:
+                - button "Izmijeni" [ref=f4e1144] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1145] [cursor=pointer]
+            - generic [ref=f4e1146]:
+              - generic [ref=f4e1147]: Dodijeljen
+              - generic [ref=f4e1148]:
+                - text: HS · I godina · Politicka istorija CG
+                - button "Ukloni iz ovog programa" [ref=f4e1149] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1150] [cursor=pointer]
+          - listitem [ref=f4e1151]:
+            - generic [ref=f4e1152]:
+              - generic [ref=f4e1153]:
+                - paragraph [ref=f4e1154]: Istorija diplomatije
+                - paragraph [ref=f4e1155]:
+                  - generic [ref=f4e1156]: Knjiga
+                  - generic [ref=f4e1157]: 15,50 €
+              - generic [ref=f4e1158]:
+                - button "Izmijeni" [ref=f4e1159] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1160] [cursor=pointer]
+            - generic [ref=f4e1161]:
+              - generic [ref=f4e1162]: Dodijeljen
+              - generic [ref=f4e1163]:
+                - text: HS · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e1164] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1165] [cursor=pointer]
+          - listitem [ref=f4e1166]:
+            - generic [ref=f4e1167]:
+              - generic [ref=f4e1168]:
+                - paragraph [ref=f4e1169]: Istorija evrope - -mala hrestomatija - 2019 ljetnji semestar
+                - paragraph [ref=f4e1170]:
+                  - generic [ref=f4e1171]: Skripta
+                  - generic [ref=f4e1172]: 13,00 €
+              - generic [ref=f4e1173]:
+                - button "Izmijeni" [ref=f4e1174] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1175] [cursor=pointer]
+            - generic [ref=f4e1176]:
+              - generic [ref=f4e1177]: Dodijeljen
+              - generic [ref=f4e1178]:
+                - text: HS · I godina · Istorija evrope - 2019 ljetnji semestar
+                - button "Ukloni iz ovog programa" [ref=f4e1179] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1180] [cursor=pointer]
+          - listitem [ref=f4e1181]:
+            - generic [ref=f4e1182]:
+              - generic [ref=f4e1183]:
+                - paragraph [ref=f4e1184]: Istorija Evrope poslije 1945. godine - Hrestomatija - 2019 ljetnji semestar
+                - paragraph [ref=f4e1185]:
+                  - generic [ref=f4e1186]: Skripta
+                  - generic [ref=f4e1187]: 15,50 €
+              - generic [ref=f4e1188]:
+                - button "Izmijeni" [ref=f4e1189] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1190] [cursor=pointer]
+            - generic [ref=f4e1191]:
+              - generic [ref=f4e1192]: Dodijeljen
+              - generic [ref=f4e1193]:
+                - text: HS · I godina · Istorija evrope - 2019 ljetnji semestar
+                - button "Ukloni iz ovog programa" [ref=f4e1194] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1195] [cursor=pointer]
+          - listitem [ref=f4e1196]:
+            - generic [ref=f4e1197]:
+              - generic [ref=f4e1198]:
+                - paragraph [ref=f4e1199]: Istorija politicikih ideja - 2021
+                - paragraph [ref=f4e1200]:
+                  - generic [ref=f4e1201]: Knjiga
+                  - generic [ref=f4e1202]: 15,50 €
+              - generic [ref=f4e1203]:
+                - button "Izmijeni" [ref=f4e1204] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1205] [cursor=pointer]
+            - generic [ref=f4e1206]:
+              - generic [ref=f4e1207]: Dodijeljen
+              - generic [ref=f4e1208]:
+                - text: HS · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e1209] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1210] [cursor=pointer]
+          - listitem [ref=f4e1211]:
+            - generic [ref=f4e1212]:
+              - generic [ref=f4e1213]:
+                - paragraph [ref=f4e1214]: Italijanski A1.1
+                - paragraph [ref=f4e1215]:
+                  - generic [ref=f4e1216]: Knjiga
+                  - generic [ref=f4e1217]: 15,50 €
+              - generic [ref=f4e1218]:
+                - button "Izmijeni" [ref=f4e1219] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1220] [cursor=pointer]
+            - generic [ref=f4e1221]:
+              - generic [ref=f4e1222]: Dodijeljen
+              - generic [ref=f4e1223]:
+                - text: Italijanski · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e1224] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1225] [cursor=pointer]
+          - listitem [ref=f4e1226]:
+            - generic [ref=f4e1227]:
+              - generic [ref=f4e1228]:
+                - paragraph [ref=f4e1229]: Italijanski A1.2 A2.1
+                - paragraph [ref=f4e1230]:
+                  - generic [ref=f4e1231]: Knjiga
+                  - generic [ref=f4e1232]: 18,00 €
+              - generic [ref=f4e1233]:
+                - button "Izmijeni" [ref=f4e1234] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1235] [cursor=pointer]
+            - generic [ref=f4e1236]:
+              - generic [ref=f4e1237]: Dodijeljen
+              - generic [ref=f4e1238]:
+                - text: Italijanski · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e1239] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1240] [cursor=pointer]
+          - listitem [ref=f4e1241]:
+            - generic [ref=f4e1242]:
+              - generic [ref=f4e1243]:
+                - paragraph [ref=f4e1244]: Italijanski A2.2
+                - paragraph [ref=f4e1245]:
+                  - generic [ref=f4e1246]: Knjiga
+                  - generic [ref=f4e1247]: 8,00 €
+              - generic [ref=f4e1248]:
+                - button "Izmijeni" [ref=f4e1249] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1250] [cursor=pointer]
+            - generic [ref=f4e1251]:
+              - generic [ref=f4e1252]: Dodijeljen
+              - generic [ref=f4e1253]:
+                - text: Italijanski · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e1254] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1255] [cursor=pointer]
+          - listitem [ref=f4e1256]:
+            - generic [ref=f4e1257]:
+              - generic [ref=f4e1258]:
+                - paragraph [ref=f4e1259]: Komparativni sistemi bezbjednosti i nacionalna bezbjednost Crne Gore-Ivan Masulovic
+                - paragraph [ref=f4e1260]:
+                  - generic [ref=f4e1261]: Knjiga
+                  - generic [ref=f4e1262]: 18,00 €
+              - generic [ref=f4e1263]:
+                - button "Izmijeni" [ref=f4e1264] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1265] [cursor=pointer]
+            - generic [ref=f4e1266]:
+              - generic [ref=f4e1267]: Dodijeljen
+              - generic [ref=f4e1268]:
+                - text: HS · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e1269] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1270] [cursor=pointer]
+          - listitem [ref=f4e1271]:
+            - generic [ref=f4e1272]:
+              - generic [ref=f4e1273]:
+                - paragraph [ref=f4e1274]: Komunikologija-Zorica Tomic
+                - paragraph [ref=f4e1275]:
+                  - generic [ref=f4e1276]: Knjiga
+                  - generic [ref=f4e1277]: 8,00 €
+              - generic [ref=f4e1278]:
+                - button "Izmijeni" [ref=f4e1279] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1280] [cursor=pointer]
+            - generic [ref=f4e1281]:
+              - generic [ref=f4e1282]: Dodijeljen
+              - generic [ref=f4e1283]:
+                - text: HS · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e1284] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1285] [cursor=pointer]
+          - listitem [ref=f4e1286]:
+            - generic [ref=f4e1287]:
+              - generic [ref=f4e1288]:
+                - paragraph [ref=f4e1289]: Konstitucionalizam (ogranicenje i kontrola vlasti)-Karl Joakim Fridrih
+                - paragraph [ref=f4e1290]:
+                  - generic [ref=f4e1291]: Knjiga
+                  - generic [ref=f4e1292]: 13,00 €
+              - generic [ref=f4e1293]:
+                - button "Izmijeni" [ref=f4e1294] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1295] [cursor=pointer]
+            - generic [ref=f4e1296]:
+              - generic [ref=f4e1297]: Dodijeljen
+              - generic [ref=f4e1298]:
+                - text: HS · Doktorske studije
+                - button "Ukloni iz ovog programa" [ref=f4e1299] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1300] [cursor=pointer]
+          - listitem [ref=f4e1301]:
+            - generic [ref=f4e1302]:
+              - generic [ref=f4e1303]:
+                - paragraph [ref=f4e1304]: Korporativno komuniciranje.
+                - paragraph [ref=f4e1305]:
+                  - generic [ref=f4e1306]: Knjiga
+                  - generic [ref=f4e1307]: 15,50 €
+              - generic [ref=f4e1308]:
+                - button "Izmijeni" [ref=f4e1309] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1310] [cursor=pointer]
+            - generic [ref=f4e1311]:
+              - generic [ref=f4e1312]: Dodijeljen
+              - generic [ref=f4e1313]:
+                - text: HS · III godina
+                - button "Ukloni iz ovog programa" [ref=f4e1314] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1315] [cursor=pointer]
+          - listitem [ref=f4e1316]:
+            - generic [ref=f4e1317]:
+              - generic [ref=f4e1318]:
+                - paragraph [ref=f4e1319]: Kreativno pisanje-Miomir Petrovic
+                - paragraph [ref=f4e1320]:
+                  - generic [ref=f4e1321]: Knjiga
+                  - generic [ref=f4e1322]: 13,00 €
+              - generic [ref=f4e1323]:
+                - button "Izmijeni" [ref=f4e1324] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1325] [cursor=pointer]
+            - generic [ref=f4e1326]:
+              - generic [ref=f4e1327]: Dodijeljen
+              - generic [ref=f4e1328]:
+                - text: FKT · I godina · Kreativno razmisljanje
+                - button "Ukloni iz ovog programa" [ref=f4e1329] [cursor=pointer]: ×
+              - generic [ref=f4e1330]:
+                - text: HS · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e1331] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1332] [cursor=pointer]
+          - listitem [ref=f4e1333]:
+            - generic [ref=f4e1334]:
+              - generic [ref=f4e1335]:
+                - paragraph [ref=f4e1336]: La Formation du Contrat-(knjiga na francuskom )
+                - paragraph [ref=f4e1337]:
+                  - generic [ref=f4e1338]: Knjiga
+                  - generic [ref=f4e1339]: 10,50 €
+              - generic [ref=f4e1340]:
+                - button "Izmijeni" [ref=f4e1341] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1342] [cursor=pointer]
+            - generic [ref=f4e1343]:
+              - generic [ref=f4e1344]: Dodijeljen
+              - generic [ref=f4e1345]:
+                - text: Pravo · Doktorske studije
+                - button "Ukloni iz ovog programa" [ref=f4e1346] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1347] [cursor=pointer]
+          - listitem [ref=f4e1348]:
+            - generic [ref=f4e1349]:
+              - generic [ref=f4e1350]:
+                - paragraph [ref=f4e1351]: latinske izreke - 2017 ljetnji semestar
+                - paragraph [ref=f4e1352]:
+                  - generic [ref=f4e1353]: Knjiga
+                  - generic [ref=f4e1354]: 8,00 €
+              - generic [ref=f4e1355]:
+                - button "Izmijeni" [ref=f4e1356] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1357] [cursor=pointer]
+            - generic [ref=f4e1358]:
+              - generic [ref=f4e1359]: Dodijeljen
+              - generic [ref=f4e1360]:
+                - text: Pravo · III godina · Gradjansko procesno
+                - button "Ukloni iz ovog programa" [ref=f4e1361] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1362] [cursor=pointer]
+          - listitem [ref=f4e1363]:
+            - generic [ref=f4e1364]:
+              - generic [ref=f4e1365]:
+                - paragraph [ref=f4e1366]: Lesson Planning - Jeremy Harmer
+                - paragraph [ref=f4e1367]:
+                  - generic [ref=f4e1368]: Knjiga
+                  - generic [ref=f4e1369]: 10,50 €
+              - generic [ref=f4e1370]:
+                - button "Izmijeni" [ref=f4e1371] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1372] [cursor=pointer]
+            - generic [ref=f4e1373]:
+              - generic [ref=f4e1374]: Dodijeljen
+              - generic [ref=f4e1375]:
+                - text: Filoloski · Master · praktikum 1 materijali
+                - button "Ukloni iz ovog programa" [ref=f4e1376] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1377] [cursor=pointer]
+          - listitem [ref=f4e1378]:
+            - generic [ref=f4e1379]:
+              - generic [ref=f4e1380]:
+                - paragraph [ref=f4e1381]: Lesson Planning - Uputstva za citanje
+                - paragraph [ref=f4e1382]:
+                  - generic [ref=f4e1383]: Ostali materijal
+                  - generic [ref=f4e1384]: 13,00 €
+              - generic [ref=f4e1385]:
+                - button "Izmijeni" [ref=f4e1386] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1387] [cursor=pointer]
+            - generic [ref=f4e1388]:
+              - generic [ref=f4e1389]: Dodijeljen
+              - generic [ref=f4e1390]:
+                - text: Filoloski · Master · praktikum 1 materijali
+                - button "Ukloni iz ovog programa" [ref=f4e1391] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1392] [cursor=pointer]
+          - listitem [ref=f4e1393]:
+            - generic [ref=f4e1394]:
+              - generic [ref=f4e1395]:
+                - paragraph [ref=f4e1396]: Lirizam u romanima nevidbog Rista Rarkovica i mojkovacka bitka Camila Sijarica - Milun Lutovac
+                - paragraph [ref=f4e1397]:
+                  - generic [ref=f4e1398]: Knjiga
+                  - generic [ref=f4e1399]: 18,00 €
+              - generic [ref=f4e1400]:
+                - button "Izmijeni" [ref=f4e1401] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1402] [cursor=pointer]
+            - generic [ref=f4e1403]:
+              - generic [ref=f4e1404]: Dodijeljen
+              - generic [ref=f4e1405]:
+                - text: FU · III godina
+                - button "Ukloni iz ovog programa" [ref=f4e1406] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1407] [cursor=pointer]
+          - listitem [ref=f4e1408]:
+            - generic [ref=f4e1409]:
+              - generic [ref=f4e1410]:
+                - paragraph [ref=f4e1411]: Losa nauka -Ben Goldejker
+                - paragraph [ref=f4e1412]:
+                  - generic [ref=f4e1413]: Knjiga
+                  - generic [ref=f4e1414]: 8,00 €
+              - generic [ref=f4e1415]:
+                - button "Izmijeni" [ref=f4e1416] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1417] [cursor=pointer]
+            - generic [ref=f4e1418]:
+              - generic [ref=f4e1419]: Dodijeljen
+              - generic [ref=f4e1420]:
+                - text: Prehrambena tehnologija · I godina · Osnove naucnoistrazivackog rada
+                - button "Ukloni iz ovog programa" [ref=f4e1421] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1422] [cursor=pointer]
+          - listitem [ref=f4e1423]:
+            - generic [ref=f4e1424]:
+              - generic [ref=f4e1425]:
+                - paragraph [ref=f4e1426]: Medijska istrazivanja-Hrestomatija 2026
+                - paragraph [ref=f4e1427]:
+                  - generic [ref=f4e1428]: Skripta
+                  - generic [ref=f4e1429]: 10,50 €
+              - generic [ref=f4e1430]:
+                - button "Izmijeni" [ref=f4e1431] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1432] [cursor=pointer]
+            - generic [ref=f4e1433]:
+              - generic [ref=f4e1434]: Dodijeljen
+              - generic [ref=f4e1435]:
+                - text: HS · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e1436] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1437] [cursor=pointer]
+          - listitem [ref=f4e1438]:
+            - generic [ref=f4e1439]:
+              - generic [ref=f4e1440]:
+                - paragraph [ref=f4e1441]: medijski linc-Cupic
+                - paragraph [ref=f4e1442]:
+                  - generic [ref=f4e1443]: Knjiga
+                  - generic [ref=f4e1444]: 13,00 €
+              - generic [ref=f4e1445]:
+                - button "Izmijeni" [ref=f4e1446] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1447] [cursor=pointer]
+            - generic [ref=f4e1448]:
+              - generic [ref=f4e1449]: Dodijeljen
+              - generic [ref=f4e1450]:
+                - text: HS · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e1451] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1452] [cursor=pointer]
+          - listitem [ref=f4e1453]:
+            - generic [ref=f4e1454]:
+              - generic [ref=f4e1455]:
+                - paragraph [ref=f4e1456]: Medjunarodno krivicno pravo-Bozidar Banovic,Stanko Bejatovic,Veljko Turanjanin 2g mr.
+                - paragraph [ref=f4e1457]:
+                  - generic [ref=f4e1458]: Knjiga
+                  - generic [ref=f4e1459]: 18,00 €
+              - generic [ref=f4e1460]:
+                - button "Izmijeni" [ref=f4e1461] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1462] [cursor=pointer]
+            - generic [ref=f4e1463]:
+              - generic [ref=f4e1464]: Dodijeljen
+              - generic [ref=f4e1465]:
+                - text: Pravo · Master
+                - button "Ukloni iz ovog programa" [ref=f4e1466] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1467] [cursor=pointer]
+          - listitem [ref=f4e1468]:
+            - generic [ref=f4e1469]:
+              - generic [ref=f4e1470]:
+                - paragraph [ref=f4e1471]: Menadzment rizika i osiguranja-Posdiplomske studije-vojin g
+                - paragraph [ref=f4e1472]:
+                  - generic [ref=f4e1473]: Knjiga
+                  - generic [ref=f4e1474]: 13,00 €
+              - generic [ref=f4e1475]:
+                - button "Izmijeni" [ref=f4e1476] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1477] [cursor=pointer]
+            - generic [ref=f4e1478]:
+              - generic [ref=f4e1479]: Dodijeljen
+              - generic [ref=f4e1480]:
+                - text: Ekonomija FMEFB · IV godina
+                - button "Ukloni iz ovog programa" [ref=f4e1481] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1482] [cursor=pointer]
+          - listitem [ref=f4e1483]:
+            - generic [ref=f4e1484]:
+              - generic [ref=f4e1485]:
+                - paragraph [ref=f4e1486]: MKTG Marketing-na nasem jeziku
+                - paragraph [ref=f4e1487]:
+                  - generic [ref=f4e1488]: Knjiga
+                  - generic [ref=f4e1489]: 15,50 €
+              - generic [ref=f4e1490]:
+                - button "Izmijeni" [ref=f4e1491] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1492] [cursor=pointer]
+            - generic [ref=f4e1493]:
+              - generic [ref=f4e1494]: Dodijeljen
+              - generic [ref=f4e1495]:
+                - text: Ekonomija FMEFB · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e1496] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1497] [cursor=pointer]
+          - listitem [ref=f4e1498]:
+            - generic [ref=f4e1499]:
+              - generic [ref=f4e1500]:
+                - paragraph [ref=f4e1501]: Mlijeko-skripta-Poznavanje i kontrola sirovina animlanog porijekla
+                - paragraph [ref=f4e1502]:
+                  - generic [ref=f4e1503]: Skripta
+                  - generic [ref=f4e1504]: 10,50 €
+              - generic [ref=f4e1505]:
+                - button "Izmijeni" [ref=f4e1506] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1507] [cursor=pointer]
+            - generic [ref=f4e1508]:
+              - generic [ref=f4e1509]: Dodijeljen
+              - generic [ref=f4e1510]:
+                - text: Prehrambena tehnologija · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e1511] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1512] [cursor=pointer]
+          - listitem [ref=f4e1513]:
+            - generic [ref=f4e1514]:
+              - generic [ref=f4e1515]:
+                - paragraph [ref=f4e1516]: Moderne politicke ideologije - Slaven Ravlić - Svjetovi ideologije - 2017 ljetnji semestar
+                - paragraph [ref=f4e1517]:
+                  - generic [ref=f4e1518]: Knjiga
+                  - generic [ref=f4e1519]: 15,50 €
+              - generic [ref=f4e1520]:
+                - button "Izmijeni" [ref=f4e1521] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1522] [cursor=pointer]
+            - generic [ref=f4e1523]:
+              - generic [ref=f4e1524]: Dodijeljen
+              - generic [ref=f4e1525]:
+                - text: HS · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e1526] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1527] [cursor=pointer]
+          - listitem [ref=f4e1528]:
+            - generic [ref=f4e1529]:
+              - generic [ref=f4e1530]:
+                - paragraph [ref=f4e1531]: Monetarna ekonomija i bankarstvi II-(nova knjiga )
+                - paragraph [ref=f4e1532]:
+                  - generic [ref=f4e1533]: Knjiga
+                  - generic [ref=f4e1534]: 18,00 €
+              - generic [ref=f4e1535]:
+                - button "Izmijeni" [ref=f4e1536] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1537] [cursor=pointer]
+            - generic [ref=f4e1538]:
+              - generic [ref=f4e1539]: Dodijeljen
+              - generic [ref=f4e1540]:
+                - text: Ekonomija FMEFB · III godina
+                - button "Ukloni iz ovog programa" [ref=f4e1541] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1542] [cursor=pointer]
+          - listitem [ref=f4e1543]:
+            - generic [ref=f4e1544]:
+              - generic [ref=f4e1545]:
+                - paragraph [ref=f4e1546]: Morfologija 1
+                - paragraph [ref=f4e1547]:
+                  - generic [ref=f4e1548]: Knjiga
+                  - generic [ref=f4e1549]: 18,00 €
+              - generic [ref=f4e1550]:
+                - button "Izmijeni" [ref=f4e1551] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1552] [cursor=pointer]
+            - generic [ref=f4e1553]:
+              - generic [ref=f4e1554]: Dodijeljen
+              - generic [ref=f4e1555]:
+                - text: Filoloski · I godina · Morfologija
+                - button "Ukloni iz ovog programa" [ref=f4e1556] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1557] [cursor=pointer]
+          - listitem [ref=f4e1558]:
+            - generic [ref=f4e1559]:
+              - generic [ref=f4e1560]:
+                - paragraph [ref=f4e1561]: Morfologija 2
+                - paragraph [ref=f4e1562]:
+                  - generic [ref=f4e1563]: Knjiga
+                  - generic [ref=f4e1564]: 8,00 €
+              - generic [ref=f4e1565]:
+                - button "Izmijeni" [ref=f4e1566] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1567] [cursor=pointer]
+            - generic [ref=f4e1568]:
+              - generic [ref=f4e1569]: Dodijeljen
+              - generic [ref=f4e1570]:
+                - text: Filoloski · I godina · Morfologija
+                - button "Ukloni iz ovog programa" [ref=f4e1571] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1572] [cursor=pointer]
+          - listitem [ref=f4e1573]:
+            - generic [ref=f4e1574]:
+              - generic [ref=f4e1575]:
+                - paragraph [ref=f4e1576]: Morfologija 3
+                - paragraph [ref=f4e1577]:
+                  - generic [ref=f4e1578]: Knjiga
+                  - generic [ref=f4e1579]: 10,50 €
+              - generic [ref=f4e1580]:
+                - button "Izmijeni" [ref=f4e1581] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1582] [cursor=pointer]
+            - generic [ref=f4e1583]:
+              - generic [ref=f4e1584]: Dodijeljen
+              - generic [ref=f4e1585]:
+                - text: Filoloski · I godina · Morfologija
+                - button "Ukloni iz ovog programa" [ref=f4e1586] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1587] [cursor=pointer]
+          - listitem [ref=f4e1588]:
+            - generic [ref=f4e1589]:
+              - generic [ref=f4e1590]:
+                - paragraph [ref=f4e1591]: Morfologija 4
+                - paragraph [ref=f4e1592]:
+                  - generic [ref=f4e1593]: Knjiga
+                  - generic [ref=f4e1594]: 13,00 €
+              - generic [ref=f4e1595]:
+                - button "Izmijeni" [ref=f4e1596] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1597] [cursor=pointer]
+            - generic [ref=f4e1598]:
+              - generic [ref=f4e1599]: Dodijeljen
+              - generic [ref=f4e1600]:
+                - text: Filoloski · I godina · Morfologija
+                - button "Ukloni iz ovog programa" [ref=f4e1601] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1602] [cursor=pointer]
+          - listitem [ref=f4e1603]:
+            - generic [ref=f4e1604]:
+              - generic [ref=f4e1605]:
+                - paragraph [ref=f4e1606]: Morfologija 5
+                - paragraph [ref=f4e1607]:
+                  - generic [ref=f4e1608]: Knjiga
+                  - generic [ref=f4e1609]: 15,50 €
+              - generic [ref=f4e1610]:
+                - button "Izmijeni" [ref=f4e1611] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1612] [cursor=pointer]
+            - generic [ref=f4e1613]:
+              - generic [ref=f4e1614]: Dodijeljen
+              - generic [ref=f4e1615]:
+                - text: Filoloski · I godina · Morfologija
+                - button "Ukloni iz ovog programa" [ref=f4e1616] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1617] [cursor=pointer]
+          - listitem [ref=f4e1618]:
+            - generic [ref=f4e1619]:
+              - generic [ref=f4e1620]:
+                - paragraph [ref=f4e1621]: Morfologija 6
+                - paragraph [ref=f4e1622]:
+                  - generic [ref=f4e1623]: Knjiga
+                  - generic [ref=f4e1624]: 18,00 €
+              - generic [ref=f4e1625]:
+                - button "Izmijeni" [ref=f4e1626] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1627] [cursor=pointer]
+            - generic [ref=f4e1628]:
+              - generic [ref=f4e1629]: Dodijeljen
+              - generic [ref=f4e1630]:
+                - text: Filoloski · I godina · Morfologija
+                - button "Ukloni iz ovog programa" [ref=f4e1631] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1632] [cursor=pointer]
+          - listitem [ref=f4e1633]:
+            - generic [ref=f4e1634]:
+              - generic [ref=f4e1635]:
+                - paragraph [ref=f4e1636]: Morfologija 7
+                - paragraph [ref=f4e1637]:
+                  - generic [ref=f4e1638]: Knjiga
+                  - generic [ref=f4e1639]: 8,00 €
+              - generic [ref=f4e1640]:
+                - button "Izmijeni" [ref=f4e1641] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1642] [cursor=pointer]
+            - generic [ref=f4e1643]:
+              - generic [ref=f4e1644]: Dodijeljen
+              - generic [ref=f4e1645]:
+                - text: Filoloski · I godina · Morfologija
+                - button "Ukloni iz ovog programa" [ref=f4e1646] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1647] [cursor=pointer]
+          - listitem [ref=f4e1648]:
+            - generic [ref=f4e1649]:
+              - generic [ref=f4e1650]:
+                - paragraph [ref=f4e1651]: Morfologija 8
+                - paragraph [ref=f4e1652]:
+                  - generic [ref=f4e1653]: Knjiga
+                  - generic [ref=f4e1654]: 10,50 €
+              - generic [ref=f4e1655]:
+                - button "Izmijeni" [ref=f4e1656] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1657] [cursor=pointer]
+            - generic [ref=f4e1658]:
+              - generic [ref=f4e1659]: Dodijeljen
+              - generic [ref=f4e1660]:
+                - text: Filoloski · I godina · Morfologija
+                - button "Ukloni iz ovog programa" [ref=f4e1661] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1662] [cursor=pointer]
+          - listitem [ref=f4e1663]:
+            - generic [ref=f4e1664]:
+              - generic [ref=f4e1665]:
+                - paragraph [ref=f4e1666]: Morfologija 9
+                - paragraph [ref=f4e1667]:
+                  - generic [ref=f4e1668]: Knjiga
+                  - generic [ref=f4e1669]: 13,00 €
+              - generic [ref=f4e1670]:
+                - button "Izmijeni" [ref=f4e1671] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1672] [cursor=pointer]
+            - generic [ref=f4e1673]:
+              - generic [ref=f4e1674]: Dodijeljen
+              - generic [ref=f4e1675]:
+                - text: Filoloski · I godina · Morfologija
+                - button "Ukloni iz ovog programa" [ref=f4e1676] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1677] [cursor=pointer]
+          - listitem [ref=f4e1678]:
+            - generic [ref=f4e1679]:
+              - generic [ref=f4e1680]:
+                - paragraph [ref=f4e1681]: Muzicka kultura Crne Gore XIII -XVIII vijek
+                - paragraph [ref=f4e1682]:
+                  - generic [ref=f4e1683]: Knjiga
+                  - generic [ref=f4e1684]: 8,00 €
+              - generic [ref=f4e1685]:
+                - button "Izmijeni" [ref=f4e1686] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1687] [cursor=pointer]
+            - generic [ref=f4e1688]:
+              - generic [ref=f4e1689]: Dodijeljen
+              - generic [ref=f4e1690]:
+                - text: FKT · III godina
+                - button "Ukloni iz ovog programa" [ref=f4e1691] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1692] [cursor=pointer]
+          - listitem [ref=f4e1693]:
+            - generic [ref=f4e1694]:
+              - generic [ref=f4e1695]:
+                - paragraph [ref=f4e1696]: Nova era medjunarodnih organizacija -Tanja Miscevic
+                - paragraph [ref=f4e1697]:
+                  - generic [ref=f4e1698]: Knjiga
+                  - generic [ref=f4e1699]: 8,00 €
+              - generic [ref=f4e1700]:
+                - button "Izmijeni" [ref=f4e1701] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1702] [cursor=pointer]
+            - generic [ref=f4e1703]:
+              - generic [ref=f4e1704]: Dodijeljen
+              - generic [ref=f4e1705]:
+                - text: HS · Master
+                - button "Ukloni iz ovog programa" [ref=f4e1706] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1707] [cursor=pointer]
+          - listitem [ref=f4e1708]:
+            - generic [ref=f4e1709]:
+              - generic [ref=f4e1710]:
+                - paragraph [ref=f4e1711]: Obligacije i ugovori-Mihailo Konstatinovic
+                - paragraph [ref=f4e1712]:
+                  - generic [ref=f4e1713]: Knjiga
+                  - generic [ref=f4e1714]: 13,00 €
+              - generic [ref=f4e1715]:
+                - button "Izmijeni" [ref=f4e1716] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1717] [cursor=pointer]
+            - generic [ref=f4e1718]:
+              - generic [ref=f4e1719]: Dodijeljen
+              - generic [ref=f4e1720]:
+                - text: Pravo · Doktorske studije · Teorija privatnog prava
+                - button "Ukloni iz ovog programa" [ref=f4e1721] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1722] [cursor=pointer]
+          - listitem [ref=f4e1723]:
+            - generic [ref=f4e1724]:
+              - generic [ref=f4e1725]:
+                - paragraph [ref=f4e1726]: Obligaciono pravo drugi dio - Slobodan Perovic - 2017 ljetnji semestar
+                - paragraph [ref=f4e1727]:
+                  - generic [ref=f4e1728]: Knjiga
+                  - generic [ref=f4e1729]: 10,50 €
+              - generic [ref=f4e1730]:
+                - button "Izmijeni" [ref=f4e1731] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1732] [cursor=pointer]
+            - generic [ref=f4e1733]:
+              - generic [ref=f4e1734]: Dodijeljen
+              - generic [ref=f4e1735]:
+                - text: Pravo · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e1736] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1737] [cursor=pointer]
+          - listitem [ref=f4e1738]:
+            - generic [ref=f4e1739]:
+              - generic [ref=f4e1740]:
+                - paragraph [ref=f4e1741]: Observation Task 1
+                - paragraph [ref=f4e1742]:
+                  - generic [ref=f4e1743]: Ostali materijal
+                  - generic [ref=f4e1744]: 15,50 €
+              - generic [ref=f4e1745]:
+                - button "Izmijeni" [ref=f4e1746] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1747] [cursor=pointer]
+            - generic [ref=f4e1748]:
+              - generic [ref=f4e1749]: Dodijeljen
+              - generic [ref=f4e1750]:
+                - text: Filoloski · Master · praktikum 1 materijali
+                - button "Ukloni iz ovog programa" [ref=f4e1751] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1752] [cursor=pointer]
+          - listitem [ref=f4e1753]:
+            - generic [ref=f4e1754]:
+              - generic [ref=f4e1755]:
+                - paragraph [ref=f4e1756]: Opsta mikrobiologija -interna skripta
+                - paragraph [ref=f4e1757]:
+                  - generic [ref=f4e1758]: Skripta
+                  - generic [ref=f4e1759]: 13,00 €
+              - generic [ref=f4e1760]:
+                - button "Izmijeni" [ref=f4e1761] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1762] [cursor=pointer]
+            - generic [ref=f4e1763]:
+              - generic [ref=f4e1764]: Dodijeljen
+              - generic [ref=f4e1765]:
+                - text: Prehrambena tehnologija · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e1766] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1767] [cursor=pointer]
+          - listitem [ref=f4e1768]:
+            - generic [ref=f4e1769]:
+              - generic [ref=f4e1770]:
+                - paragraph [ref=f4e1771]: Opsta mikrobiologija-Praktikum
+                - paragraph [ref=f4e1772]:
+                  - generic [ref=f4e1773]: Skripta
+                  - generic [ref=f4e1774]: 15,50 €
+              - generic [ref=f4e1775]:
+                - button "Izmijeni" [ref=f4e1776] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1777] [cursor=pointer]
+            - generic [ref=f4e1778]:
+              - generic [ref=f4e1779]: Dodijeljen
+              - generic [ref=f4e1780]:
+                - text: Prehrambena tehnologija · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e1781] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1782] [cursor=pointer]
+          - listitem [ref=f4e1783]:
+            - generic [ref=f4e1784]:
+              - generic [ref=f4e1785]:
+                - paragraph [ref=f4e1786]: Organska hemija-Praktikum
+                - paragraph [ref=f4e1787]:
+                  - generic [ref=f4e1788]: Skripta
+                  - generic [ref=f4e1789]: 18,00 €
+              - generic [ref=f4e1790]:
+                - button "Izmijeni" [ref=f4e1791] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1792] [cursor=pointer]
+            - generic [ref=f4e1793]:
+              - generic [ref=f4e1794]: Dodijeljen
+              - generic [ref=f4e1795]:
+                - text: Prehrambena tehnologija · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e1796] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1797] [cursor=pointer]
+          - listitem [ref=f4e1798]:
+            - generic [ref=f4e1799]:
+              - generic [ref=f4e1800]:
+                - paragraph [ref=f4e1801]: Osnovi diplomatije -Sasa Knezevic,Todor Lakic
+                - paragraph [ref=f4e1802]:
+                  - generic [ref=f4e1803]: Knjiga
+                  - generic [ref=f4e1804]: 18,00 €
+              - generic [ref=f4e1805]:
+                - button "Izmijeni" [ref=f4e1806] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1807] [cursor=pointer]
+            - generic [ref=f4e1808]:
+              - generic [ref=f4e1809]: Dodijeljen
+              - generic [ref=f4e1810]:
+                - text: HS · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e1811] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1812] [cursor=pointer]
+          - listitem [ref=f4e1813]:
+            - generic [ref=f4e1814]:
+              - generic [ref=f4e1815]:
+                - paragraph [ref=f4e1816]: Osnovi menadzmenta ljudskih resursa -Dessler (1,2,3,4,8 i 10 )
+                - paragraph [ref=f4e1817]:
+                  - generic [ref=f4e1818]: Knjiga
+                  - generic [ref=f4e1819]: 8,00 €
+              - generic [ref=f4e1820]:
+                - button "Izmijeni" [ref=f4e1821] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1822] [cursor=pointer]
+            - generic [ref=f4e1823]:
+              - generic [ref=f4e1824]: Dodijeljen
+              - generic [ref=f4e1825]:
+                - text: Psihologija · III godina
+                - button "Ukloni iz ovog programa" [ref=f4e1826] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1827] [cursor=pointer]
+          - listitem [ref=f4e1828]:
+            - generic [ref=f4e1829]:
+              - generic [ref=f4e1830]:
+                - paragraph [ref=f4e1831]: Osnovi racunovodstva i upravljackih finansija-Hrestomatija 25-26g 1 dio
+                - paragraph [ref=f4e1832]:
+                  - generic [ref=f4e1833]: Skripta
+                  - generic [ref=f4e1834]: 10,50 €
+              - generic [ref=f4e1835]:
+                - button "Izmijeni" [ref=f4e1836] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1837] [cursor=pointer]
+            - generic [ref=f4e1838]:
+              - generic [ref=f4e1839]: Dodijeljen
+              - generic [ref=f4e1840]:
+                - text: Geodezija · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e1841] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1842] [cursor=pointer]
+          - listitem [ref=f4e1843]:
+            - generic [ref=f4e1844]:
+              - generic [ref=f4e1845]:
+                - paragraph [ref=f4e1846]: Osnovi racunovodstva i upravljackih finansija-Hrestomatija 25-26g 1dio
+                - paragraph [ref=f4e1847]:
+                  - generic [ref=f4e1848]: Skripta
+                  - generic [ref=f4e1849]: 8,00 €
+              - generic [ref=f4e1850]:
+                - button "Izmijeni" [ref=f4e1851] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1852] [cursor=pointer]
+            - generic [ref=f4e1853]:
+              - generic [ref=f4e1854]: Dodijeljen
+              - generic [ref=f4e1855]:
+                - text: Matematika · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e1856] [cursor=pointer]: ×
+              - generic [ref=f4e1857]:
+                - text: Politehnika · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e1858] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1859] [cursor=pointer]
+          - listitem [ref=f4e1860]:
+            - generic [ref=f4e1861]:
+              - generic [ref=f4e1862]:
+                - paragraph [ref=f4e1863]: Osnovi racunovodstva ll
+                - paragraph [ref=f4e1864]:
+                  - generic [ref=f4e1865]: Knjiga
+                  - generic [ref=f4e1866]: 13,00 €
+              - generic [ref=f4e1867]:
+                - button "Izmijeni" [ref=f4e1868] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1869] [cursor=pointer]
+            - generic [ref=f4e1870]:
+              - generic [ref=f4e1871]: Dodijeljen
+              - generic [ref=f4e1872]:
+                - text: Geodezija · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e1873] [cursor=pointer]: ×
+              - generic [ref=f4e1874]:
+                - text: Politehnika · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e1875] [cursor=pointer]: ×
+              - generic [ref=f4e1876]:
+                - text: Primijenjena matematika · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e1877] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1878] [cursor=pointer]
+          - listitem [ref=f4e1879]:
+            - generic [ref=f4e1880]:
+              - generic [ref=f4e1881]:
+                - paragraph [ref=f4e1882]: Osnovi racunovodstva ll-hrestomatija
+                - paragraph [ref=f4e1883]:
+                  - generic [ref=f4e1884]: Skripta
+                  - generic [ref=f4e1885]: 13,00 €
+              - generic [ref=f4e1886]:
+                - button "Izmijeni" [ref=f4e1887] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1888] [cursor=pointer]
+            - generic [ref=f4e1889]:
+              - generic [ref=f4e1890]: Dodijeljen
+              - generic [ref=f4e1891]:
+                - text: Prehrambena tehnologija · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e1892] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1893] [cursor=pointer]
+          - listitem [ref=f4e1894]:
+            - generic [ref=f4e1895]:
+              - generic [ref=f4e1896]:
+                - paragraph [ref=f4e1897]: Osnovi racunovodstva-Hrestomatija 1dio
+                - paragraph [ref=f4e1898]:
+                  - generic [ref=f4e1899]: Skripta
+                  - generic [ref=f4e1900]: 15,50 €
+              - generic [ref=f4e1901]:
+                - button "Izmijeni" [ref=f4e1902] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1903] [cursor=pointer]
+            - generic [ref=f4e1904]:
+              - generic [ref=f4e1905]: Dodijeljen
+              - generic [ref=f4e1906]:
+                - text: Prehrambena tehnologija · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e1907] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1908] [cursor=pointer]
+          - listitem [ref=f4e1909]:
+            - generic [ref=f4e1910]:
+              - generic [ref=f4e1911]:
+                - paragraph [ref=f4e1912]: Osnovi tehnologije cuvanja namirnica -Praktikum (1)
+                - paragraph [ref=f4e1913]:
+                  - generic [ref=f4e1914]: Skripta
+                  - generic [ref=f4e1915]: 18,00 €
+              - generic [ref=f4e1916]:
+                - button "Izmijeni" [ref=f4e1917] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1918] [cursor=pointer]
+            - generic [ref=f4e1919]:
+              - generic [ref=f4e1920]: Dodijeljen
+              - generic [ref=f4e1921]:
+                - text: Prehrambena tehnologija · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e1922] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1923] [cursor=pointer]
+          - listitem [ref=f4e1924]:
+            - generic [ref=f4e1925]:
+              - generic [ref=f4e1926]:
+                - paragraph [ref=f4e1927]: Osnovni elementi karijernog savetovanja -Norman A.(1,2,3,4 )
+                - paragraph [ref=f4e1928]:
+                  - generic [ref=f4e1929]: Knjiga
+                  - generic [ref=f4e1930]: 10,50 €
+              - generic [ref=f4e1931]:
+                - button "Izmijeni" [ref=f4e1932] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1933] [cursor=pointer]
+            - generic [ref=f4e1934]:
+              - generic [ref=f4e1935]: Dodijeljen
+              - generic [ref=f4e1936]:
+                - text: Psihologija · III godina
+                - button "Ukloni iz ovog programa" [ref=f4e1937] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1938] [cursor=pointer]
+          - listitem [ref=f4e1939]:
+            - generic [ref=f4e1940]:
+              - generic [ref=f4e1941]:
+                - paragraph [ref=f4e1942]: Pakao-dante aligijeri-dio
+                - paragraph [ref=f4e1943]:
+                  - generic [ref=f4e1944]: Knjiga
+                  - generic [ref=f4e1945]: 10,50 €
+              - generic [ref=f4e1946]:
+                - button "Izmijeni" [ref=f4e1947] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1948] [cursor=pointer]
+            - generic [ref=f4e1949]:
+              - generic [ref=f4e1950]: Dodijeljen
+              - generic [ref=f4e1951]:
+                - text: FU · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e1952] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1953] [cursor=pointer]
+          - listitem [ref=f4e1954]:
+            - generic [ref=f4e1955]:
+              - generic [ref=f4e1956]:
+                - paragraph [ref=f4e1957]: Participle clauses
+                - paragraph [ref=f4e1958]:
+                  - generic [ref=f4e1959]: Knjiga
+                  - generic [ref=f4e1960]: 15,50 €
+              - generic [ref=f4e1961]:
+                - button "Izmijeni" [ref=f4e1962] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1963] [cursor=pointer]
+            - generic [ref=f4e1964]:
+              - generic [ref=f4e1965]: Dodijeljen
+              - generic [ref=f4e1966]:
+                - text: Filoloski · II godina · gramatika
+                - button "Ukloni iz ovog programa" [ref=f4e1967] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1968] [cursor=pointer]
+          - listitem [ref=f4e1969]:
+            - generic [ref=f4e1970]:
+              - generic [ref=f4e1971]:
+                - paragraph [ref=f4e1972]: poexali-разблокирован
+                - paragraph [ref=f4e1973]:
+                  - generic [ref=f4e1974]: Knjiga
+                  - generic [ref=f4e1975]: 8,00 €
+              - generic [ref=f4e1976]:
+                - button "Izmijeni" [ref=f4e1977] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1978] [cursor=pointer]
+            - generic [ref=f4e1979]:
+              - generic [ref=f4e1980]: Dodijeljen
+              - generic [ref=f4e1981]:
+                - text: Ruski A11 · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e1982] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1983] [cursor=pointer]
+          - listitem [ref=f4e1984]:
+            - generic [ref=f4e1985]:
+              - generic [ref=f4e1986]:
+                - paragraph [ref=f4e1987]: Politicka sociologija -Hrestomatija (2026)
+                - paragraph [ref=f4e1988]:
+                  - generic [ref=f4e1989]: Skripta
+                  - generic [ref=f4e1990]: 18,00 €
+              - generic [ref=f4e1991]:
+                - button "Izmijeni" [ref=f4e1992] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e1993] [cursor=pointer]
+            - generic [ref=f4e1994]:
+              - generic [ref=f4e1995]: Dodijeljen
+              - generic [ref=f4e1996]:
+                - text: HS · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e1997] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e1998] [cursor=pointer]
+          - listitem [ref=f4e1999]:
+            - generic [ref=f4e2000]:
+              - generic [ref=f4e2001]:
+                - paragraph [ref=f4e2002]: Politicki sistem CG
+                - paragraph [ref=f4e2003]:
+                  - generic [ref=f4e2004]: Knjiga
+                  - generic [ref=f4e2005]: 8,00 €
+              - generic [ref=f4e2006]:
+                - button "Izmijeni" [ref=f4e2007] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2008] [cursor=pointer]
+            - generic [ref=f4e2009]:
+              - generic [ref=f4e2010]: Dodijeljen
+              - generic [ref=f4e2011]:
+                - text: HS · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e2012] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2013] [cursor=pointer]
+          - listitem [ref=f4e2014]:
+            - generic [ref=f4e2015]:
+              - generic [ref=f4e2016]:
+                - paragraph [ref=f4e2017]: Politika prosirenja EU - hrestomatija - ljetnji semestar 2019
+                - paragraph [ref=f4e2018]:
+                  - generic [ref=f4e2019]: Skripta
+                  - generic [ref=f4e2020]: 18,00 €
+              - generic [ref=f4e2021]:
+                - button "Izmijeni" [ref=f4e2022] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2023] [cursor=pointer]
+            - generic [ref=f4e2024]:
+              - generic [ref=f4e2025]: Dodijeljen
+              - generic [ref=f4e2026]:
+                - text: HS · III godina
+                - button "Ukloni iz ovog programa" [ref=f4e2027] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2028] [cursor=pointer]
+          - listitem [ref=f4e2029]:
+            - generic [ref=f4e2030]:
+              - generic [ref=f4e2031]:
+                - paragraph [ref=f4e2032]: Porodično pravo - Dejan Đurđević - Osnovi porodičnog prava Crne Gore - 2017 ljetnji semestar
+                - paragraph [ref=f4e2033]:
+                  - generic [ref=f4e2034]: Knjiga
+                  - generic [ref=f4e2035]: 18,00 €
+              - generic [ref=f4e2036]:
+                - button "Izmijeni" [ref=f4e2037] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2038] [cursor=pointer]
+            - generic [ref=f4e2039]:
+              - generic [ref=f4e2040]: Dodijeljen
+              - generic [ref=f4e2041]:
+                - text: Pravo · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e2042] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2043] [cursor=pointer]
+          - listitem [ref=f4e2044]:
+            - generic [ref=f4e2045]:
+              - generic [ref=f4e2046]:
+                - paragraph [ref=f4e2047]: Postdramsko pozoriste -Hans Thies Lehmann
+                - paragraph [ref=f4e2048]:
+                  - generic [ref=f4e2049]: Knjiga
+                  - generic [ref=f4e2050]: 8,00 €
+              - generic [ref=f4e2051]:
+                - button "Izmijeni" [ref=f4e2052] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2053] [cursor=pointer]
+            - generic [ref=f4e2054]:
+              - generic [ref=f4e2055]: Dodijeljen
+              - generic [ref=f4e2056]:
+                - text: FU · III godina
+                - button "Ukloni iz ovog programa" [ref=f4e2057] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2058] [cursor=pointer]
+          - listitem [ref=f4e2059]:
+            - generic [ref=f4e2060]:
+              - generic [ref=f4e2061]:
+                - paragraph [ref=f4e2062]: Poznavanje i kontrola sirovina animalnog porijekla -Praktikum
+                - paragraph [ref=f4e2063]:
+                  - generic [ref=f4e2064]: Skripta
+                  - generic [ref=f4e2065]: 8,00 €
+              - generic [ref=f4e2066]:
+                - button "Izmijeni" [ref=f4e2067] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2068] [cursor=pointer]
+            - generic [ref=f4e2069]:
+              - generic [ref=f4e2070]: Dodijeljen
+              - generic [ref=f4e2071]:
+                - text: Prehrambena tehnologija · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e2072] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2073] [cursor=pointer]
+          - listitem [ref=f4e2074]:
+            - generic [ref=f4e2075]:
+              - generic [ref=f4e2076]:
+                - paragraph [ref=f4e2077]: Prakticna ekonomija -James D.Gwartney (prva dva dijela )
+                - paragraph [ref=f4e2078]:
+                  - generic [ref=f4e2079]: Knjiga
+                  - generic [ref=f4e2080]: 8,00 €
+              - generic [ref=f4e2081]:
+                - button "Izmijeni" [ref=f4e2082] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2083] [cursor=pointer]
+            - generic [ref=f4e2084]:
+              - generic [ref=f4e2085]: Dodijeljen
+              - generic [ref=f4e2086]:
+                - text: Pravo · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e2087] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2088] [cursor=pointer]
+          - listitem [ref=f4e2089]:
+            - generic [ref=f4e2090]:
+              - generic [ref=f4e2091]:
+                - paragraph [ref=f4e2092]: Prakticna filozofija treninga i sporta-Hrestomatija
+                - paragraph [ref=f4e2093]:
+                  - generic [ref=f4e2094]: Skripta
+                  - generic [ref=f4e2095]: 8,00 €
+              - generic [ref=f4e2096]:
+                - button "Izmijeni" [ref=f4e2097] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2098] [cursor=pointer]
+            - generic [ref=f4e2099]:
+              - generic [ref=f4e2100]: Dodijeljen
+              - generic [ref=f4e2101]:
+                - text: Sportski menadzment · I godina · Praktična filozofija sporta i života
+                - button "Ukloni iz ovog programa" [ref=f4e2102] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2103] [cursor=pointer]
+          - listitem [ref=f4e2104]:
+            - generic [ref=f4e2105]:
+              - generic [ref=f4e2106]:
+                - paragraph [ref=f4e2107]: Prakticna filozofija treninga i sporta-Ivan Terzic
+                - paragraph [ref=f4e2108]:
+                  - generic [ref=f4e2109]: Knjiga
+                  - generic [ref=f4e2110]: 10,50 €
+              - generic [ref=f4e2111]:
+                - button "Izmijeni" [ref=f4e2112] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2113] [cursor=pointer]
+            - generic [ref=f4e2114]:
+              - generic [ref=f4e2115]: Dodijeljen
+              - generic [ref=f4e2116]:
+                - text: Sportski menadzment · I godina · Praktična filozofija sporta i života
+                - button "Ukloni iz ovog programa" [ref=f4e2117] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2118] [cursor=pointer]
+          - listitem [ref=f4e2119]:
+            - generic [ref=f4e2120]:
+              - generic [ref=f4e2121]:
+                - paragraph [ref=f4e2122]: Praktikum iz trgovinskog prava 2012 - Jovanovic Radovic
+                - paragraph [ref=f4e2123]:
+                  - generic [ref=f4e2124]: Skripta
+                  - generic [ref=f4e2125]: 13,00 €
+              - generic [ref=f4e2126]:
+                - button "Izmijeni" [ref=f4e2127] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2128] [cursor=pointer]
+            - generic [ref=f4e2129]:
+              - generic [ref=f4e2130]: Dodijeljen
+              - generic [ref=f4e2131]:
+                - text: Pravo · III godina
+                - button "Ukloni iz ovog programa" [ref=f4e2132] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2133] [cursor=pointer]
+          - listitem [ref=f4e2134]:
+            - generic [ref=f4e2135]:
+              - generic [ref=f4e2136]:
+                - paragraph [ref=f4e2137]: Pre-service ST observations
+                - paragraph [ref=f4e2138]:
+                  - generic [ref=f4e2139]: Ostali materijal
+                  - generic [ref=f4e2140]: 18,00 €
+              - generic [ref=f4e2141]:
+                - button "Izmijeni" [ref=f4e2142] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2143] [cursor=pointer]
+            - generic [ref=f4e2144]:
+              - generic [ref=f4e2145]: Dodijeljen
+              - generic [ref=f4e2146]:
+                - text: Filoloski · Master · praktikum 1 materijali
+                - button "Ukloni iz ovog programa" [ref=f4e2147] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2148] [cursor=pointer]
+          - listitem [ref=f4e2149]:
+            - generic [ref=f4e2150]:
+              - generic [ref=f4e2151]:
+                - paragraph [ref=f4e2152]: Prezentacije- KP-Zdravstvena psihologija
+                - paragraph [ref=f4e2153]:
+                  - generic [ref=f4e2154]: Ostali materijal
+                  - generic [ref=f4e2155]: 15,50 €
+              - generic [ref=f4e2156]:
+                - button "Izmijeni" [ref=f4e2157] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2158] [cursor=pointer]
+            - generic [ref=f4e2159]:
+              - generic [ref=f4e2160]: Dodijeljen
+              - generic [ref=f4e2161]:
+                - text: Psihologija · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e2162] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2163] [cursor=pointer]
+          - listitem [ref=f4e2164]:
+            - generic [ref=f4e2165]:
+              - generic [ref=f4e2166]:
+                - paragraph [ref=f4e2167]: Prezentacije-K,P-Klinicki metod
+                - paragraph [ref=f4e2168]:
+                  - generic [ref=f4e2169]: Ostali materijal
+                  - generic [ref=f4e2170]: 18,00 €
+              - generic [ref=f4e2171]:
+                - button "Izmijeni" [ref=f4e2172] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2173] [cursor=pointer]
+            - generic [ref=f4e2174]:
+              - generic [ref=f4e2175]: Dodijeljen
+              - generic [ref=f4e2176]:
+                - text: Psihologija · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e2177] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2178] [cursor=pointer]
+          - listitem [ref=f4e2179]:
+            - generic [ref=f4e2180]:
+              - generic [ref=f4e2181]:
+                - paragraph [ref=f4e2182]: Prezentacije-k.p-Podsjetimo se
+                - paragraph [ref=f4e2183]:
+                  - generic [ref=f4e2184]: Ostali materijal
+                  - generic [ref=f4e2185]: 8,00 €
+              - generic [ref=f4e2186]:
+                - button "Izmijeni" [ref=f4e2187] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2188] [cursor=pointer]
+            - generic [ref=f4e2189]:
+              - generic [ref=f4e2190]: Dodijeljen
+              - generic [ref=f4e2191]:
+                - text: Psihologija · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e2192] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2193] [cursor=pointer]
+          - listitem [ref=f4e2194]:
+            - generic [ref=f4e2195]:
+              - generic [ref=f4e2196]:
+                - paragraph [ref=f4e2197]: Prezentacije-K.P-Studija slucaja
+                - paragraph [ref=f4e2198]:
+                  - generic [ref=f4e2199]: Ostali materijal
+                  - generic [ref=f4e2200]: 10,50 €
+              - generic [ref=f4e2201]:
+                - button "Izmijeni" [ref=f4e2202] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2203] [cursor=pointer]
+            - generic [ref=f4e2204]:
+              - generic [ref=f4e2205]: Dodijeljen
+              - generic [ref=f4e2206]:
+                - text: Psihologija · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e2207] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2208] [cursor=pointer]
+          - listitem [ref=f4e2209]:
+            - generic [ref=f4e2210]:
+              - generic [ref=f4e2211]:
+                - paragraph [ref=f4e2212]: Principi ekonomije - Gregori Menkju - 1, 2, 3, 4, 5, 7, 13, 14, 15, 16, 17
+                - paragraph [ref=f4e2213]:
+                  - generic [ref=f4e2214]: Knjiga
+                  - generic [ref=f4e2215]: 10,50 €
+              - generic [ref=f4e2216]:
+                - button "Izmijeni" [ref=f4e2217] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2218] [cursor=pointer]
+            - generic [ref=f4e2219]:
+              - generic [ref=f4e2220]: Dodijeljen
+              - generic [ref=f4e2221]:
+                - text: PMB · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e2222] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2223] [cursor=pointer]
+          - listitem [ref=f4e2224]:
+            - generic [ref=f4e2225]:
+              - generic [ref=f4e2226]:
+                - paragraph [ref=f4e2227]: Principi politickog poretka,konstitucionalna demokratija i politicka kultura-Podunavac
+                - paragraph [ref=f4e2228]:
+                  - generic [ref=f4e2229]: Knjiga
+                  - generic [ref=f4e2230]: 15,50 €
+              - generic [ref=f4e2231]:
+                - button "Izmijeni" [ref=f4e2232] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2233] [cursor=pointer]
+            - generic [ref=f4e2234]:
+              - generic [ref=f4e2235]: Dodijeljen
+              - generic [ref=f4e2236]:
+                - text: HS · Doktorske studije
+                - button "Ukloni iz ovog programa" [ref=f4e2237] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2238] [cursor=pointer]
+          - listitem [ref=f4e2239]:
+            - generic [ref=f4e2240]:
+              - generic [ref=f4e2241]:
+                - paragraph [ref=f4e2242]: Prisma A1 - A2 nuevo - libro de EJERCICIOS
+                - paragraph [ref=f4e2243]:
+                  - generic [ref=f4e2244]: Skripta
+                  - generic [ref=f4e2245]: 15,50 €
+              - generic [ref=f4e2246]:
+                - button "Izmijeni" [ref=f4e2247] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2248] [cursor=pointer]
+            - generic [ref=f4e2249]:
+              - generic [ref=f4e2250]: Dodijeljen
+              - generic [ref=f4e2251]:
+                - text: Spanski · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e2252] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2253] [cursor=pointer]
+          - listitem [ref=f4e2254]:
+            - generic [ref=f4e2255]:
+              - generic [ref=f4e2256]:
+                - paragraph [ref=f4e2257]: Prisma A1 - A2 nuevo - libro del ALUMNO
+                - paragraph [ref=f4e2258]:
+                  - generic [ref=f4e2259]: Knjiga
+                  - generic [ref=f4e2260]: 18,00 €
+              - generic [ref=f4e2261]:
+                - button "Izmijeni" [ref=f4e2262] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2263] [cursor=pointer]
+            - generic [ref=f4e2264]:
+              - generic [ref=f4e2265]: Dodijeljen
+              - generic [ref=f4e2266]:
+                - text: Spanski · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e2267] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2268] [cursor=pointer]
+          - listitem [ref=f4e2269]:
+            - generic [ref=f4e2270]:
+              - generic [ref=f4e2271]:
+                - paragraph [ref=f4e2272]: Proficiency expert coursebook
+                - paragraph [ref=f4e2273]:
+                  - generic [ref=f4e2274]: Knjiga
+                  - generic [ref=f4e2275]: 8,00 €
+              - generic [ref=f4e2276]:
+                - button "Izmijeni" [ref=f4e2277] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2278] [cursor=pointer]
+            - generic [ref=f4e2279]:
+              - generic [ref=f4e2280]: Dodijeljen
+              - generic [ref=f4e2281]:
+                - text: Filoloski · III godina
+                - button "Ukloni iz ovog programa" [ref=f4e2282] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2283] [cursor=pointer]
+          - listitem [ref=f4e2284]:
+            - generic [ref=f4e2285]:
+              - generic [ref=f4e2286]:
+                - paragraph [ref=f4e2287]: Promenada kroz svijet protokola
+                - paragraph [ref=f4e2288]:
+                  - generic [ref=f4e2289]: Knjiga
+                  - generic [ref=f4e2290]: 10,50 €
+              - generic [ref=f4e2291]:
+                - button "Izmijeni" [ref=f4e2292] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2293] [cursor=pointer]
+            - generic [ref=f4e2294]:
+              - generic [ref=f4e2295]: Dodijeljen
+              - generic [ref=f4e2296]:
+                - text: HS · III godina · Diplomatsko pravo i diplomatska profesija - 2018 ljetnji semestar
+                - button "Ukloni iz ovog programa" [ref=f4e2297] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2298] [cursor=pointer]
+          - listitem [ref=f4e2299]:
+            - generic [ref=f4e2300]:
+              - generic [ref=f4e2301]:
+                - paragraph [ref=f4e2302]: Proracun armiranobetonskih konstrukcija prema eurocode 2-Vahid Hasanovic
+                - paragraph [ref=f4e2303]:
+                  - generic [ref=f4e2304]: Knjiga
+                  - generic [ref=f4e2305]: 18,00 €
+              - generic [ref=f4e2306]:
+                - button "Izmijeni" [ref=f4e2307] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2308] [cursor=pointer]
+            - generic [ref=f4e2309]:
+              - generic [ref=f4e2310]: Dodijeljen
+              - generic [ref=f4e2311]:
+                - text: Politehnika · III godina · Projektovanje 1
+                - button "Ukloni iz ovog programa" [ref=f4e2312] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2313] [cursor=pointer]
+          - listitem [ref=f4e2314]:
+            - generic [ref=f4e2315]:
+              - generic [ref=f4e2316]:
+                - paragraph [ref=f4e2317]: Proracun Betonskih Konstrukcija
+                - paragraph [ref=f4e2318]:
+                  - generic [ref=f4e2319]: Knjiga
+                  - generic [ref=f4e2320]: 8,00 €
+              - generic [ref=f4e2321]:
+                - button "Izmijeni" [ref=f4e2322] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2323] [cursor=pointer]
+            - generic [ref=f4e2324]:
+              - generic [ref=f4e2325]: Dodijeljen
+              - generic [ref=f4e2326]:
+                - text: Politehnika · III godina · Projektovanje 1
+                - button "Ukloni iz ovog programa" [ref=f4e2327] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2328] [cursor=pointer]
+          - listitem [ref=f4e2329]:
+            - generic [ref=f4e2330]:
+              - generic [ref=f4e2331]:
+                - paragraph [ref=f4e2332]: Psihologija licnosti-Zarko Trebjesanin
+                - paragraph [ref=f4e2333]:
+                  - generic [ref=f4e2334]: Knjiga
+                  - generic [ref=f4e2335]: 13,00 €
+              - generic [ref=f4e2336]:
+                - button "Izmijeni" [ref=f4e2337] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2338] [cursor=pointer]
+            - generic [ref=f4e2339]:
+              - generic [ref=f4e2340]: Dodijeljen
+              - generic [ref=f4e2341]:
+                - text: Psihologija · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e2342] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2343] [cursor=pointer]
+          - listitem [ref=f4e2344]:
+            - generic [ref=f4e2345]:
+              - generic [ref=f4e2346]:
+                - paragraph [ref=f4e2347]: Psihologija u nastavi-Jasmina Pekic
+                - paragraph [ref=f4e2348]:
+                  - generic [ref=f4e2349]: Knjiga
+                  - generic [ref=f4e2350]: 13,00 €
+              - generic [ref=f4e2351]:
+                - button "Izmijeni" [ref=f4e2352] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2353] [cursor=pointer]
+            - generic [ref=f4e2354]:
+              - generic [ref=f4e2355]: Dodijeljen
+              - generic [ref=f4e2356]:
+                - text: Psihologija · III godina
+                - button "Ukloni iz ovog programa" [ref=f4e2357] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2358] [cursor=pointer]
+          - listitem [ref=f4e2359]:
+            - generic [ref=f4e2360]:
+              - generic [ref=f4e2361]:
+                - paragraph [ref=f4e2362]: Racunovodstvo i analiza finansijskih izvjestaja-Hrestomatija 1dio
+                - paragraph [ref=f4e2363]:
+                  - generic [ref=f4e2364]: Skripta
+                  - generic [ref=f4e2365]: 8,00 €
+              - generic [ref=f4e2366]:
+                - button "Izmijeni" [ref=f4e2367] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2368] [cursor=pointer]
+            - generic [ref=f4e2369]:
+              - generic [ref=f4e2370]: Dodijeljen
+              - generic [ref=f4e2371]:
+                - text: PMB · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e2372] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2373] [cursor=pointer]
+          - listitem [ref=f4e2374]:
+            - generic [ref=f4e2375]:
+              - generic [ref=f4e2376]:
+                - paragraph [ref=f4e2377]: Racunovodstvo-hrestomatija ll dio
+                - paragraph [ref=f4e2378]:
+                  - generic [ref=f4e2379]: Skripta
+                  - generic [ref=f4e2380]: 10,50 €
+              - generic [ref=f4e2381]:
+                - button "Izmijeni" [ref=f4e2382] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2383] [cursor=pointer]
+            - generic [ref=f4e2384]:
+              - generic [ref=f4e2385]: Dodijeljen
+              - generic [ref=f4e2386]:
+                - text: PMB · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e2387] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2388] [cursor=pointer]
+          - listitem [ref=f4e2389]:
+            - generic [ref=f4e2390]:
+              - generic [ref=f4e2391]:
+                - paragraph [ref=f4e2392]: Razvojna psihologija odraslog doba-Nila Kapor (novi dodatak)
+                - paragraph [ref=f4e2393]:
+                  - generic [ref=f4e2394]: Knjiga
+                  - generic [ref=f4e2395]: 15,50 €
+              - generic [ref=f4e2396]:
+                - button "Izmijeni" [ref=f4e2397] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2398] [cursor=pointer]
+            - generic [ref=f4e2399]:
+              - generic [ref=f4e2400]: Dodijeljen
+              - generic [ref=f4e2401]:
+                - text: Psihologija · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e2402] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2403] [cursor=pointer]
+          - listitem [ref=f4e2404]:
+            - generic [ref=f4e2405]:
+              - generic [ref=f4e2406]:
+                - paragraph [ref=f4e2407]: Razvojna psihologija-Ivan Jerkovic,Zotovic-(cetvrto izdanje 2026)
+                - paragraph [ref=f4e2408]:
+                  - generic [ref=f4e2409]: Knjiga
+                  - generic [ref=f4e2410]: 10,50 €
+              - generic [ref=f4e2411]:
+                - button "Izmijeni" [ref=f4e2412] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2413] [cursor=pointer]
+            - generic [ref=f4e2414]:
+              - generic [ref=f4e2415]: Dodijeljen
+              - generic [ref=f4e2416]:
+                - text: Psihologija · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e2417] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2418] [cursor=pointer]
+          - listitem [ref=f4e2419]:
+            - generic [ref=f4e2420]:
+              - generic [ref=f4e2421]:
+                - paragraph [ref=f4e2422]: Regionalna bezbjednost -Hrestomatija (novi master program )
+                - paragraph [ref=f4e2423]:
+                  - generic [ref=f4e2424]: Skripta
+                  - generic [ref=f4e2425]: 10,50 €
+              - generic [ref=f4e2426]:
+                - button "Izmijeni" [ref=f4e2427] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2428] [cursor=pointer]
+            - generic [ref=f4e2429]:
+              - generic [ref=f4e2430]: Dodijeljen
+              - generic [ref=f4e2431]:
+                - text: HS · Master
+                - button "Ukloni iz ovog programa" [ref=f4e2432] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2433] [cursor=pointer]
+          - listitem [ref=f4e2434]:
+            - generic [ref=f4e2435]:
+              - generic [ref=f4e2436]:
+                - paragraph [ref=f4e2437]: Ruski A22 knjiga koja se koristi
+                - paragraph [ref=f4e2438]:
+                  - generic [ref=f4e2439]: Knjiga
+                  - generic [ref=f4e2440]: 13,00 €
+              - generic [ref=f4e2441]:
+                - button "Izmijeni" [ref=f4e2442] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2443] [cursor=pointer]
+            - generic [ref=f4e2444]:
+              - generic [ref=f4e2445]: Dodijeljen
+              - generic [ref=f4e2446]:
+                - text: Ostali jezici · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e2447] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2448] [cursor=pointer]
+          - listitem [ref=f4e2449]:
+            - generic [ref=f4e2450]:
+              - generic [ref=f4e2451]:
+                - paragraph [ref=f4e2452]: Ruski jezik A2.2.
+                - paragraph [ref=f4e2453]:
+                  - generic [ref=f4e2454]: Knjiga
+                  - generic [ref=f4e2455]: 15,50 €
+              - generic [ref=f4e2456]:
+                - button "Izmijeni" [ref=f4e2457] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2458] [cursor=pointer]
+            - generic [ref=f4e2459]:
+              - generic [ref=f4e2460]: Dodijeljen
+              - generic [ref=f4e2461]:
+                - text: Ostali jezici · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e2462] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2463] [cursor=pointer]
+          - listitem [ref=f4e2464]:
+            - generic [ref=f4e2465]:
+              - generic [ref=f4e2466]:
+                - paragraph [ref=f4e2467]: Savremene politicke teorije-Hrestomatija
+                - paragraph [ref=f4e2468]:
+                  - generic [ref=f4e2469]: Skripta
+                  - generic [ref=f4e2470]: 8,00 €
+              - generic [ref=f4e2471]:
+                - button "Izmijeni" [ref=f4e2472] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2473] [cursor=pointer]
+            - generic [ref=f4e2474]:
+              - generic [ref=f4e2475]: Dodijeljen
+              - generic [ref=f4e2476]:
+                - text: HS · III godina
+                - button "Ukloni iz ovog programa" [ref=f4e2477] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2478] [cursor=pointer]
+          - listitem [ref=f4e2479]:
+            - generic [ref=f4e2480]:
+              - generic [ref=f4e2481]:
+                - paragraph [ref=f4e2482]: Savremene politicke teorije-Reader -Milan Podunavac
+                - paragraph [ref=f4e2483]:
+                  - generic [ref=f4e2484]: Knjiga
+                  - generic [ref=f4e2485]: 10,50 €
+              - generic [ref=f4e2486]:
+                - button "Izmijeni" [ref=f4e2487] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2488] [cursor=pointer]
+            - generic [ref=f4e2489]:
+              - generic [ref=f4e2490]: Dodijeljen
+              - generic [ref=f4e2491]:
+                - text: HS · III godina
+                - button "Ukloni iz ovog programa" [ref=f4e2492] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2493] [cursor=pointer]
+          - listitem [ref=f4e2494]:
+            - generic [ref=f4e2495]:
+              - generic [ref=f4e2496]:
+                - paragraph [ref=f4e2497]: Savremeni engleski 2 gramatika
+                - paragraph [ref=f4e2498]:
+                  - generic [ref=f4e2499]: Knjiga
+                  - generic [ref=f4e2500]: 15,50 €
+              - generic [ref=f4e2501]:
+                - button "Izmijeni" [ref=f4e2502] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2503] [cursor=pointer]
+            - generic [ref=f4e2504]:
+              - generic [ref=f4e2505]: Dodijeljen
+              - generic [ref=f4e2506]:
+                - text: Filoloski · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e2507] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2508] [cursor=pointer]
+          - listitem [ref=f4e2509]:
+            - generic [ref=f4e2510]:
+              - generic [ref=f4e2511]:
+                - paragraph [ref=f4e2512]: Savremeni engleski 4
+                - paragraph [ref=f4e2513]:
+                  - generic [ref=f4e2514]: Knjiga
+                  - generic [ref=f4e2515]: 18,00 €
+              - generic [ref=f4e2516]:
+                - button "Izmijeni" [ref=f4e2517] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2518] [cursor=pointer]
+            - generic [ref=f4e2519]:
+              - generic [ref=f4e2520]: Dodijeljen
+              - generic [ref=f4e2521]:
+                - text: Filoloski · II godina · gramatika
+                - button "Ukloni iz ovog programa" [ref=f4e2522] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2523] [cursor=pointer]
+          - listitem [ref=f4e2524]:
+            - generic [ref=f4e2525]:
+              - generic [ref=f4e2526]:
+                - paragraph [ref=f4e2527]: Schritte A2.1
+                - paragraph [ref=f4e2528]:
+                  - generic [ref=f4e2529]: Knjiga
+                  - generic [ref=f4e2530]: 8,00 €
+              - generic [ref=f4e2531]:
+                - button "Izmijeni" [ref=f4e2532] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2533] [cursor=pointer]
+            - generic [ref=f4e2534]:
+              - generic [ref=f4e2535]: Dodijeljen
+              - generic [ref=f4e2536]:
+                - text: Njemacki · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e2537] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2538] [cursor=pointer]
+          - listitem [ref=f4e2539]:
+            - generic [ref=f4e2540]:
+              - generic [ref=f4e2541]:
+                - paragraph [ref=f4e2542]: Schritte B1.1
+                - paragraph [ref=f4e2543]:
+                  - generic [ref=f4e2544]: Knjiga
+                  - generic [ref=f4e2545]: 10,50 €
+              - generic [ref=f4e2546]:
+                - button "Izmijeni" [ref=f4e2547] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2548] [cursor=pointer]
+            - generic [ref=f4e2549]:
+              - generic [ref=f4e2550]: Dodijeljen
+              - generic [ref=f4e2551]:
+                - text: Njemacki · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e2552] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2553] [cursor=pointer]
+          - listitem [ref=f4e2554]:
+            - generic [ref=f4e2555]:
+              - generic [ref=f4e2556]:
+                - paragraph [ref=f4e2557]: Schritte Int. A1.2 neu
+                - paragraph [ref=f4e2558]:
+                  - generic [ref=f4e2559]: Knjiga
+                  - generic [ref=f4e2560]: 13,00 €
+              - generic [ref=f4e2561]:
+                - button "Izmijeni" [ref=f4e2562] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2563] [cursor=pointer]
+            - generic [ref=f4e2564]:
+              - generic [ref=f4e2565]: Dodijeljen
+              - generic [ref=f4e2566]:
+                - text: Njemacki · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e2567] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2568] [cursor=pointer]
+          - listitem [ref=f4e2569]:
+            - generic [ref=f4e2570]:
+              - generic [ref=f4e2571]:
+                - paragraph [ref=f4e2572]: Schritte international -neu 4 -A2.2
+                - paragraph [ref=f4e2573]:
+                  - generic [ref=f4e2574]: Knjiga
+                  - generic [ref=f4e2575]: 15,50 €
+              - generic [ref=f4e2576]:
+                - button "Izmijeni" [ref=f4e2577] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2578] [cursor=pointer]
+            - generic [ref=f4e2579]:
+              - generic [ref=f4e2580]: Dodijeljen
+              - generic [ref=f4e2581]:
+                - text: Njemacki · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e2582] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2583] [cursor=pointer]
+          - listitem [ref=f4e2584]:
+            - generic [ref=f4e2585]:
+              - generic [ref=f4e2586]:
+                - paragraph [ref=f4e2587]: Shritte A11
+                - paragraph [ref=f4e2588]:
+                  - generic [ref=f4e2589]: Knjiga
+                  - generic [ref=f4e2590]: 18,00 €
+              - generic [ref=f4e2591]:
+                - button "Izmijeni" [ref=f4e2592] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2593] [cursor=pointer]
+            - generic [ref=f4e2594]:
+              - generic [ref=f4e2595]: Dodijeljen
+              - generic [ref=f4e2596]:
+                - text: Njemacki · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e2597] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2598] [cursor=pointer]
+          - listitem [ref=f4e2599]:
+            - generic [ref=f4e2600]:
+              - generic [ref=f4e2601]:
+                - paragraph [ref=f4e2602]: Skripta-tehnologija mlijeka-Tehnologija proizvoda animalnog porijekla
+                - paragraph [ref=f4e2603]:
+                  - generic [ref=f4e2604]: Skripta
+                  - generic [ref=f4e2605]: 15,50 €
+              - generic [ref=f4e2606]:
+                - button "Izmijeni" [ref=f4e2607] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2608] [cursor=pointer]
+            - generic [ref=f4e2609]:
+              - generic [ref=f4e2610]: Dodijeljen
+              - generic [ref=f4e2611]:
+                - text: Prehrambena tehnologija · III godina
+                - button "Ukloni iz ovog programa" [ref=f4e2612] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2613] [cursor=pointer]
+          - listitem [ref=f4e2614]:
+            - generic [ref=f4e2615]:
+              - generic [ref=f4e2616]:
+                - paragraph [ref=f4e2617]: Socijalna psihologija-Aronson,Vilson(ispravna knjiga 2023)
+                - paragraph [ref=f4e2618]:
+                  - generic [ref=f4e2619]: Knjiga
+                  - generic [ref=f4e2620]: 13,00 €
+              - generic [ref=f4e2621]:
+                - button "Izmijeni" [ref=f4e2622] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2623] [cursor=pointer]
+            - generic [ref=f4e2624]:
+              - generic [ref=f4e2625]: Dodijeljen
+              - generic [ref=f4e2626]:
+                - text: Psihologija · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e2627] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2628] [cursor=pointer]
+          - listitem [ref=f4e2629]:
+            - generic [ref=f4e2630]:
+              - generic [ref=f4e2631]:
+                - paragraph [ref=f4e2632]: Sportske organizacijue i sportski dogadjaji-Milan Mihajlovic
+                - paragraph [ref=f4e2633]:
+                  - generic [ref=f4e2634]: Knjiga
+                  - generic [ref=f4e2635]: 15,50 €
+              - generic [ref=f4e2636]:
+                - button "Izmijeni" [ref=f4e2637] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2638] [cursor=pointer]
+            - generic [ref=f4e2639]:
+              - generic [ref=f4e2640]: Dodijeljen
+              - generic [ref=f4e2641]:
+                - text: Sportski menadzment · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e2642] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2643] [cursor=pointer]
+          - listitem [ref=f4e2644]:
+            - generic [ref=f4e2645]:
+              - generic [ref=f4e2646]:
+                - paragraph [ref=f4e2647]: Statistika PMB - 2018 ljetnji semestar
+                - paragraph [ref=f4e2648]:
+                  - generic [ref=f4e2649]: Knjiga
+                  - generic [ref=f4e2650]: 13,00 €
+              - generic [ref=f4e2651]:
+                - button "Izmijeni" [ref=f4e2652] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2653] [cursor=pointer]
+            - generic [ref=f4e2654]:
+              - generic [ref=f4e2655]: Dodijeljen
+              - generic [ref=f4e2656]:
+                - text: PMB · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e2657] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2658] [cursor=pointer]
+          - listitem [ref=f4e2659]:
+            - generic [ref=f4e2660]:
+              - generic [ref=f4e2661]:
+                - paragraph [ref=f4e2662]: Sve bliza Unija - Dezmon Dinan
+                - paragraph [ref=f4e2663]:
+                  - generic [ref=f4e2664]: Knjiga
+                  - generic [ref=f4e2665]: 10,50 €
+              - generic [ref=f4e2666]:
+                - button "Izmijeni" [ref=f4e2667] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2668] [cursor=pointer]
+            - generic [ref=f4e2669]:
+              - generic [ref=f4e2670]: Dodijeljen
+              - generic [ref=f4e2671]:
+                - text: HS · II godina · Istorija evropskih integracija
+                - button "Ukloni iz ovog programa" [ref=f4e2672] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2673] [cursor=pointer]
+          - listitem [ref=f4e2674]:
+            - generic [ref=f4e2675]:
+              - generic [ref=f4e2676]:
+                - paragraph [ref=f4e2677]: Teacher Education
+                - paragraph [ref=f4e2678]:
+                  - generic [ref=f4e2679]: Knjiga
+                  - generic [ref=f4e2680]: 8,00 €
+              - generic [ref=f4e2681]:
+                - button "Izmijeni" [ref=f4e2682] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2683] [cursor=pointer]
+            - generic [ref=f4e2684]:
+              - generic [ref=f4e2685]: Dodijeljen
+              - generic [ref=f4e2686]:
+                - text: Filoloski · Master · praktikum 1 materijali
+                - button "Ukloni iz ovog programa" [ref=f4e2687] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2688] [cursor=pointer]
+          - listitem [ref=f4e2689]:
+            - generic [ref=f4e2690]:
+              - generic [ref=f4e2691]:
+                - paragraph [ref=f4e2692]: TEFL Lesson observation Form
+                - paragraph [ref=f4e2693]:
+                  - generic [ref=f4e2694]: Ostali materijal
+                  - generic [ref=f4e2695]: 10,50 €
+              - generic [ref=f4e2696]:
+                - button "Izmijeni" [ref=f4e2697] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2698] [cursor=pointer]
+            - generic [ref=f4e2699]:
+              - generic [ref=f4e2700]: Dodijeljen
+              - generic [ref=f4e2701]:
+                - text: Filoloski · Master · praktikum 1 materijali
+                - button "Ukloni iz ovog programa" [ref=f4e2702] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2703] [cursor=pointer]
+          - listitem [ref=f4e2704]:
+            - generic [ref=f4e2705]:
+              - generic [ref=f4e2706]:
+                - paragraph [ref=f4e2707]: Tehnike odnosa s javnoscu
+                - paragraph [ref=f4e2708]:
+                  - generic [ref=f4e2709]: Knjiga
+                  - generic [ref=f4e2710]: 13,00 €
+              - generic [ref=f4e2711]:
+                - button "Izmijeni" [ref=f4e2712] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2713] [cursor=pointer]
+            - generic [ref=f4e2714]:
+              - generic [ref=f4e2715]: Dodijeljen
+              - generic [ref=f4e2716]:
+                - text: HS · III godina
+                - button "Ukloni iz ovog programa" [ref=f4e2717] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2718] [cursor=pointer]
+          - listitem [ref=f4e2719]:
+            - generic [ref=f4e2720]:
+              - generic [ref=f4e2721]:
+                - paragraph [ref=f4e2722]: Tehnologija proizvoda animalnog porijekla -Praktikum
+                - paragraph [ref=f4e2723]:
+                  - generic [ref=f4e2724]: Skripta
+                  - generic [ref=f4e2725]: 18,00 €
+              - generic [ref=f4e2726]:
+                - button "Izmijeni" [ref=f4e2727] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2728] [cursor=pointer]
+            - generic [ref=f4e2729]:
+              - generic [ref=f4e2730]: Dodijeljen
+              - generic [ref=f4e2731]:
+                - text: Prehrambena tehnologija · III godina
+                - button "Ukloni iz ovog programa" [ref=f4e2732] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2733] [cursor=pointer]
+          - listitem [ref=f4e2734]:
+            - generic [ref=f4e2735]:
+              - generic [ref=f4e2736]:
+                - paragraph [ref=f4e2737]: Terenske vjezbe -Poznavanje i kontrola sirovina animalnog porijekla
+                - paragraph [ref=f4e2738]:
+                  - generic [ref=f4e2739]: Ostali materijal
+                  - generic [ref=f4e2740]: 10,50 €
+              - generic [ref=f4e2741]:
+                - button "Izmijeni" [ref=f4e2742] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2743] [cursor=pointer]
+            - generic [ref=f4e2744]:
+              - generic [ref=f4e2745]: Dodijeljen
+              - generic [ref=f4e2746]:
+                - text: Prehrambena tehnologija · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e2747] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2748] [cursor=pointer]
+          - listitem [ref=f4e2749]:
+            - generic [ref=f4e2750]:
+              - generic [ref=f4e2751]:
+                - paragraph [ref=f4e2752]: Terenske vjezbe -Tehnologija proizvoda animalnog porijekla
+                - paragraph [ref=f4e2753]:
+                  - generic [ref=f4e2754]: Ostali materijal
+                  - generic [ref=f4e2755]: 8,00 €
+              - generic [ref=f4e2756]:
+                - button "Izmijeni" [ref=f4e2757] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2758] [cursor=pointer]
+            - generic [ref=f4e2759]:
+              - generic [ref=f4e2760]: Dodijeljen
+              - generic [ref=f4e2761]:
+                - text: Prehrambena tehnologija · III godina
+                - button "Ukloni iz ovog programa" [ref=f4e2762] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2763] [cursor=pointer]
+          - listitem [ref=f4e2764]:
+            - generic [ref=f4e2765]:
+              - generic [ref=f4e2766]:
+                - paragraph [ref=f4e2767]: The art of Loving
+                - paragraph [ref=f4e2768]:
+                  - generic [ref=f4e2769]: Knjiga
+                  - generic [ref=f4e2770]: 8,00 €
+              - generic [ref=f4e2771]:
+                - button "Izmijeni" [ref=f4e2772] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2773] [cursor=pointer]
+            - generic [ref=f4e2774]:
+              - generic [ref=f4e2775]: Dodijeljen
+              - generic [ref=f4e2776]:
+                - text: Filoloski · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e2777] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2778] [cursor=pointer]
+          - listitem [ref=f4e2779]:
+            - generic [ref=f4e2780]:
+              - generic [ref=f4e2781]:
+                - paragraph [ref=f4e2782]: Trgovinsko pravo 2021 - Jovanovic Radovic Radovic
+                - paragraph [ref=f4e2783]:
+                  - generic [ref=f4e2784]: Knjiga
+                  - generic [ref=f4e2785]: 15,50 €
+              - generic [ref=f4e2786]:
+                - button "Izmijeni" [ref=f4e2787] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2788] [cursor=pointer]
+            - generic [ref=f4e2789]:
+              - generic [ref=f4e2790]: Dodijeljen
+              - generic [ref=f4e2791]:
+                - text: Pravo · III godina
+                - button "Ukloni iz ovog programa" [ref=f4e2792] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2793] [cursor=pointer]
+          - listitem [ref=f4e2794]:
+            - generic [ref=f4e2795]:
+              - generic [ref=f4e2796]:
+                - paragraph [ref=f4e2797]: Turkce -A2
+                - paragraph [ref=f4e2798]:
+                  - generic [ref=f4e2799]: Knjiga
+                  - generic [ref=f4e2800]: 18,00 €
+              - generic [ref=f4e2801]:
+                - button "Izmijeni" [ref=f4e2802] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2803] [cursor=pointer]
+            - generic [ref=f4e2804]:
+              - generic [ref=f4e2805]: Dodijeljen
+              - generic [ref=f4e2806]:
+                - text: Ostali jezici · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e2807] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2808] [cursor=pointer]
+          - listitem [ref=f4e2809]:
+            - generic [ref=f4e2810]:
+              - generic [ref=f4e2811]:
+                - paragraph [ref=f4e2812]: Turkce A1
+                - paragraph [ref=f4e2813]:
+                  - generic [ref=f4e2814]: Knjiga
+                  - generic [ref=f4e2815]: 8,00 €
+              - generic [ref=f4e2816]:
+                - button "Izmijeni" [ref=f4e2817] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2818] [cursor=pointer]
+            - generic [ref=f4e2819]:
+              - generic [ref=f4e2820]: Dodijeljen
+              - generic [ref=f4e2821]:
+                - text: Ostali jezici · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e2822] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2823] [cursor=pointer]
+          - listitem [ref=f4e2824]:
+            - generic [ref=f4e2825]:
+              - generic [ref=f4e2826]:
+                - paragraph [ref=f4e2827]: Turski A1-radna sveska
+                - paragraph [ref=f4e2828]:
+                  - generic [ref=f4e2829]: Skripta
+                  - generic [ref=f4e2830]: 10,50 €
+              - generic [ref=f4e2831]:
+                - button "Izmijeni" [ref=f4e2832] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2833] [cursor=pointer]
+            - generic [ref=f4e2834]:
+              - generic [ref=f4e2835]: Dodijeljen
+              - generic [ref=f4e2836]:
+                - text: Ostali jezici · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e2837] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2838] [cursor=pointer]
+          - listitem [ref=f4e2839]:
+            - generic [ref=f4e2840]:
+              - generic [ref=f4e2841]:
+                - paragraph [ref=f4e2842]: Turski A2 - radna sveska
+                - paragraph [ref=f4e2843]:
+                  - generic [ref=f4e2844]: Skripta
+                  - generic [ref=f4e2845]: 13,00 €
+              - generic [ref=f4e2846]:
+                - button "Izmijeni" [ref=f4e2847] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2848] [cursor=pointer]
+            - generic [ref=f4e2849]:
+              - generic [ref=f4e2850]: Dodijeljen
+              - generic [ref=f4e2851]:
+                - text: Ostali jezici · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e2852] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2853] [cursor=pointer]
+          - listitem [ref=f4e2854]:
+            - generic [ref=f4e2855]:
+              - generic [ref=f4e2856]:
+                - paragraph [ref=f4e2857]: Ustavno sudstvo-(materijalno pravo,postupci,...-Mladen Vukcevic
+                - paragraph [ref=f4e2858]:
+                  - generic [ref=f4e2859]: Knjiga
+                  - generic [ref=f4e2860]: 8,00 €
+              - generic [ref=f4e2861]:
+                - button "Izmijeni" [ref=f4e2862] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2863] [cursor=pointer]
+            - generic [ref=f4e2864]:
+              - generic [ref=f4e2865]: Dodijeljen
+              - generic [ref=f4e2866]:
+                - text: Pravo · Master
+                - button "Ukloni iz ovog programa" [ref=f4e2867] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2868] [cursor=pointer]
+          - listitem [ref=f4e2869]:
+            - generic [ref=f4e2870]:
+              - generic [ref=f4e2871]:
+                - paragraph [ref=f4e2872]: Uvod u klinicku psihologiju-Nietzel,Bernstern,milich
+                - paragraph [ref=f4e2873]:
+                  - generic [ref=f4e2874]: Knjiga
+                  - generic [ref=f4e2875]: 18,00 €
+              - generic [ref=f4e2876]:
+                - button "Izmijeni" [ref=f4e2877] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2878] [cursor=pointer]
+            - generic [ref=f4e2879]:
+              - generic [ref=f4e2880]: Dodijeljen
+              - generic [ref=f4e2881]:
+                - text: Psihologija · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e2882] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2883] [cursor=pointer]
+          - listitem [ref=f4e2884]:
+            - generic [ref=f4e2885]:
+              - generic [ref=f4e2886]:
+                - paragraph [ref=f4e2887]: Vanparnicno procesno pravo-skripta-DIKA
+                - paragraph [ref=f4e2888]:
+                  - generic [ref=f4e2889]: Skripta
+                  - generic [ref=f4e2890]: 10,50 €
+              - generic [ref=f4e2891]:
+                - button "Izmijeni" [ref=f4e2892] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2893] [cursor=pointer]
+            - generic [ref=f4e2894]:
+              - generic [ref=f4e2895]: Dodijeljen
+              - generic [ref=f4e2896]:
+                - text: Pravo · Master
+                - button "Ukloni iz ovog programa" [ref=f4e2897] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2898] [cursor=pointer]
+          - listitem [ref=f4e2899]:
+            - generic [ref=f4e2900]:
+              - generic [ref=f4e2901]:
+                - paragraph [ref=f4e2902]: Velike knjizevne epohe- Milun dao
+                - paragraph [ref=f4e2903]:
+                  - generic [ref=f4e2904]: Knjiga
+                  - generic [ref=f4e2905]: 13,00 €
+              - generic [ref=f4e2906]:
+                - button "Izmijeni" [ref=f4e2907] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2908] [cursor=pointer]
+            - generic [ref=f4e2909]:
+              - generic [ref=f4e2910]: Dodijeljen
+              - generic [ref=f4e2911]:
+                - text: FU · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e2912] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2913] [cursor=pointer]
+          - listitem [ref=f4e2914]:
+            - generic [ref=f4e2915]:
+              - generic [ref=f4e2916]:
+                - paragraph [ref=f4e2917]: Veselin Vukotić - Mreža međuzavisnosti - 2018 ljetnji semestar
+                - paragraph [ref=f4e2918]:
+                  - generic [ref=f4e2919]: Knjiga
+                  - generic [ref=f4e2920]: 8,00 €
+              - generic [ref=f4e2921]:
+                - button "Izmijeni" [ref=f4e2922] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2923] [cursor=pointer]
+            - generic [ref=f4e2924]:
+              - generic [ref=f4e2925]: Dodijeljen
+              - generic [ref=f4e2926]:
+                - text: Ekonomija FMEFB · III godina
+                - button "Ukloni iz ovog programa" [ref=f4e2927] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2928] [cursor=pointer]
+          - listitem [ref=f4e2929]:
+            - generic [ref=f4e2930]:
+              - generic [ref=f4e2931]:
+                - paragraph [ref=f4e2932]: Veselin Vukotić - Život i riječ - 2018 ljetnji semestar
+                - paragraph [ref=f4e2933]:
+                  - generic [ref=f4e2934]: Knjiga
+                  - generic [ref=f4e2935]: 10,50 €
+              - generic [ref=f4e2936]:
+                - button "Izmijeni" [ref=f4e2937] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2938] [cursor=pointer]
+            - generic [ref=f4e2939]:
+              - generic [ref=f4e2940]: Dodijeljen
+              - generic [ref=f4e2941]:
+                - text: Ekonomija FMEFB · III godina
+                - button "Ukloni iz ovog programa" [ref=f4e2942] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2943] [cursor=pointer]
+          - listitem [ref=f4e2944]:
+            - generic [ref=f4e2945]:
+              - generic [ref=f4e2946]:
+                - paragraph [ref=f4e2947]: Vjezbe jaja-poznavanje i kontrola animalnog porijekla
+                - paragraph [ref=f4e2948]:
+                  - generic [ref=f4e2949]: Ostali materijal
+                  - generic [ref=f4e2950]: 13,00 €
+              - generic [ref=f4e2951]:
+                - button "Izmijeni" [ref=f4e2952] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2953] [cursor=pointer]
+            - generic [ref=f4e2954]:
+              - generic [ref=f4e2955]: Dodijeljen
+              - generic [ref=f4e2956]:
+                - text: Prehrambena tehnologija · II godina
+                - button "Ukloni iz ovog programa" [ref=f4e2957] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2958] [cursor=pointer]
+          - listitem [ref=f4e2959]:
+            - generic [ref=f4e2960]:
+              - generic [ref=f4e2961]:
+                - paragraph [ref=f4e2962]: Wall street - Undewrstanding wall street - 2018 ljetnji semestar
+                - paragraph [ref=f4e2963]:
+                  - generic [ref=f4e2964]: Knjiga
+                  - generic [ref=f4e2965]: 15,50 €
+              - generic [ref=f4e2966]:
+                - button "Izmijeni" [ref=f4e2967] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2968] [cursor=pointer]
+            - generic [ref=f4e2969]:
+              - generic [ref=f4e2970]: Dodijeljen
+              - generic [ref=f4e2971]:
+                - text: PMB · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e2972] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2973] [cursor=pointer]
+          - listitem [ref=f4e2974]:
+            - generic [ref=f4e2975]:
+              - generic [ref=f4e2976]:
+                - paragraph [ref=f4e2977]: Wall street -Skripta
+                - paragraph [ref=f4e2978]:
+                  - generic [ref=f4e2979]: Skripta
+                  - generic [ref=f4e2980]: 18,00 €
+              - generic [ref=f4e2981]:
+                - button "Izmijeni" [ref=f4e2982] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2983] [cursor=pointer]
+            - generic [ref=f4e2984]:
+              - generic [ref=f4e2985]: Dodijeljen
+              - generic [ref=f4e2986]:
+                - text: PMB · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e2987] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e2988] [cursor=pointer]
+          - listitem [ref=f4e2989]:
+            - generic [ref=f4e2990]:
+              - generic [ref=f4e2991]:
+                - paragraph [ref=f4e2992]: Zakljucenje ugovora-M.Orlic
+                - paragraph [ref=f4e2993]:
+                  - generic [ref=f4e2994]: Knjiga
+                  - generic [ref=f4e2995]: 15,50 €
+              - generic [ref=f4e2996]:
+                - button "Izmijeni" [ref=f4e2997] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e2998] [cursor=pointer]
+            - generic [ref=f4e2999]:
+              - generic [ref=f4e3000]: Dodijeljen
+              - generic [ref=f4e3001]:
+                - text: Pravo · Doktorske studije · Teorija privatnog prava
+                - button "Ukloni iz ovog programa" [ref=f4e3002] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e3003] [cursor=pointer]
+          - listitem [ref=f4e3004]:
+            - generic [ref=f4e3005]:
+              - generic [ref=f4e3006]:
+                - paragraph [ref=f4e3007]: Zbirka tekstova-Savremene politicke teorije
+                - paragraph [ref=f4e3008]:
+                  - generic [ref=f4e3009]: Knjiga
+                  - generic [ref=f4e3010]: 18,00 €
+              - generic [ref=f4e3011]:
+                - button "Izmijeni" [ref=f4e3012] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e3013] [cursor=pointer]
+            - generic [ref=f4e3014]:
+              - generic [ref=f4e3015]: Dodijeljen
+              - generic [ref=f4e3016]:
+                - text: HS · Doktorske studije
+                - button "Ukloni iz ovog programa" [ref=f4e3017] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e3018] [cursor=pointer]
+          - listitem [ref=f4e3019]:
+            - generic [ref=f4e3020]:
+              - generic [ref=f4e3021]:
+                - paragraph [ref=f4e3022]: Đorđe Ignjatović, Milan Škulić - ORGANIZOVANI KRIMINALITET (drugo izmenjeno i dopunjeno izdanje)
+                - paragraph [ref=f4e3023]:
+                  - generic [ref=f4e3024]: Knjiga
+                  - generic [ref=f4e3025]: 15,50 €
+              - generic [ref=f4e3026]:
+                - button "Izmijeni" [ref=f4e3027] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e3028] [cursor=pointer]
+            - generic [ref=f4e3029]:
+              - generic [ref=f4e3030]: Dodijeljen
+              - generic [ref=f4e3031]:
+                - text: HS · III godina
+                - button "Ukloni iz ovog programa" [ref=f4e3032] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e3033] [cursor=pointer]
+          - listitem [ref=f4e3034]:
+            - generic [ref=f4e3035]:
+              - generic [ref=f4e3036]:
+                - paragraph [ref=f4e3037]: Živko Andrijašević Šerbo Rastoder - Istorija Crne Gore (2006)
+                - paragraph [ref=f4e3038]:
+                  - generic [ref=f4e3039]: Knjiga
+                  - generic [ref=f4e3040]: 8,00 €
+              - generic [ref=f4e3041]:
+                - button "Izmijeni" [ref=f4e3042] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e3043] [cursor=pointer]
+            - generic [ref=f4e3044]:
+              - generic [ref=f4e3045]: Dodijeljen
+              - generic [ref=f4e3046]:
+                - text: HS · I godina · Politicka istorija CG
+                - button "Ukloni iz ovog programa" [ref=f4e3047] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e3048] [cursor=pointer]
+          - listitem [ref=f4e3049]:
+            - generic [ref=f4e3050]:
+              - generic [ref=f4e3051]:
+                - paragraph [ref=f4e3052]: Поехали. Русский язык для взрослых. Ч.2_Чернышов_2009, 168с-разблокирован
+                - paragraph [ref=f4e3053]:
+                  - generic [ref=f4e3054]: Knjiga
+                  - generic [ref=f4e3055]: 10,50 €
+              - generic [ref=f4e3056]:
+                - button "Izmijeni" [ref=f4e3057] [cursor=pointer]
+                - button "Izbriši materijal" [ref=f4e3058] [cursor=pointer]
+            - generic [ref=f4e3059]:
+              - generic [ref=f4e3060]: Dodijeljen
+              - generic [ref=f4e3061]:
+                - text: Ruski A2.1 · I godina
+                - button "Ukloni iz ovog programa" [ref=f4e3062] [cursor=pointer]: ×
+              - button "+ Dodaj lokaciju" [ref=f4e3063] [cursor=pointer]
