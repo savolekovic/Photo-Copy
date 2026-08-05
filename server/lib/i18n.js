@@ -51,6 +51,7 @@ const dict = {
     "magicLink.intro":
       "Kliknite na dugme ispod da se prijavite. Link važi {minutes} minuta i može se koristiti samo jednom.",
     "magicLink.button": "Prijavi se",
+    "magicLink.forAccount": "Prijava za račun: {email}",
     "magicLink.fallback":
       "Ako dugme ne radi, kopirajte ovaj link u pregledač:",
     "magicLink.footer":
@@ -136,6 +137,7 @@ const dict = {
     "magicLink.intro":
       "Click the button below to sign in. The link is valid for {minutes} minutes and can be used once.",
     "magicLink.button": "Sign in",
+    "magicLink.forAccount": "Signing in as: {email}",
     "magicLink.fallback": "If the button does not work, paste this link into your browser:",
     "magicLink.footer":
       "If you did not request this, you can ignore this e-mail — nobody accessed your account.",

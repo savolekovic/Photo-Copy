@@ -274,8 +274,12 @@ async function deliver({ to, subject, text, html, label }) {
 export async function sendMagicLinkEmail({ to, url, locale }) {
   const minutes = config.magicLinkTtlMinutes;
   const intro = t(locale, "magicLink.intro", { minutes });
+  // Naming the account matters when one inbox receives links for more than one account
+  // (plus-addressing, or a shared mailbox): otherwise the messages are indistinguishable.
+  const forAccount = t(locale, "magicLink.forAccount", { email: to });
 
   const inner =
+    `<p style="margin:0 0 14px;font-size:14px;color:#0f172a;">${escapeHtml(forAccount)}</p>` +
     buttonHtml(t(locale, "magicLink.button"), url, ACCENT.neutral) +
     `<p style="margin:0;font-size:13px;line-height:1.5;color:#94a3b8;">${escapeHtml(
       t(locale, "magicLink.fallback")
@@ -286,6 +290,8 @@ export async function sendMagicLinkEmail({ to, url, locale }) {
 
   const text = [
     t(locale, "magicLink.title"),
+    "",
+    forAccount,
     "",
     intro,
     "",
