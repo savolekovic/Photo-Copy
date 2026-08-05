@@ -10,7 +10,8 @@
     "db:setup": "node db/setup.js",
     "db:seed": "node db/seed.js",
     "create:operator": "node scripts/createOperator.js",
-    "import:stablo": "node scripts/importStablo.js"
+    "import:stablo": "node scripts/importStablo.js",
+    "issue:link": "node scripts/issueLoginLink.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
