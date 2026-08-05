@@ -8,11 +8,13 @@ export default defineConfig({
   },
   server: {
     port: 5173,
-    // ngrok sends a non-localhost Host header (Vite 6 validates it)
+    // Vite 6 validates the Host header, so any tunnel domain used to reach the dev
+    // server has to be listed or it answers "Blocked request".
     allowedHosts: [
       ".ngrok-free.app",
       ".ngrok-free.dev",
       ".ngrok.io",
+      ".trycloudflare.com",
       "localhost",
     ],
     proxy: {

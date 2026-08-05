@@ -1,0 +1,14 @@
+- generic [ref=f6e3]:
+  - banner [ref=f6e4]:
+    - generic [ref=f6e5]:
+      - link "Fotokopirnica" [ref=f6e6] [cursor=pointer]:
+        - /url: /
+      - generic [ref=f6e7]:
+        - navigation "Main" [ref=f6e8]:
+          - link "Prijava" [ref=f6e9] [cursor=pointer]:
+            - /url: /prijava
+        - group "Jezik" [ref=f6e10]:
+          - button "CG" [pressed] [ref=f6e11] [cursor=pointer]
+          - button "EN" [ref=f6e12] [cursor=pointer]
+  - main [ref=f6e13]:
+    - paragraph [ref=f6e14]: Prijavljivanje…
