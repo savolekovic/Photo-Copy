@@ -112,6 +112,19 @@ export const messages = {
     "cart.unavailable":
       "Neki materijali više nisu dostupni za fakultet i godinu iz kojih su izabrani. Uklonjeni su iz korpe.",
 
+    "print.action": "Štampaj",
+    "print.heading": "Nalog za preuzimanje",
+    "print.orderNo": "Narudžbina",
+    "print.colItem": "Materijal",
+    "print.colQty": "Kom.",
+    "print.colUnit": "Cijena",
+    "print.colTotal": "Ukupno",
+    "print.signature": "Potpis studenta pri preuzimanju",
+    "print.dateCollected": "Datum preuzimanja",
+    "print.printedAt": "Štampano {date}",
+    "print.notReady":
+      "Nalog se štampa kada narudžbina bude spremna za preuzimanje.",
+
     "materialType.knjiga": "Knjiga",
     "materialType.skripta": "Skripta",
     "materialType.ostali_materijal": "Ostali materijal",
@@ -424,6 +437,18 @@ export const messages = {
       "The price changed in the meantime. Check the total and confirm again.",
     "cart.unavailable":
       "Some materials are no longer available for the faculty and year they were chosen from. They have been removed from your cart.",
+
+    "print.action": "Print",
+    "print.heading": "Pickup slip",
+    "print.orderNo": "Order",
+    "print.colItem": "Material",
+    "print.colQty": "Qty",
+    "print.colUnit": "Price",
+    "print.colTotal": "Total",
+    "print.signature": "Student signature on collection",
+    "print.dateCollected": "Date collected",
+    "print.printedAt": "Printed {date}",
+    "print.notReady": "The slip can be printed once the order is ready for pickup.",
 
     "materialType.knjiga": "Book",
     "materialType.skripta": "Course notes",

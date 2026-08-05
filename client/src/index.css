@@ -7,3 +7,53 @@
     @apply bg-slate-50 text-slate-900 min-h-screen;
   }
 }
+
+/**
+ * Printing an order.
+ *
+ * The print sheet lives outside #root (see OrderPrintSheet), so in print we swap which of the
+ * two is visible. The swap is gated on `.has-print-sheet`, which that component puts on
+ * <html> while it is mounted — without the gate, a plain Ctrl+P with no order open would hide
+ * the app and print an empty page.
+ */
+@media print {
+  html.has-print-sheet,
+  html.has-print-sheet body {
+    @apply bg-white;
+    /* The screen layout constrains height and scroll; paper flows instead. */
+    min-height: 0;
+    height: auto;
+  }
+
+  html.has-print-sheet #root {
+    display: none !important;
+  }
+
+  html.has-print-sheet #print-root {
+    display: block !important;
+  }
+
+  /* Never split a material's row, or a group heading from the rows it labels. */
+  #print-root tr,
+  #print-root thead {
+    break-inside: avoid;
+  }
+  #print-root thead {
+    display: table-header-group;
+  }
+
+  /**
+   * Zero page margins, and the sheet supplies its own padding instead.
+   *
+   * This is what suppresses the browser's own header and footer — the date, page title, URL
+   * and "1/5" are drawn in the page margin, so with no margin there is nowhere to draw them.
+   * The trade-off is that the real margin must come from the content, hence the padding below.
+   */
+  @page {
+    margin: 0;
+  }
+
+  html.has-print-sheet #print-root {
+    padding: 14mm;
+  }
+}

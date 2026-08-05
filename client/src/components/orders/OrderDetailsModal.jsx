@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchOrder } from "../../api.js";
 import StatusBadge from "../StatusBadge.jsx";
+import OrderPrintSheet from "./OrderPrintSheet.jsx";
 import OrderStatusTimeline from "./OrderStatusTimeline.jsx";
 import StatusActionButton from "./StatusActionButton.jsx";
 import { useI18n } from "../../i18n/I18nProvider.jsx";
@@ -53,6 +54,10 @@ export default function OrderDetailsModal({
 
   const allowed = data?.allowedTransitions ?? [];
 
+  // Printing is offered once the copies exist. Before that there is nothing to put the
+  // printout with, and a cancelled order has nothing to hand over.
+  const printable = ["spremno", "preuzeto"].includes(data?.status);
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-end justify-center p-4 sm:items-center sm:p-6"
@@ -66,18 +71,38 @@ export default function OrderDetailsModal({
         onClick={onClose}
         aria-label={t("common.close")}
       />
+      {/* Mounted whenever the order has loaded: it is what makes Ctrl+P print the sheet
+          instead of the modal. */}
+      {data && <OrderPrintSheet order={data} />}
+
       <div className="relative max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl bg-white shadow-xl ring-1 ring-slate-200/80">
         <div className="sticky top-0 flex items-center justify-between gap-3 border-b border-slate-100 bg-white/95 px-5 py-4 backdrop-blur-sm">
           <h2 id="order-details-title" className="text-lg font-semibold text-slate-900">
             {t("orders.details.title", { id: orderId })}
           </h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-lg p-1.5 text-sm font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-900"
-          >
-            {t("common.close")}
-          </button>
+          <div className="flex items-center gap-1">
+            {/* One click, one printout — window.print() straight from the handler, with no
+                state change in between for anything to go wrong in. */}
+            <button
+              type="button"
+              onClick={() => window.print()}
+              disabled={!printable}
+              title={printable ? undefined : t("print.notReady")}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-2.5 py-1.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-40"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.7} stroke="currentColor" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.32 0H6.34m4.66-13.5h2.32c.621 0 1.125.504 1.125 1.125v3.026a48.31 48.31 0 00-4.57 0V5.625c0-.621.504-1.125 1.125-1.125z" />
+              </svg>
+              {t("print.action")}
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-lg p-1.5 text-sm font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-900"
+            >
+              {t("common.close")}
+            </button>
+          </div>
         </div>
 
         <div className="space-y-6 px-5 py-5">
