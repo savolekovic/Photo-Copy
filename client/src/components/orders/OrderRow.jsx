@@ -3,6 +3,7 @@ import StatusActionButton from "./StatusActionButton.jsx";
 import { IconClock, IconEye } from "./OrderIcons.jsx";
 import { PRIMARY_NEXT } from "./orderActions.js";
 import { useI18n } from "../../i18n/I18nProvider.jsx";
+import { scopeLabel } from "../../lib/orderLabels.js";
 
 /** True when a ready order has sat past its pickup deadline. */
 export function isOverdue(order) {
@@ -14,7 +15,7 @@ export function isOverdue(order) {
 }
 
 export default function OrderRow({ order, onView, onStatusChange, busyId }) {
-  const { t, formatDate } = useI18n();
+  const { t, locale, formatDate } = useI18n();
   const busy = busyId === order.id;
   const primary = PRIMARY_NEXT[order.status];
   const allowed = order.allowedTransitions ?? [];
@@ -39,6 +40,13 @@ export default function OrderRow({ order, onView, onStatusChange, busyId }) {
             +{order.items.length - 1}
           </span>
         )}
+        {/* Where the order draws from. Worth a line in the queue: an order spanning two
+            faculties means two shelves to visit, which changes how it is prepared. */}
+        <span className="mt-0.5 block text-xs text-slate-500">
+          {(order.scopes ?? []).length > 1
+            ? t("orders.details.mixed")
+            : scopeLabel(order.scopes?.[0], locale)}
+        </span>
       </td>
 
       <td className="px-3 py-3 align-middle text-sm">

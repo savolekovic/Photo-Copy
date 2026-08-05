@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 import { config } from "../config.js";
-import { facultyLabel, formatMoney, resolveLocale, t, yearLabel } from "../lib/i18n.js";
+import { formatMoney, resolveLocale, t } from "../lib/i18n.js";
 
 /**
  * All outbound mail. Every template shares one document shell so the five message types
@@ -63,10 +63,45 @@ function detailRow(label, value) {
   </tr>`;
 }
 
-/** Renders the ordered lines as a small table. Quantity is shown only when above one. */
-function itemsHtml(items, locale) {
-  if (!items || items.length === 0) return "";
-  const rows = items
+/**
+ * Distinct faculty+year scopes across the lines, in the order the lines arrive (the API
+ * already sorts them by faculty then year). An order may span several: a language at the
+ * Centar za strane jezike alongside a degree programme, or a subject being retaken.
+ */
+function groupByScope(items) {
+  const groups = [];
+  const byKey = new Map();
+  for (const it of items ?? []) {
+    const key = `${it.facultyName ?? ""}|${it.yearCode ?? ""}`;
+    let group = byKey.get(key);
+    if (!group) {
+      group = { facultyName: it.facultyName, yearCode: it.yearCode, items: [] };
+      byKey.set(key, group);
+      groups.push(group);
+    }
+    group.items.push(it);
+  }
+  return groups;
+}
+
+/**
+ * The year's own label, snapshotted onto the line. Read from the catalogue rather than a
+ * code-to-label table in this file, so adding a study year needs no code change.
+ */
+function scopeYearLabel(group, locale) {
+  const sr = group.items.find((it) => it.yearLabelSr)?.yearLabelSr;
+  const en = group.items.find((it) => it.yearLabelEn)?.yearLabelEn;
+  const wanted = resolveLocale(locale) === "en" ? en || sr : sr || en;
+  return wanted || group.yearCode || "";
+}
+
+function scopeHeading(group, locale) {
+  const parts = [group.facultyName, scopeYearLabel(group, locale)].filter(Boolean);
+  return parts.join(" · ");
+}
+
+function itemRowsHtml(items, locale) {
+  return items
     .map((it) => {
       const qty = it.quantity ?? 1;
       const line = formatMoney(locale, (it.unitPrice ?? 0) * qty);
@@ -81,27 +116,50 @@ function itemsHtml(items, locale) {
       </tr>`;
     })
     .join("");
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:0 0 8px;">${rows}</table>`;
 }
 
-function orderSummaryHtml({
-  when,
-  faculty,
-  year,
-  items,
-  price,
-  email,
-  phone,
-  locale,
-}) {
+/**
+ * Renders the ordered lines as a small table. Quantity is shown only when above one.
+ *
+ * With one scope the lines are listed flat — the faculty and year are already stated in the
+ * detail rows above, and repeating them as a heading would be noise. With several, each
+ * group is headed by its own faculty and year, which is what the counter needs in order to
+ * pull the right shelf and what the student needs to recognise the order.
+ */
+function itemsHtml(items, locale) {
+  if (!items || items.length === 0) return "";
+  const groups = groupByScope(items);
+  const table = (inner) =>
+    `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:0 0 8px;">${inner}</table>`;
+
+  if (groups.length <= 1) return table(itemRowsHtml(items, locale));
+
+  return groups
+    .map(
+      (g) => `
+  <p style="margin:12px 0 2px;font-size:13px;font-weight:600;color:#0f172a;">${escapeHtml(scopeHeading(g, locale))}</p>
+  ${table(itemRowsHtml(g.items, locale))}`
+    )
+    .join("");
+}
+
+function orderSummaryHtml({ when, items, price, email, phone, locale }) {
   const priceStr = formatMoney(locale, price);
   const phoneDisplay =
     phone && String(phone).trim() ? String(phone) : t(locale, "label.notProvided");
 
+  // A single-scope order states its faculty and year up here, where they have always been.
+  // A mixed one cannot — the answer differs per line, so the item groups carry it instead.
+  const groups = groupByScope(items);
+  const scopeRows =
+    groups.length === 1
+      ? detailRow(t(locale, "label.faculty"), groups[0].facultyName) +
+        detailRow(t(locale, "label.year"), scopeYearLabel(groups[0], locale))
+      : "";
+
   const rows =
     detailRow(t(locale, "label.placed"), when) +
-    detailRow(t(locale, "label.faculty"), facultyLabel(locale, faculty)) +
-    detailRow(t(locale, "label.year"), yearLabel(locale, year)) +
+    scopeRows +
     detailRow(t(locale, "label.email"), email) +
     detailRow(t(locale, "label.phone"), phoneDisplay);
 
@@ -319,20 +377,30 @@ export async function sendMagicLinkEmail({ to, url, locale }) {
 
 /* ----------------------------------------------------------------- orders ---- */
 
-function summaryTextLines(locale, { when, faculty, year, items, price }) {
-  const lines = (items ?? []).map((it) => {
+function summaryTextLines(locale, { when, items, price }) {
+  const groups = groupByScope(items);
+  const line = (it) => {
     const qty = it.quantity ?? 1;
     const money = formatMoney(locale, (it.unitPrice ?? 0) * qty);
-    return `  - ${it.title}${qty > 1 ? ` x ${qty}` : ""}  ${money}`;
-  });
-  return [
-    `${t(locale, "label.placed")}: ${when}`,
-    `${t(locale, "label.faculty")}: ${facultyLabel(locale, faculty)}`,
-    `${t(locale, "label.year")}: ${yearLabel(locale, year)}`,
-    `${t(locale, "label.items")}:`,
-    ...lines,
-    `${t(locale, "label.total")}: ${formatMoney(locale, price)}`,
-  ];
+    return `  - ${it.title}${qty > 1 ? ` x ${qty}` : ""} — ${money}`;
+  };
+
+  const out = [`${t(locale, "label.placed")}: ${when}`];
+  if (groups.length === 1) {
+    out.push(`${t(locale, "label.faculty")}: ${groups[0].facultyName ?? "—"}`);
+    out.push(`${t(locale, "label.year")}: ${scopeYearLabel(groups[0], locale)}`);
+  }
+  out.push(`${t(locale, "label.items")}:`);
+  if (groups.length <= 1) {
+    out.push(...(items ?? []).map(line));
+  } else {
+    for (const g of groups) {
+      out.push(`  ${scopeHeading(g, locale)}:`);
+      out.push(...g.items.map(line));
+    }
+  }
+  out.push(`${t(locale, "label.total")}: ${formatMoney(locale, price)}`);
+  return out;
 }
 
 /**
@@ -343,8 +411,6 @@ function summaryTextLines(locale, { when, faculty, year, items, price }) {
 export async function sendOrderConfirmationEmails({
   orderId,
   createdAt,
-  faculty,
-  year,
   items,
   price,
   email,
@@ -353,7 +419,7 @@ export async function sendOrderConfirmationEmails({
 }) {
   const studentLocale = resolveLocale(locale);
   const when = formatWhen(createdAt, studentLocale);
-  const summary = { when, faculty, year, items, price, email, phone };
+  const summary = { when, items, price, email, phone };
 
   const studentHtml = buildEmailDocument({
     preheader: t(studentLocale, "confirm.subject", { id: orderId }),
@@ -418,8 +484,6 @@ export async function sendOrderConfirmationEmails({
 export async function sendOrderReadyEmail({
   orderId,
   createdAt,
-  faculty,
-  year,
   items,
   price,
   email,
@@ -438,8 +502,6 @@ export async function sendOrderReadyEmail({
     (deadlineLine ? noticeHtml(deadlineLine) : "") +
     orderSummaryHtml({
       when,
-      faculty,
-      year,
       items,
       price,
       email,
@@ -456,7 +518,7 @@ export async function sendOrderReadyEmail({
       t(loc, "ready.intro"),
       ...(deadlineLine ? ["", deadlineLine] : []),
       "",
-      ...summaryTextLines(loc, { when, faculty, year, items, price }),
+      ...summaryTextLines(loc, { when, items, price }),
     ].join("\n"),
     html: buildEmailDocument({
       preheader: t(loc, "ready.subject", { id: orderId }),

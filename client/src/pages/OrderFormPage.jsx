@@ -19,6 +19,12 @@ import { useCart } from "../lib/useCart.js";
  * Faculties, years and materials all come from the administrable catalogue, so nothing is
  * hardcoded, and each step only offers options that have something behind them.
  *
+ * The faculty and year choices scope what the catalogue step SHOWS; they do not scope the
+ * cart. Going back and picking another faculty keeps everything already added, so a student
+ * can order a language from the Centar za strane jezike alongside their own programme's
+ * literature, or a subject being retaken from an earlier year, in one order — and collect it
+ * in one go. Each line remembers where it was picked from.
+ *
  * There is no e-mail step: the address comes from the verified university account.
  */
 const STEP_KEYS = [
@@ -53,13 +59,31 @@ export default function OrderFormPage() {
   const [orderDone, setOrderDone] = useState(false);
   const [completedOrder, setCompletedOrder] = useState(null);
 
-  const cart = useCart(facultyId, yearId);
+  const cart = useCart();
 
   const faculty = useMemo(
     () => faculties.find((f) => f.id === facultyId) ?? null,
     [faculties, facultyId]
   );
   const year = useMemo(() => years.find((y) => y.id === yearId) ?? null, [years, yearId]);
+
+  /**
+   * Stamped onto each line as it is added. The names travel with the line so the cart can
+   * group and label itself after the student has moved on to another faculty, without
+   * refetching a catalogue that is no longer on screen.
+   */
+  const scope = useMemo(
+    () =>
+      faculty && year
+        ? {
+            facultyId: faculty.id,
+            facultyName: faculty.name,
+            yearId: year.id,
+            yearLabel: yearLabel(year, locale),
+          }
+        : null,
+    [faculty, year, locale]
+  );
 
   const filteredMaterials = useMemo(() => {
     const q = litSearch.trim().toLowerCase();
@@ -136,14 +160,18 @@ export default function OrderFormPage() {
   };
 
   const handleSubmit = async () => {
-    if (cart.count === 0 || !facultyId || !yearId) return;
+    // No order-level faculty or year to check: every line carries its own.
+    if (cart.count === 0) return;
     setSubmitting(true);
     setSubmitError("");
     try {
       const result = await submitOrder({
-        faculty_id: facultyId,
-        year_id: yearId,
-        items: cart.lines.map((l) => ({ material_id: l.materialId, quantity: l.quantity })),
+        items: cart.lines.map((l) => ({
+          material_id: l.materialId,
+          quantity: l.quantity,
+          faculty_id: l.facultyId,
+          year_id: l.yearId,
+        })),
         // Guards against the catalogue price changing between review and confirm.
         expected_total: cart.total,
         phone: phone.trim() || undefined,
@@ -158,8 +186,7 @@ export default function OrderFormPage() {
         setSubmitError(t("cart.totalChanged"));
         setStep(2);
       } else if (e.code === "material_unavailable") {
-        const gone = new Set(e.materialIds ?? []);
-        cart.lines.filter((l) => gone.has(l.materialId)).forEach((l) => cart.remove(l.materialId));
+        cart.removeMany(e.materialIds ?? []);
         setSubmitError(t("cart.unavailable"));
         setStep(2);
       } else {
@@ -276,13 +303,13 @@ export default function OrderFormPage() {
                 onSearchChange={setLitSearch}
                 items={filteredMaterials}
                 cart={cart}
+                scope={scope}
+                onChangeScope={() => setStep(0)}
               />
             )}
 
             {step === 3 && (
               <StepOverview
-                facultyName={faculty?.name}
-                yearName={year ? yearLabel(year, locale) : null}
                 cart={cart}
                 email={user?.email}
                 phone={phone}
@@ -292,8 +319,6 @@ export default function OrderFormPage() {
 
             {step === 4 && !orderDone && (
               <StepConfirm
-                facultyName={faculty?.name}
-                yearName={year ? yearLabel(year, locale) : null}
                 cart={cart}
                 email={user?.email}
                 phone={phone}
@@ -485,7 +510,7 @@ function QuantityStepper({ quantity, onChange }) {
   );
 }
 
-function StepMaterials({ loading, search, onSearchChange, items, cart }) {
+function StepMaterials({ loading, search, onSearchChange, items, cart, scope, onChangeScope }) {
   const { t, formatPrice } = useI18n();
   return (
     <div>
@@ -494,6 +519,26 @@ function StepMaterials({ loading, search, onSearchChange, items, cart }) {
       </h2>
       <p className="mb-1 text-sm text-slate-500">{t("form.literature.subtitle")}</p>
       <p className="mb-4 text-xs text-slate-400">{t("cart.scopeNote")}</p>
+
+      {/* Which faculty and year this list belongs to. Stated here because the cart may hold
+          lines from elsewhere, so the list alone no longer implies the whole order. */}
+      {scope && (
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+          <span className="min-w-0 text-xs text-slate-600">
+            {t("cart.showing")}{" "}
+            <span className="font-medium text-slate-900">{scope.facultyName}</span>
+            <span className="text-slate-400"> · </span>
+            <span className="font-medium text-slate-900">{scope.yearLabel}</span>
+          </span>
+          <button
+            type="button"
+            onClick={onChangeScope}
+            className="shrink-0 text-xs font-medium text-slate-600 underline hover:text-slate-900"
+          >
+            {t("cart.changeScope")}
+          </button>
+        </div>
+      )}
 
       <label htmlFor="lit-search" className="mb-1.5 block text-xs font-medium text-slate-500">
         {t("form.literature.searchLabel")}
@@ -558,7 +603,8 @@ function StepMaterials({ loading, search, onSearchChange, items, cart }) {
                 ) : (
                   <button
                     type="button"
-                    onClick={() => cart.add(item)}
+                    onClick={() => cart.add(item, scope)}
+                    disabled={!scope}
                     className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800"
                   >
                     {t("cart.add")}
@@ -571,15 +617,22 @@ function StepMaterials({ loading, search, onSearchChange, items, cart }) {
       )}
 
       <div className="mt-5 border-t border-slate-100 pt-4">
-        <CartPanel cart={cart} />
+        <CartPanel cart={cart} onAddFromElsewhere={onChangeScope} />
       </div>
     </div>
   );
 }
 
-/** The korpa itself: line totals and a running sum. */
-function CartPanel({ cart, readOnly = false }) {
-  const { t, formatPrice } = useI18n();
+/**
+ * The korpa itself: line totals and a running sum.
+ *
+ * Lines are grouped by the faculty and year they were picked from. With one group the
+ * headings are suppressed — the step already says which faculty is on screen and repeating
+ * it on every line would be noise. With several, each group is labelled and subtotalled,
+ * because that is the only place the mix is visible before the order is placed.
+ */
+function CartPanel({ cart, readOnly = false, onAddFromElsewhere }) {
+  const { t, tn, formatPrice } = useI18n();
 
   if (cart.lines.length === 0) {
     return (
@@ -590,41 +643,68 @@ function CartPanel({ cart, readOnly = false }) {
     );
   }
 
+  const mixed = cart.groups.length > 1;
+
   return (
     <div>
-      <div className="mb-2 flex items-center justify-between">
+      <div className="mb-2 flex items-center justify-between gap-3">
         <h3 className="text-xs font-medium uppercase tracking-wide text-slate-500">
           {t("cart.title")}
+          {mixed && (
+            <span className="ml-2 font-normal normal-case tracking-normal text-slate-400">
+              {tn("cart.groupCount", cart.groups.length)}
+            </span>
+          )}
         </h3>
         {!readOnly && (
           <button
             type="button"
             onClick={cart.clear}
-            className="text-xs font-medium text-slate-500 underline hover:text-slate-800"
+            className="shrink-0 text-xs font-medium text-slate-500 underline hover:text-slate-800"
           >
             {t("cart.clear")}
           </button>
         )}
       </div>
 
-      <ul className="divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
-        {cart.lines.map((l) => (
-          <li key={l.materialId} className="flex flex-wrap items-center gap-3 px-3 py-2.5">
-            <span className="min-w-0 flex-1 text-sm text-slate-900">{l.title}</span>
-            {readOnly ? (
-              <span className="text-xs text-slate-500">× {l.quantity}</span>
-            ) : (
-              <QuantityStepper
-                quantity={l.quantity}
-                onChange={(q) => cart.setQuantity(l.materialId, q)}
-              />
+      {mixed && <p className="mb-2 text-xs text-slate-500">{t("cart.mixedNote")}</p>}
+
+      <div className="divide-y divide-slate-200 overflow-hidden rounded-xl border border-slate-200 bg-white">
+        {cart.groups.map((g) => (
+          <div key={g.key}>
+            {mixed && (
+              <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 bg-slate-50 px-3 py-2">
+                <span className="min-w-0 text-xs font-medium text-slate-700">
+                  {g.facultyName}
+                  <span className="text-slate-400"> · </span>
+                  {g.yearLabel}
+                </span>
+                <span className="text-xs tabular-nums text-slate-500">
+                  {formatPrice(g.total)}
+                </span>
+              </div>
             )}
-            <span className="w-20 text-right text-sm tabular-nums text-slate-800">
-              {formatPrice(l.unitPrice * l.quantity)}
-            </span>
-          </li>
+            <ul className="divide-y divide-slate-100">
+              {g.lines.map((l) => (
+                <li key={l.materialId} className="flex flex-wrap items-center gap-3 px-3 py-2.5">
+                  <span className="min-w-0 flex-1 text-sm text-slate-900">{l.title}</span>
+                  {readOnly ? (
+                    <span className="text-xs text-slate-500">× {l.quantity}</span>
+                  ) : (
+                    <QuantityStepper
+                      quantity={l.quantity}
+                      onChange={(q) => cart.setQuantity(l.materialId, q)}
+                    />
+                  )}
+                  <span className="w-20 text-right text-sm tabular-nums text-slate-800">
+                    {formatPrice(l.unitPrice * l.quantity)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
         ))}
-      </ul>
+      </div>
 
       <div className="mt-2 flex items-center justify-between px-3">
         <span className="text-sm font-medium text-slate-700">{t("common.total")}</span>
@@ -632,6 +712,18 @@ function CartPanel({ cart, readOnly = false }) {
           {formatPrice(cart.total)}
         </span>
       </div>
+
+      {/* Offered once there is something in the cart: at that point "I am done with this
+          faculty" is a real intent, and the way to act on it is not otherwise obvious. */}
+      {!readOnly && onAddFromElsewhere && (
+        <button
+          type="button"
+          onClick={onAddFromElsewhere}
+          className="mt-3 w-full rounded-xl border border-dashed border-slate-300 px-3 py-2 text-xs font-medium text-slate-600 transition-colors hover:border-slate-400 hover:text-slate-900"
+        >
+          + {t("cart.addFromElsewhere")}
+        </button>
+      )}
     </div>
   );
 }
@@ -645,7 +737,28 @@ function SummaryRow({ label, value }) {
   );
 }
 
-function StepOverview({ facultyName, yearName, cart, email, phone, onPhone }) {
+/**
+ * The faculty and year of the order. One scope states itself plainly; several cannot be
+ * reduced to one row, so the grouped cart below is left to spell the mix out.
+ */
+function ScopeRows({ cart }) {
+  const { t } = useI18n();
+  if (cart.groups.length !== 1) {
+    return <SummaryRow label={t("orders.details.scope")} value={t("orders.details.mixed")} />;
+  }
+  const [only] = cart.groups;
+  return (
+    <>
+      <SummaryRow
+        label={t("orders.details.faculty")}
+        value={only.facultyName ?? t("common.dash")}
+      />
+      <SummaryRow label={t("orders.details.year")} value={only.yearLabel ?? t("common.dash")} />
+    </>
+  );
+}
+
+function StepOverview({ cart, email, phone, onPhone }) {
   const { t } = useI18n();
   return (
     <div>
@@ -653,8 +766,7 @@ function StepOverview({ facultyName, yearName, cart, email, phone, onPhone }) {
       <p className="mb-6 text-sm text-slate-500">{t("form.overview.subtitle")}</p>
 
       <dl className="mb-6 space-y-3 text-sm">
-        <SummaryRow label={t("orders.details.faculty")} value={facultyName ?? t("common.dash")} />
-        <SummaryRow label={t("orders.details.year")} value={yearName ?? t("common.dash")} />
+        <ScopeRows cart={cart} />
         <SummaryRow label={t("orders.details.email")} value={email} />
       </dl>
 
@@ -679,16 +791,7 @@ function StepOverview({ facultyName, yearName, cart, email, phone, onPhone }) {
   );
 }
 
-function StepConfirm({
-  facultyName,
-  yearName,
-  cart,
-  email,
-  phone,
-  onSubmit,
-  submitting,
-  error,
-}) {
+function StepConfirm({ cart, email, phone, onSubmit, submitting, error }) {
   const { t } = useI18n();
   return (
     <div>
@@ -696,8 +799,7 @@ function StepConfirm({
       <p className="mb-6 text-sm text-slate-500">{t("form.confirm.subtitle")}</p>
 
       <dl className="mb-4 space-y-2 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm">
-        <SummaryRow label={t("orders.details.faculty")} value={facultyName ?? t("common.dash")} />
-        <SummaryRow label={t("orders.details.year")} value={yearName ?? t("common.dash")} />
+        <ScopeRows cart={cart} />
         <SummaryRow label={t("orders.details.email")} value={email} />
         {phone ? <SummaryRow label={t("orders.details.phone")} value={phone} /> : null}
       </dl>

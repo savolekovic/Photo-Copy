@@ -14,14 +14,18 @@ import {
 } from "../services/emailService.js";
 
 /**
- * Columns every order response is built from. The lines are aggregated in a subquery so an
- * order stays a single row — joining order_items directly would multiply the order across
- * its items and break both COUNT(*) and LIMIT.
+ * Columns every order response is built from.
+ *
+ * Scope (faculty, year, programme, subject) lives on the LINE, not the order, because a cart
+ * may span faculties. An order's scope is therefore whatever its lines say, and the lines
+ * come back ordered by faculty then year so the client can group them without sorting.
+ *
+ * The lines are aggregated in a subquery so an order stays a single row — joining
+ * order_items directly would multiply the order across its items and break COUNT(*) and
+ * LIMIT.
  */
 const ORDER_SELECT = `
   o.id,
-  o.faculty,
-  o.year,
   o.price::float8 AS price,
   o.email,
   o.phone,
@@ -35,10 +39,6 @@ const ORDER_SELECT = `
   o.last_reminder_at,
   o.user_id,
   u.index_number AS student_index_number,
-  o.programme_id,
-  prog.name AS programme_name,
-  sy.label_sr AS year_label_sr,
-  sy.label_en AS year_label_en,
   (SELECT COALESCE(
             json_agg(
               json_build_object(
@@ -48,24 +48,29 @@ const ORDER_SELECT = `
                 'quantity', oi.quantity,
                 'unitPrice', oi.unit_price::float8,
                 'lineTotal', (oi.unit_price * oi.quantity)::float8,
-                'materialType', m.material_type
-              ) ORDER BY oi.id
+                'materialType', m.material_type,
+                'facultyName', oi.faculty_name,
+                'yearCode', oi.year_code,
+                'yearLabelSr', sy.label_sr,
+                'yearLabelEn', sy.label_en,
+                'programmeName', prog.name,
+                'subjectName', subj.name
+              ) ORDER BY oi.faculty_name, sy.sort_order, oi.id
             ), '[]'::json)
      FROM order_items oi
      LEFT JOIN materials m ON m.id = oi.material_id
+     LEFT JOIN study_years sy ON sy.id = oi.study_year_id
+     LEFT JOIN study_programmes prog ON prog.id = oi.programme_id
+     LEFT JOIN subjects subj ON subj.id = oi.subject_id
     WHERE oi.order_id = o.id) AS items`;
 
 const ORDER_FROM = `
   FROM orders o
-  LEFT JOIN users u ON u.id = o.user_id
-  LEFT JOIN study_programmes prog ON prog.id = o.programme_id
-  LEFT JOIN study_years sy ON sy.id = o.study_year_id`;
+  LEFT JOIN users u ON u.id = o.user_id`;
 
 function mapOrder(r) {
   return {
     id: r.id,
-    faculty: r.faculty,
-    year: r.year,
     price: r.price,
     email: r.email,
     phone: r.phone,
@@ -84,10 +89,20 @@ function mapOrder(r) {
     },
     items: r.items ?? [],
     itemCount: (r.items ?? []).reduce((n, i) => n + i.quantity, 0),
-    programme: r.programme_id ? { id: r.programme_id, name: r.programme_name } : null,
-    // Both labels travel with the order so the client can render it in either language
-    // without holding a study-years lookup. Falls back to the stored code for legacy rows.
-    yearLabel: { sr: r.year_label_sr, en: r.year_label_en },
+    // Distinct faculty+year pairs the order touches, in the order the lines came back.
+    // One entry for an ordinary order; several for a cart spanning faculties or years.
+    scopes: (r.items ?? []).reduce((acc, i) => {
+      const key = `${i.facultyName}|${i.yearCode}`;
+      if (!acc.some((sc) => sc.key === key)) {
+        acc.push({
+          key,
+          facultyName: i.facultyName,
+          yearCode: i.yearCode,
+          yearLabel: { sr: i.yearLabelSr, en: i.yearLabelEn },
+        });
+      }
+      return acc;
+    }, []),
     // Lets the client render only the buttons that will actually succeed.
     allowedTransitions: allowedTransitionsFrom(r.status),
   };
@@ -96,11 +111,13 @@ function mapOrder(r) {
 /* ------------------------------------------------------------------ create ---- */
 
 export const orderValidators = [
-  body("faculty_id").isInt({ min: 1 }).toInt(),
-  body("year_id").isInt({ min: 1 }).toInt(),
   body("items").isArray({ min: 1, max: 50 }).withMessage("Cart is empty"),
   body("items.*.material_id").isInt({ min: 1 }).toInt(),
   body("items.*.quantity").optional().isInt({ min: 1, max: 99 }).toInt(),
+  // Scope is per line: a cart may span faculties and years.
+  body("items.*.faculty_id").isInt({ min: 1 }).toInt(),
+  body("items.*.year_id").isInt({ min: 1 }).toInt(),
+  body("items.*.subject_id").optional({ values: "null" }).isInt({ min: 1 }).toInt(),
   // What the student was shown. Optional, but when present it must agree with what the
   // catalogue says now, so a price edited mid-session cannot silently change the charge.
   body("expected_total").optional({ values: "falsy" }).isFloat({ min: 0 }).toFloat(),
@@ -112,14 +129,15 @@ export const orderValidators = [
 ];
 
 /**
- * POST /api/orders — student only. Places a whole cart.
+ * POST /api/orders — student only. Places a whole cart, which may draw on several faculties
+ * and years: a language at the Centar za strane jezike alongside a degree programme, or a
+ * subject being retaken from an earlier year.
  *
- * Prices are never taken from the request: each line is priced from the catalogue and the
- * total is summed server-side. Every material must genuinely be placed in the chosen
- * faculty and year, so nothing off-offer can be ordered.
+ * Every line is validated against ITS OWN faculty and year, so nothing off-offer can be
+ * ordered, and priced from the catalogue — prices are never taken from the request.
  *
- * The recipient address comes from the authenticated account for the same reason — the
- * spec ties an order to a verified university address.
+ * The recipient address comes from the authenticated account, since the spec ties an order
+ * to a verified university address.
  */
 export async function createOrder(req, res, next) {
   try {
@@ -128,52 +146,91 @@ export async function createOrder(req, res, next) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { faculty_id, year_id, items, expected_total, phone } = req.body;
+    const { items, expected_total, phone } = req.body;
     const email = req.user.email;
 
-    // Collapse duplicate lines for the same material rather than rejecting them: the unique
-    // index allows only one row per material, and summing is what the student meant.
+    // One line per material, matching the unique index on (order_id, material_id): a copy
+    // shop hands over one physical copy however many places it was requested from, so
+    // quantities are summed and the first scope recorded as provenance.
     const wanted = new Map();
     for (const it of items) {
-      wanted.set(it.material_id, (wanted.get(it.material_id) ?? 0) + (it.quantity ?? 1));
+      const existing = wanted.get(it.material_id);
+      if (existing) {
+        existing.quantity += it.quantity ?? 1;
+      } else {
+        wanted.set(it.material_id, {
+          materialId: it.material_id,
+          facultyId: it.faculty_id,
+          yearId: it.year_id,
+          subjectId: it.subject_id ?? null,
+          quantity: it.quantity ?? 1,
+        });
+      }
     }
     const ids = [...wanted.keys()];
 
-    const { rows: available } = await pool.query(
+    // Every (material, faculty, year) the catalogue actually offers among those materials.
+    const { rows: offered } = await pool.query(
       `SELECT
-         m.id,
+         m.id AS material_id,
          m.title,
          m.price::float8 AS price,
+         f.id AS faculty_id,
          f.name AS faculty_name,
+         y.id AS year_id,
          y.code AS year_code,
+         y.label_sr,
+         y.label_en,
          ARRAY_AGG(DISTINCT p.id) AS programme_ids
        FROM materials m
        JOIN material_placements pl ON pl.material_id = m.id
        JOIN study_programmes p ON p.id = pl.programme_id AND p.is_active
        JOIN faculties f ON f.id = p.faculty_id AND f.is_active
        JOIN study_years y ON y.id = pl.study_year_id AND y.is_active
-      WHERE m.id = ANY($1) AND f.id = $2 AND pl.study_year_id = $3 AND m.is_active
-      GROUP BY m.id, m.title, m.price, f.name, y.code`,
-      [ids, faculty_id, year_id]
+      WHERE m.id = ANY($1) AND m.is_active
+      GROUP BY m.id, m.title, m.price, f.id, f.name, y.id, y.code, y.label_sr, y.label_en`,
+      [ids]
     );
 
-    // Anything the student asked for that is not on offer here.
-    const found = new Set(available.map((r) => r.id));
-    const missing = ids.filter((id) => !found.has(id));
-    if (missing.length > 0) {
-      return res.status(400).json({
-        error: "Some materials are not available for the selected faculty and year",
-        code: "material_unavailable",
-        materialIds: missing,
+    const offeredBy = new Map(
+      offered.map((r) => [`${r.material_id}|${r.faculty_id}|${r.year_id}`, r])
+    );
+
+    // Reject per line, naming what failed: the client drops exactly those from the cart.
+    const unavailable = [];
+    const lines = [];
+    for (const w of wanted.values()) {
+      const match = offeredBy.get(`${w.materialId}|${w.facultyId}|${w.yearId}`);
+      if (!match) {
+        unavailable.push(w.materialId);
+        continue;
+      }
+      const programmeIds = match.programme_ids ?? [];
+      lines.push({
+        materialId: w.materialId,
+        title: match.title,
+        unitPrice: Number(match.price),
+        quantity: w.quantity,
+        facultyName: match.faculty_name,
+        yearCode: match.year_code,
+        yearLabelSr: match.label_sr,
+        yearLabelEn: match.label_en,
+        studyYearId: w.yearId,
+        subjectId: w.subjectId,
+        // Only recorded when unambiguous; a material shared by several programmes of one
+        // faculty genuinely has no single answer, and the student never chose one.
+        programmeId: programmeIds.length === 1 ? programmeIds[0] : null,
       });
     }
 
-    const lines = available.map((r) => ({
-      materialId: r.id,
-      title: r.title,
-      unitPrice: Number(r.price),
-      quantity: wanted.get(r.id),
-    }));
+    if (unavailable.length > 0) {
+      return res.status(400).json({
+        error: "Some materials are not available for the faculty and year requested",
+        code: "material_unavailable",
+        materialIds: unavailable,
+      });
+    }
+
     const total =
       Math.round(lines.reduce((sum, l) => sum + l.unitPrice * l.quantity, 0) * 100) / 100;
 
@@ -185,50 +242,38 @@ export async function createOrder(req, res, next) {
       });
     }
 
-    // The spec has the student choose a faculty, not a programme, so a cart whose materials
-    // span several programmes of that faculty is genuinely ambiguous. Record a programme
-    // only when every line agrees on exactly one.
-    const programmeSets = available.map((r) => new Set(r.programme_ids ?? []));
-    const commonProgrammes = programmeSets.reduce(
-      (acc, set) => (acc === null ? set : new Set([...acc].filter((x) => set.has(x)))),
-      null
-    );
-    const programmeId =
-      commonProgrammes && commonProgrammes.size === 1 ? [...commonProgrammes][0] : null;
-
-    const facultyName = available[0].faculty_name;
-    const yearCode = available[0].year_code;
-
-    // Order, its lines and its first history row all commit together, so no order can
-    // exist without items or without an origin entry in the audit trail.
+    // Order, lines and the first history row commit together, so no order can exist without
+    // items or without an origin entry in the audit trail.
     const client = await pool.connect();
     let created;
     try {
       await client.query("BEGIN");
       const insert = await client.query(
-        `INSERT INTO orders
-           (faculty, year, price, email, phone, user_id, status, programme_id, study_year_id)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        `INSERT INTO orders (price, email, phone, user_id, status)
+         VALUES ($1, $2, $3, $4, $5)
          RETURNING id, created_at`,
-        [
-          facultyName,
-          yearCode,
-          total,
-          email,
-          phone || null,
-          req.user.id,
-          STATUS.NOVA,
-          programmeId,
-          year_id,
-        ]
+        [total, email, phone || null, req.user.id, STATUS.NOVA]
       );
       created = insert.rows[0];
 
       for (const l of lines) {
         await client.query(
-          `INSERT INTO order_items (order_id, material_id, quantity, unit_price, title)
-           VALUES ($1, $2, $3, $4, $5)`,
-          [created.id, l.materialId, l.quantity, l.unitPrice, l.title]
+          `INSERT INTO order_items
+             (order_id, material_id, quantity, unit_price, title,
+              faculty_name, year_code, programme_id, study_year_id, subject_id)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+          [
+            created.id,
+            l.materialId,
+            l.quantity,
+            l.unitPrice,
+            l.title,
+            l.facultyName,
+            l.yearCode,
+            l.programmeId,
+            l.studyYearId,
+            l.subjectId,
+          ]
         );
       }
 
@@ -252,8 +297,6 @@ export async function createOrder(req, res, next) {
       const result = await sendOrderConfirmationEmails({
         orderId: created.id,
         createdAt: created.created_at,
-        faculty: facultyName,
-        year: yearCode,
         items: lines,
         price: total,
         email,
@@ -377,14 +420,17 @@ function buildListQuery(reqQuery, extraConditions = [], extraParams = []) {
     return { error: "Invalid status filter" };
   }
 
-  // faculty and year are historical text snapshots on the order, and the real values now
-  // live in administrable tables, so there is no fixed list to validate against. An
-  // unknown value simply matches nothing — the query is parameterised either way.
+  // Scope lives on the lines, so an order matches when ANY line does. A cart spanning two
+  // faculties therefore appears under both — which is what an operator filtering by faculty
+  // wants, since they still have to prepare that order.
   const facultyQ = reqQuery.faculty;
   const faculty =
     typeof facultyQ === "string" ? facultyQ : Array.isArray(facultyQ) ? facultyQ[0] : "";
   if (faculty) {
-    conditions.push(`o.faculty = $${i++}`);
+    conditions.push(
+      `EXISTS (SELECT 1 FROM order_items oif
+                WHERE oif.order_id = o.id AND oif.faculty_name = $${i++})`
+    );
     params.push(faculty);
   }
 
@@ -392,7 +438,10 @@ function buildListQuery(reqQuery, extraConditions = [], extraParams = []) {
   const year =
     typeof yearQ === "string" ? yearQ : Array.isArray(yearQ) ? yearQ[0] : "";
   if (year) {
-    conditions.push(`o.year = $${i++}`);
+    conditions.push(
+      `EXISTS (SELECT 1 FROM order_items oiy
+                WHERE oiy.order_id = o.id AND oiy.year_code = $${i++})`
+    );
     params.push(year);
   }
 
@@ -640,8 +689,6 @@ export async function updateOrderStatus(req, res, next) {
         const result = await sendOrderReadyEmail({
           orderId: order.id,
           createdAt: order.created_at,
-          faculty: order.faculty,
-          year: order.year,
           items: order.items,
           price: order.price,
           email: order.email,

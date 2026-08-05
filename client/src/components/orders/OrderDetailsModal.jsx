@@ -5,7 +5,7 @@ import OrderStatusTimeline from "./OrderStatusTimeline.jsx";
 import StatusActionButton from "./StatusActionButton.jsx";
 import { useI18n } from "../../i18n/I18nProvider.jsx";
 import { apiErrorMessage } from "../../lib/apiErrorMessage.js";
-import { orderFacultyLabel, orderYearLabel } from "../../lib/orderLabels.js";
+import { groupOrderItems, scopeLabel } from "../../lib/orderLabels.js";
 
 /**
  * Operator detail view. Unlike the table row, this exposes *every* legal transition —
@@ -106,36 +106,56 @@ export default function OrderDetailsModal({
                   value={data.student?.indexNumber || t("common.dash")}
                   mono={Boolean(data.student?.indexNumber)}
                 />
-                <DetailRow label={t("orders.details.faculty")} value={orderFacultyLabel(data)} />
-                <DetailRow label={t("orders.details.year")} value={orderYearLabel(data, locale)} />
-                {data.programme && (
-                  <DetailRow label={t("admin.programme")} value={data.programme.name} />
+                {/* One scope states itself as a row. Several cannot, so the item list below
+                    carries a heading per faculty and year instead — that is what the counter
+                    reads when pulling the order off the shelves. */}
+                {(data.scopes ?? []).length === 1 ? (
+                  <DetailRow
+                    label={t("orders.details.scope")}
+                    value={scopeLabel(data.scopes[0], locale)}
+                  />
+                ) : (
+                  <DetailRow
+                    label={t("orders.details.scope")}
+                    value={t("orders.details.mixed")}
+                  />
                 )}
                 <div>
                   <dt className="mb-1 text-xs font-medium text-slate-500">
                     {t("cart.items")}
                   </dt>
                   <dd>
-                    <ul className="divide-y divide-slate-100 rounded-lg border border-slate-200">
-                      {(data.items ?? []).map((it) => (
-                        <li key={it.id} className="flex items-center gap-2 px-2.5 py-2 text-sm">
-                          <span className="min-w-0 flex-1 text-slate-900">
-                            {it.title}
-                            {it.materialType && (
-                              <span className="ml-1.5 rounded bg-slate-100 px-1 py-0.5 text-[11px] text-slate-600">
-                                {t(`materialType.${it.materialType}`)}
-                              </span>
-                            )}
-                          </span>
-                          {it.quantity > 1 && (
-                            <span className="text-xs text-slate-500">× {it.quantity}</span>
+                    <div className="divide-y divide-slate-200 overflow-hidden rounded-lg border border-slate-200">
+                      {groupOrderItems(data, locale).map((g) => (
+                        <div key={g.key}>
+                          {(data.scopes ?? []).length > 1 && (
+                            <p className="bg-slate-50 px-2.5 py-1.5 text-[11px] font-medium text-slate-700">
+                              {g.label}
+                            </p>
                           )}
-                          <span className="w-20 text-right tabular-nums text-slate-800">
-                            {formatPrice(it.lineTotal)}
-                          </span>
-                        </li>
+                          <ul className="divide-y divide-slate-100">
+                            {g.items.map((it) => (
+                              <li key={it.id} className="flex items-center gap-2 px-2.5 py-2 text-sm">
+                                <span className="min-w-0 flex-1 text-slate-900">
+                                  {it.title}
+                                  {it.materialType && (
+                                    <span className="ml-1.5 rounded bg-slate-100 px-1 py-0.5 text-[11px] text-slate-600">
+                                      {t(`materialType.${it.materialType}`)}
+                                    </span>
+                                  )}
+                                </span>
+                                {it.quantity > 1 && (
+                                  <span className="text-xs text-slate-500">× {it.quantity}</span>
+                                )}
+                                <span className="w-20 text-right tabular-nums text-slate-800">
+                                  {formatPrice(it.lineTotal)}
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
                       ))}
-                    </ul>
+                    </div>
                     <div className="mt-1.5 flex items-center justify-between px-2.5">
                       <span className="text-xs font-medium text-slate-600">
                         {t("common.total")}

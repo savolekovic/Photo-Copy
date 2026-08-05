@@ -11,3 +11,6 @@ server/.env
 
 # Real faculty mapping for the catalogue importer (client data; keep the .example)
 faculty-map.json
+
+# Playwright MCP scratch (browser snapshots, console logs)
+.playwright-mcp/

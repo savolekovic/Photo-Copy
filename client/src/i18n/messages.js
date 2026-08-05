@@ -98,11 +98,19 @@ export const messages = {
     "cart.items": "Poručeni materijali",
     "cart.itemCount": "{count} u korpi",
     "cart.scopeNote":
-      "Korpa se odnosi na izabrani fakultet i godinu. Promjena izbora prazni korpu.",
+      "Korpa ostaje sačuvana ako promijenite fakultet ili godinu, pa u jednu narudžbinu možete dodati materijale sa više fakulteta.",
+    "cart.showing": "Prikaz materijala za:",
+    "cart.changeScope": "Promijeni fakultet ili godinu",
+    "cart.addFromElsewhere": "Dodaj sa drugog fakulteta",
+    "cart.groupCount.one": "{count} izvor",
+    "cart.groupCount.few": "{count} izvora",
+    "cart.groupCount.other": "{count} izvora",
+    "cart.mixedNote":
+      "Narudžbina obuhvata materijale sa više fakulteta ili godina. Preuzimate ih zajedno, uz jedno obavještenje.",
     "cart.totalChanged":
       "Cijena je izmijenjena u međuvremenu. Provjerite ukupan iznos i potvrdite ponovo.",
     "cart.unavailable":
-      "Neki materijali više nisu dostupni za izabrani fakultet i godinu. Uklonjeni su iz korpe.",
+      "Neki materijali više nisu dostupni za fakultet i godinu iz kojih su izabrani. Uklonjeni su iz korpe.",
 
     "materialType.knjiga": "Knjiga",
     "materialType.skripta": "Skripta",
@@ -296,6 +304,8 @@ export const messages = {
     "orders.details.student": "Student",
     "orders.details.indexNumber": "Broj indeksa",
     "orders.details.faculty": "Fakultet",
+    "orders.details.scope": "Fakultet i godina",
+    "orders.details.mixed": "Više fakulteta / godina",
     "orders.details.year": "Godina studija",
     "orders.details.literature": "Literatura",
     "orders.details.price": "Cijena",
@@ -402,11 +412,18 @@ export const messages = {
     "cart.items": "Ordered materials",
     "cart.itemCount": "{count} in cart",
     "cart.scopeNote":
-      "The cart applies to the selected faculty and year. Changing either empties it.",
+      "Your cart is kept when you change faculty or year, so one order can include materials from more than one faculty.",
+    "cart.showing": "Showing materials for:",
+    "cart.changeScope": "Change faculty or year",
+    "cart.addFromElsewhere": "Add from another faculty",
+    "cart.groupCount.one": "{count} source",
+    "cart.groupCount.other": "{count} sources",
+    "cart.mixedNote":
+      "This order spans more than one faculty or year. You collect it all together, with a single notification.",
     "cart.totalChanged":
       "The price changed in the meantime. Check the total and confirm again.",
     "cart.unavailable":
-      "Some materials are no longer available for the selected faculty and year and were removed from your cart.",
+      "Some materials are no longer available for the faculty and year they were chosen from. They have been removed from your cart.",
 
     "materialType.knjiga": "Book",
     "materialType.skripta": "Course notes",
@@ -599,6 +616,8 @@ export const messages = {
     "orders.details.student": "Student",
     "orders.details.indexNumber": "Index number",
     "orders.details.faculty": "Faculty",
+    "orders.details.scope": "Faculty and year",
+    "orders.details.mixed": "Several faculties / years",
     "orders.details.year": "Year of study",
     "orders.details.literature": "Literature",
     "orders.details.price": "Price",

@@ -5,7 +5,7 @@ import StatusBadge from "../components/StatusBadge.jsx";
 import OrderStatusTimeline from "../components/orders/OrderStatusTimeline.jsx";
 import { useI18n } from "../i18n/I18nProvider.jsx";
 import { apiErrorMessage } from "../lib/apiErrorMessage.js";
-import { orderFacultyLabel, orderYearLabel } from "../lib/orderLabels.js";
+import { groupOrderItems, scopeLabel } from "../lib/orderLabels.js";
 
 const PAGE_SIZE = 10;
 
@@ -105,6 +105,7 @@ export default function MyOrdersPage() {
             {orders.map((order) => {
               const isReady = order.status === "spremno";
               const expanded = expandedId === order.id;
+              const mixed = (order.scopes ?? []).length > 1;
 
               return (
                 <li
@@ -124,31 +125,42 @@ export default function MyOrdersPage() {
                   </div>
 
                   {order.items?.length > 0 ? (
-                    <ul className="space-y-0.5">
-                      {order.items.map((it) => (
-                        <li key={it.id} className="text-sm font-medium text-slate-900">
-                          {it.title}
-                          {it.quantity > 1 && (
-                            <span className="ml-1 text-xs font-normal text-slate-500">
-                              × {it.quantity}
-                            </span>
+                    // Grouped only when the order actually spans more than one faculty or
+                    // year; a single-scope order says so once, in the details below.
+                    <div className="space-y-2">
+                      {groupOrderItems(order, locale).map((g) => (
+                        <div key={g.key}>
+                          {mixed && (
+                            <p className="text-xs font-semibold text-slate-600">{g.label}</p>
                           )}
-                        </li>
+                          <ul className="space-y-0.5">
+                            {g.items.map((it) => (
+                              <li key={it.id} className="text-sm font-medium text-slate-900">
+                                {it.title}
+                                {it.quantity > 1 && (
+                                  <span className="ml-1 text-xs font-normal text-slate-500">
+                                    × {it.quantity}
+                                  </span>
+                                )}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
                       ))}
-                    </ul>
+                    </div>
                   ) : (
                     <p className="text-sm text-slate-500">{t("common.dash")}</p>
                   )}
 
                   <dl className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-xs text-slate-500">
-                    <div className="flex gap-1.5">
-                      <dt>{t("orders.details.faculty")}:</dt>
-                      <dd className="text-slate-700">{orderFacultyLabel(order)}</dd>
-                    </div>
-                    <div className="flex gap-1.5">
-                      <dt>{t("orders.details.year")}:</dt>
-                      <dd className="text-slate-700">{orderYearLabel(order, locale)}</dd>
-                    </div>
+                    {!mixed && (
+                      <div className="flex gap-1.5">
+                        <dt>{t("orders.details.scope")}:</dt>
+                        <dd className="text-slate-700">
+                          {scopeLabel(order.scopes?.[0], locale)}
+                        </dd>
+                      </div>
+                    )}
                     <div className="flex gap-1.5">
                       <dt>{t("common.total")}:</dt>
                       <dd className="tabular-nums text-slate-700">
