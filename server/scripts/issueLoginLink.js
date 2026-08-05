@@ -1,7 +1,11 @@
 /**
  * Issue a login link for an existing account and print it, instead of e-mailing it.
  *
- *   npm run issue:link --workspace=server -- <email> [days] [clientUrl]
+ *   npm run issue:link --workspace=server -- <email> [days] [clientUrl] [indexNumber]
+ *
+ * With an index number for an address that has no account yet, redemption creates the
+ * student account — the same one-step signup the e-mailed flow performs, since
+ * login_tokens carries the index number for exactly that purpose.
  *
  * Useful whenever e-mail cannot be relied on — an unverified SMTP sender, a reviewer whose
  * inbox filters the message, or a demo behind a tunnel. The link is a bearer credential, so
@@ -27,20 +31,40 @@ if (!email) {
   process.exit(1);
 }
 
+const indexNumber = process.argv[5] ?? null;
+
 const { rows: user } = await pool.query(
   `SELECT id, role FROM users WHERE LOWER(email) = LOWER($1)`, [email]);
-if (user.length === 0) {
-  console.error(`No account for ${email} — create it first.`);
+
+if (user.length === 0 && !indexNumber) {
+  console.error(
+    `\nNo account for ${email}.\n` +
+      `Pass an index number as the 4th argument to create a student on first login,\n` +
+      `or use \`npm run create:operator\` for staff.\n`
+  );
+  process.exit(1);
+}
+
+const { isAllowedStudentEmail } = await import("../services/authService.js");
+if (user.length === 0 && !isAllowedStudentEmail(email)) {
+  console.error(
+    `\n${email} is not on an accepted student domain ` +
+      `(${config.studentEmailDomains.join(", ")}), so redeeming the link would be refused.\n` +
+      `Add the domain to STUDENT_EMAIL_DOMAINS or use an address that is allowed.\n`
+  );
   process.exit(1);
 }
 
 const token = newToken();
 const { rows } = await pool.query(
-  `INSERT INTO login_tokens (token_hash, email, expires_at)
-   VALUES ($1, $2, NOW() + ($3 || ' days')::interval)
+  `INSERT INTO login_tokens (token_hash, email, index_number, expires_at)
+   VALUES ($1, $2, $3, NOW() + ($4 || ' days')::interval)
    RETURNING expires_at`,
-  [hashToken(token), email.toLowerCase(), String(days)]
+  [hashToken(token), email.toLowerCase(), indexNumber, String(days)]
 );
 console.log(`${clientUrl.replace(/\/$/, "")}/prijava/potvrda?token=${encodeURIComponent(token)}`);
-console.error(`  (${user[0].role}, valid until ${rows[0].expires_at.toISOString()})`);
+console.error(
+  `  (${user.length ? user[0].role : "new student, broj indeksa " + indexNumber}` +
+    `, valid until ${rows[0].expires_at.toISOString()})`
+);
 await pool.end();
