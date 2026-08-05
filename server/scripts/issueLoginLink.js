@@ -67,4 +67,9 @@ console.error(
   `  (${user.length ? user[0].role : "new student, broj indeksa " + indexNumber}` +
     `, valid until ${rows[0].expires_at.toISOString()})`
 );
+// Easy to burn by accident: opening it to "check it works" is exactly what consumes it.
+console.error(
+  "  WARNING: single-use. Do not open it yourself — the first click consumes it and the\n" +
+    "  recipient will be told the link was already used. Re-run this command for a new one."
+);
 await pool.end();
