@@ -5,11 +5,28 @@ import { IconClock, IconEye } from "./OrderIcons.jsx";
 import { PRIMARY_NEXT } from "./orderActions.js";
 import { useI18n } from "../../i18n/I18nProvider.jsx";
 
-/** Table on desktop, cards on mobile — the same data and the same actions in both. */
-export default function OrdersTable({ orders, onView, onStatusChange, busyId }) {
+/**
+ * Table on desktop, cards on mobile — the same data and the same actions in both.
+ *
+ * Selection is optional: `selected`/`onToggle` arrive only where a batch can be acted on, so
+ * the checkbox column simply is not rendered otherwise.
+ */
+export default function OrdersTable({
+  orders,
+  onView,
+  onStatusChange,
+  busyId,
+  selected,
+  onToggle,
+  onToggleAll,
+}) {
   const { t } = useI18n();
 
   if (orders.length === 0) return null;
+
+  const selectable = Boolean(onToggle);
+  const shownIds = orders.map((o) => o.id);
+  const allShownSelected = selectable && shownIds.every((id) => selected?.has(id));
 
   return (
     <>
@@ -17,6 +34,17 @@ export default function OrdersTable({ orders, onView, onStatusChange, busyId }) 
         <table className="w-full min-w-[640px] border-collapse text-left">
           <thead>
             <tr className="border-b border-slate-100 text-xs font-semibold uppercase tracking-wide text-slate-500">
+              {selectable && (
+                <th className="w-10 px-3 py-3 pl-4">
+                  <input
+                    type="checkbox"
+                    checked={allShownSelected}
+                    onChange={() => onToggleAll(shownIds, !allShownSelected)}
+                    aria-label={t("report.selectAll")}
+                    className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900/20"
+                  />
+                </th>
+              )}
               <th className="w-14 px-3 py-3 pl-4">{t("orders.col.id")}</th>
               <th className="px-3 py-3">{t("orders.col.literature")}</th>
               <th className="px-3 py-3">{t("orders.col.student")}</th>
@@ -35,6 +63,8 @@ export default function OrdersTable({ orders, onView, onStatusChange, busyId }) 
                 onView={onView}
                 onStatusChange={onStatusChange}
                 busyId={busyId}
+                selected={selected?.has(order.id)}
+                onToggle={onToggle}
               />
             ))}
           </tbody>

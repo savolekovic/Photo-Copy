@@ -107,16 +107,11 @@ export default function OperatorLayout() {
           );
         })}
 
-        {/* Overdue is a problem, not a view — it gets a warning colour and only appears
-            when there is something to act on. */}
-        {summary?.overdue > 0 && (
-          <NavLink to="/narudzbine?status=spremno" className={itemClass(false)}>
-            <span className="text-rose-700">{t("orders.summary.overdue")}</span>
-            <span className="rounded-full bg-rose-100 px-1.5 py-0.5 text-[11px] font-medium tabular-nums text-rose-800">
-              {summary.overdue}
-            </span>
-          </NavLink>
-        )}
+        {/* The report reads the queue rather than being a queue itself, so it sits with the
+            orders group but without a count of its own. */}
+        <NavLink to="/izvjestaj" className={({ isActive }) => itemClass(isActive)}>
+          <span>{t("report.nav")}</span>
+        </NavLink>
 
         <p className={groupLabel}>{t("op.group.admin")}</p>
         {ADMIN_SECTIONS.map((s) => (

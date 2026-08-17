@@ -33,7 +33,11 @@ import { groupOrderItems, scopeLabel } from "../../lib/orderLabels.js";
  * and the other is an audit trail, not part of the order.
  */
 export default function OrderPrintSheet({ order, variant = "details" }) {
+  // Same reason as the report sheet: no order, no swap, or printing yields a blank page.
+  const hasOrder = Boolean(order);
+
   useEffect(() => {
+    if (!hasOrder) return undefined;
     document.documentElement.classList.add("has-print-sheet");
 
     const app = document.getElementById("root");
@@ -61,11 +65,11 @@ export default function OrderPrintSheet({ order, variant = "details" }) {
       swap(false);
       document.documentElement.classList.remove("has-print-sheet");
     };
-  }, []);
+  }, [hasOrder]);
 
   const { t, locale, formatDate, formatDateTime, formatPrice } = useI18n();
 
-  if (!order) return null;
+  if (!hasOrder) return null;
 
   const groups = groupOrderItems(order, locale);
   const mixed = (order.scopes ?? []).length > 1;

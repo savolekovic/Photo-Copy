@@ -174,3 +174,22 @@ export function patchOrderStatus(id, status, note) {
     body: { status, ...(note ? { note } : {}) },
   });
 }
+
+/**
+ * The production report: how many copies of each material need preparing.
+ *
+ * Either a period, or an explicit set of tickets the operator has picked out of the queue.
+ * `includeDone` widens it from "still to prepare" to everything already produced too.
+ */
+export function fetchProductionReport(params = {}, options = {}) {
+  const q = new URLSearchParams();
+  if (params.orderIds?.length) {
+    q.set("order_ids", params.orderIds.join(","));
+  } else {
+    if (params.from) q.set("from", params.from);
+    if (params.to) q.set("to", params.to);
+    if (params.includeDone) q.set("include_done", "true");
+  }
+  const qs = q.toString();
+  return request(`/api/reports/production${qs ? `?${qs}` : ""}`, { signal: options.signal });
+}

@@ -10,6 +10,7 @@ import LoginVerifyPage from "./pages/LoginVerifyPage.jsx";
 import MyOrdersPage from "./pages/MyOrdersPage.jsx";
 import OrderFormPage from "./pages/OrderFormPage.jsx";
 import OrdersPage from "./pages/OrdersPage.jsx";
+import ReportPage from "./pages/ReportPage.jsx";
 
 /**
  * "/" means different things per role: a student lands on the order form, an operator on
@@ -64,6 +65,7 @@ export default function App() {
             path="/administracija"
             element={<Navigate to="/administracija/fakulteti" replace />}
           />
+          <Route path="/izvjestaj" element={<ReportPage />} />
           <Route path="/administracija/:section" element={<AdminPage />} />
         </Route>
       </Routes>

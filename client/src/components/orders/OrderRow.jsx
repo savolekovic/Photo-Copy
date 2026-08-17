@@ -14,7 +14,14 @@ export function isOverdue(order) {
   );
 }
 
-export default function OrderRow({ order, onView, onStatusChange, busyId }) {
+export default function OrderRow({
+  order,
+  onView,
+  onStatusChange,
+  busyId,
+  selected,
+  onToggle,
+}) {
   const { t, locale, formatDate } = useI18n();
   const busy = busyId === order.id;
   const primary = PRIMARY_NEXT[order.status];
@@ -26,6 +33,18 @@ export default function OrderRow({ order, onView, onStatusChange, busyId }) {
       className="cursor-pointer border-b border-slate-100 transition-colors last:border-0 hover:bg-slate-50/90"
       onClick={() => onView(order.id)}
     >
+      {/* stopPropagation: ticking a row must not also open it. */}
+      {onToggle && (
+        <td className="w-10 px-3 py-3 pl-4 align-middle" onClick={(e) => e.stopPropagation()}>
+          <input
+            type="checkbox"
+            checked={Boolean(selected)}
+            onChange={() => onToggle(order.id)}
+            aria-label={`${t("report.selectRow")} #${order.id}`}
+            className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900/20"
+          />
+        </td>
+      )}
       <td className="w-14 px-3 py-3 pl-4 align-middle text-xs tabular-nums text-slate-500">
         #{order.id}
       </td>

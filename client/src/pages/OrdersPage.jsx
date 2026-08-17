@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   fetchAdminCatalogue,
   fetchOrderSummary,
@@ -20,7 +20,7 @@ const PAGE_SIZE = 20;
  * outstanding rather than the full archive.
  */
 export default function OrdersPage() {
-  const { t } = useI18n();
+  const { t, tn } = useI18n();
 
   const [orders, setOrders] = useState([]);
   const [total, setTotal] = useState(0);
@@ -32,6 +32,9 @@ export default function OrdersPage() {
   const [viewOrderId, setViewOrderId] = useState(null);
   const [notice, setNotice] = useState(null);
   const [summary, setSummary] = useState(null);
+  // Tickets ticked for a report. Ids rather than orders, so a selection survives paging and
+  // refiltering — the operator can gather a batch from more than one screenful.
+  const [selectedIds, setSelectedIds] = useState(() => new Set());
   // Filter options come from the administrable catalogue rather than a fixed list.
   const [facultyOptions, setFacultyOptions] = useState([]);
   const [yearOptions, setYearOptions] = useState([]);
@@ -293,11 +296,51 @@ export default function OrdersPage() {
 
       {!loading && !error && total > 0 && (
         <>
+          {/* Appears only once something is ticked: an always-present bar would be one more
+              thing to read on a screen the operator scans all day. */}
+          {selectedIds.size > 0 && (
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-900/20 bg-slate-900 px-4 py-2.5">
+              <span className="text-sm font-medium text-white">
+                {tn("report.selectedCount", selectedIds.size)}
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSelectedIds(new Set())}
+                  className="rounded-lg px-2.5 py-1.5 text-xs font-medium text-slate-300 transition-colors hover:text-white"
+                >
+                  {t("report.clearSelection")}
+                </button>
+                <Link
+                  to={`/izvjestaj?orders=${[...selectedIds].sort((a, b) => a - b).join(",")}`}
+                  className="rounded-lg bg-white px-3 py-1.5 text-xs font-medium text-slate-900 transition-colors hover:bg-slate-100"
+                >
+                  {t("report.forSelected")}
+                </Link>
+              </div>
+            </div>
+          )}
+
           <OrdersTable
             orders={orders}
             onView={(id) => setViewOrderId(id)}
             onStatusChange={handleStatusChange}
             busyId={busyId}
+            selected={selectedIds}
+            onToggle={(id) =>
+              setSelectedIds((prev) => {
+                const next = new Set(prev);
+                next.has(id) ? next.delete(id) : next.add(id);
+                return next;
+              })
+            }
+            onToggleAll={(ids, select) =>
+              setSelectedIds((prev) => {
+                const next = new Set(prev);
+                for (const id of ids) (select ? next.add(id) : next.delete(id));
+                return next;
+              })
+            }
           />
 
           <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
